@@ -4,7 +4,10 @@ const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
   appName: 'Strong Track',
   webDir: 'www',
-  bundledWebRuntime: false
+  bundledWebRuntime: false,
+  ios: {
+    contentInset: 'always'
+  }
 };
 
 export default config;

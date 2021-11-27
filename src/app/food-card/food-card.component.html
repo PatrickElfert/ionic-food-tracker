@@ -1,0 +1,27 @@
+  <ion-item
+    #item
+    (click)="selected = !selected"
+    class="container list-entry"
+  >
+    <div class="wrapper">
+      <div class="col">
+          <img class="edit" src="assets/icons/edit-svgrepo-com%201.svg">
+          <img class="bin" src="assets/icons/bin-svgrepo-com%201.svg">
+      </div>
+    <div #slider class="grid">
+        <div class="food">{{data?.name}}</div>
+        <div class="row macros">
+          <div class="protein">{{data?.macros?.protein}} g</div>
+          <div class="fat">{{data?.macros?.fat}} g</div>
+          <div class="carbs">{{data?.macros?.carbs}} g</div>
+      </div>
+        <div class="input-container">
+          <ion-item class="item-wrapper">
+            <ion-input type="number" class="input" (click)="$event.stopPropagation()" [ngModel]="data?.selectedAmount">
+            </ion-input>
+          </ion-item>
+        </div>
+        <div class="kcal">{{data?.calories | number }} kcal</div>
+    </div>
+    </div>
+  </ion-item>

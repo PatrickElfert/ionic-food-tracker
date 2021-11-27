@@ -3,18 +3,20 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Tab1Page } from './tab1.page';
-import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
 import { Tab1PageRoutingModule } from './tab1-routing.module';
+import {FoodCardComponent} from '../food-card/food-card.component';
+import {HammerModule} from '@angular/platform-browser';
+import {MealComponent} from '../meal/meal.component';
 
 @NgModule({
   imports: [
+    HammerModule,
     IonicModule,
     CommonModule,
     FormsModule,
-    ExploreContainerComponentModule,
-    Tab1PageRoutingModule
+    Tab1PageRoutingModule,
   ],
-  declarations: [Tab1Page]
+  declarations: [Tab1Page, FoodCardComponent, MealComponent]
 })
 export class Tab1PageModule {}
