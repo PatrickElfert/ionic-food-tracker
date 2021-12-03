@@ -21,10 +21,12 @@ export class FoodCardComponent implements AfterViewInit{
   @ViewChild('slider') slider: ElementRef | undefined;
   @Input() data: Ingredient | undefined;
   @Input() actions = true;
-  @Output() deleted: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() edited: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input() selectable = true;
+  @Output() deleted = new EventEmitter<boolean>();
+  @Output() edited = new EventEmitter<boolean>();
+  @Output() selected = new EventEmitter<boolean>();
 
-  public selected = false;
+  public isSelected = false;
   public delete = false;
   public edit = false;
 
@@ -61,8 +63,6 @@ export class FoodCardComponent implements AfterViewInit{
       }
       ,
       onEnd: ev => {
-        console.log(this.edit);
-        console.log(this.delete);
         if (this.delete) {
           this.deleted.emit();
         } else if (this.edit) {

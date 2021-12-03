@@ -8,18 +8,18 @@ import {ModalController} from '@ionic/angular';
   styleUrls: ['./ingredient-search-modal.component.sass'],
 })
 export class IngredientSearchModalComponent implements OnInit {
-  private ingredientSearchResult: Ingredient[] | undefined;
+  private ingredientSearchResult: (Ingredient & {selected: boolean})[] = [];
 
   constructor(private ingredientService: IngredientService, private modalController: ModalController) { }
 
   public async onSearchChanged($event: any): Promise<void> {
-    this.ingredientSearchResult = await this.ingredientService.loadIngredients($event.target.value as string);
+    this.ingredientSearchResult = (await this.ingredientService.loadIngredients($event.target.value as string))
+      .map(i => ({...i, selected: false}));
   }
 
-  ngOnInit() {
-  };
+  ngOnInit() {};
 
   public async dismissModal(): Promise<void> {
-    await this.modalController.dismiss();
+    await this.modalController.dismiss(this.ingredientSearchResult.filter(i => i.selected));
   }
 }

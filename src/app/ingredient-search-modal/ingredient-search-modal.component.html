@@ -19,7 +19,7 @@
 
 <ion-content>
   <ion-list>
-    <app-food-card [actions]="false"
+    <app-food-card [actions]="false" (selected)="ingredient.selected = $event"
       *ngFor="let ingredient of ingredientSearchResult"
       [data]="ingredient"
     ></app-food-card>

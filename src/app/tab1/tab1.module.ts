@@ -9,6 +9,8 @@ import {FoodCardComponent} from '../food-card/food-card.component';
 import {HammerModule} from '@angular/platform-browser';
 import {MealComponent} from '../meal/meal.component';
 import {IngredientSearchModalComponent} from '../ingredient-search-modal/ingredient-search-modal.component';
+import {MealOverviewComponent} from '../meal-overview/meal-overview.component';
+import {MealCardComponent} from '../meal-card/meal-card.component';
 
 @NgModule({
   imports: [
@@ -18,6 +20,6 @@ import {IngredientSearchModalComponent} from '../ingredient-search-modal/ingredi
     FormsModule,
     Tab1PageRoutingModule,
   ],
-  declarations: [Tab1Page, FoodCardComponent, MealComponent, IngredientSearchModalComponent]
+  declarations: [Tab1Page, FoodCardComponent, MealComponent, IngredientSearchModalComponent, MealOverviewComponent, MealCardComponent]
 })
 export class Tab1PageModule {}

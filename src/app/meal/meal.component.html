@@ -13,7 +13,9 @@
 <ion-content>
   <ion-list>
     <app-food-card
-      *ngFor="let ingredient of selectedIngredients"
+      [selectable]="false"
+      (deleted)="deleteIngredient(i)"
+      *ngFor="let ingredient of selectedIngredients; let i = index"
       [data]="ingredient"
     ></app-food-card>
     <div (click)="presentModal()" class="newItem">add new</div>
