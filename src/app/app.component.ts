@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {StatusBar, Style} from '@capacitor/status-bar';
+import {Platform} from '@ionic/angular';
+import {Keyboard, KeyboardResize} from '@capacitor/keyboard';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +9,7 @@ import {StatusBar, Style} from '@capacitor/status-bar';
 })
 export class AppComponent implements OnInit
 {
-  constructor() {
+  constructor(platform: Platform) {
   }
 
   async ngOnInit(): Promise<void> {

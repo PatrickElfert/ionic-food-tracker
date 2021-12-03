@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-row class="first-row">
+    <ion-col size="3">
+    </ion-col>
+    <ion-col size="6">
+      <ion-title size="large" > INGREDIENTS </ion-title>
+    </ion-col>
+    <ion-col size="3" class="flex ion-align-items-end ion-justify-content-end">
+        <ion-button fill="clear" (click)="dismissModal()">Close</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row class="ion-justify-content-center">
+    <ion-item class="input">
+      <ion-icon slot="end" name="search-circle-outline"></ion-icon>
+      <ion-input (change)="onSearchChanged($event)"> </ion-input>
+    </ion-item>
+  </ion-row>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <app-food-card [actions]="false"
+      *ngFor="let ingredient of ingredientSearchResult"
+      [data]="ingredient"
+    ></app-food-card>
+  </ion-list>
+</ion-content>

@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-row class="first-row">
+    <ion-col>
+        <ion-back-button></ion-back-button>
+    </ion-col>
+    <ion-col>
+      <ion-title class="ion-text-center" size="large" > MEAL </ion-title>
+    </ion-col>
+    <ion-col></ion-col>
+  </ion-row>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <app-food-card
+      *ngFor="let ingredient of selectedIngredients"
+      [data]="ingredient"
+    ></app-food-card>
+    <div (click)="presentModal()" class="newItem">add new</div>
+  </ion-list>
+</ion-content>
