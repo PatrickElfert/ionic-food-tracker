@@ -11,6 +11,7 @@ import {MealComponent} from '../meal/meal.component';
 import {IngredientSearchModalComponent} from '../ingredient-search-modal/ingredient-search-modal.component';
 import {MealOverviewComponent} from '../meal-overview/meal-overview.component';
 import {MealCardComponent} from '../meal-card/meal-card.component';
+import {TabsPageModule} from '../tabs/tabs.module';
 
 @NgModule({
   imports: [
@@ -19,6 +20,9 @@ import {MealCardComponent} from '../meal-card/meal-card.component';
     CommonModule,
     FormsModule,
     Tab1PageRoutingModule,
+    TabsPageModule
+  ],
+  exports: [
   ],
   declarations: [Tab1Page, FoodCardComponent, MealComponent, IngredientSearchModalComponent, MealOverviewComponent, MealCardComponent]
 })

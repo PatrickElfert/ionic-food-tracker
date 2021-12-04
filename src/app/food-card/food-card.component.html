@@ -8,12 +8,12 @@
       </div>
     <div #slider class="grid">
       <div class="icon-wrapper">
-        <ion-icon
-          (click)=" isSelected = !isSelected; this.selected.emit(isSelected)"
+        <ion-icon [tabindex]="1"
+          (click)="$event.stopImmediatePropagation(); isSelected = !isSelected; this.selected.emit(isSelected)"
           *ngIf='isSelected; else unchecked' class="checkIcon" name="checkmark-circle"></ion-icon>
         <ng-template #unchecked>
-          <ion-icon
-            (click)=" isSelected = !isSelected; this.selected.emit(isSelected)"
+          <ion-icon [tabindex]="1"
+            (click)="$event.stopImmediatePropagation(); isSelected = !isSelected; this.selected.emit(isSelected)"
             class="checkIcon" name="checkmark-circle-outline"></ion-icon>
         </ng-template>
       </div>
@@ -25,7 +25,7 @@
       </div>
         <div class="input-container">
           <ion-item class="item-wrapper">
-            <ion-input type="number" class="input" (click)="$event.stopPropagation()" [ngModel]="data?.selectedAmount">
+            <ion-input [tabindex]="2" type="number" class="input" (click)="$event.stopPropagation()" [ngModel]="data?.selectedAmount">
             </ion-input>
           </ion-item>
         </div>

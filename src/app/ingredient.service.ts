@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {Macros} from './macros';
 
 interface Product {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -20,12 +21,6 @@ export class Ingredient {
     this.calories = macros.carbs * 4 + macros.fat * 9 + macros.protein * 4;
     this.selectedAmount = defaultAmount;
   }
-}
-
-interface Macros {
-  protein: number;
-  fat: number;
-  carbs: number;
 }
 
 @Injectable({

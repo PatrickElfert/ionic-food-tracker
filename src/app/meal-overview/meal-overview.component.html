@@ -4,7 +4,7 @@
     </div>
   </ion-header>
   <ion-content>
-    <app-meal-card></app-meal-card>
+    <app-meal-card [meal]="meal" *ngFor="let meal of mealService.meals"></app-meal-card>
     <div (click)="navigate()" class="newItem">add new</div>
   </ion-content>
 

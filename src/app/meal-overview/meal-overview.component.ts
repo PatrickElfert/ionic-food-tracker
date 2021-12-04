@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {MealService} from "../meal.service";
 
 @Component({
   selector: 'app-meal-overview',
@@ -9,7 +10,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class MealOverviewComponent implements OnInit {
   today = new Date().toLocaleDateString();
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private mealService: MealService) { }
 
   ngOnInit() {}
 

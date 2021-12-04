@@ -19,9 +19,12 @@
 
 <ion-content>
   <ion-list>
-    <app-food-card [actions]="false" (selected)="ingredient.selected = $event"
+    <app-food-card [actions]="false" (selected)="selectionChanged($event, ingredient)"
       *ngFor="let ingredient of ingredientSearchResult"
       [data]="ingredient"
     ></app-food-card>
   </ion-list>
 </ion-content>
+<div class="footer">
+  <app-calorie-bar></app-calorie-bar>
+</div>

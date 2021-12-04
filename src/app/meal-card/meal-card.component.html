@@ -1,11 +1,11 @@
 <div class="container">
   <div class="food row">
-    <div class="row">Haferflocken mit beeren</div>
-    <div class="row">600 kcal</div>
+    <div class="row">{{meal.name}}</div>
+    <div class="row">{{meal.calories | number }} kcal</div>
   </div>
   <div class="macros row">
-    <div>180g</div>
-    <div>80g</div>
-    <div>300g</div>
+    <div>{{meal.macros.protein |number: '1.0-2' }} g</div>
+    <div>{{meal.macros.fat | number: '1.0-2'}} g</div>
+    <div>{{meal.macros.carbs | number: '1.0-2'}} g</div>
   </div>
 </div>

@@ -1,0 +1,4 @@
+<div class="bar">
+ <div [ngStyle]="{width: calorieBarService.currentCalories / calorieBarService.calorieLimit | percent }" class="row percentage"></div>
+  <div class="label">{{calorieBarService.currentCalories | number}} / {{calorieBarService.calorieLimit | number}} kcal</div>
+</div>
