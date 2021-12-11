@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {CalorieBarService} from '../calorie-bar.service';
 
 @Component({
@@ -6,11 +6,8 @@ import {CalorieBarService} from '../calorie-bar.service';
   templateUrl: './calorie-bar.component.html',
   styleUrls: ['./calorie-bar.component.sass']
 })
-export class CalorieBarComponent implements OnInit {
-
-  constructor(public calorieBarService: CalorieBarService) { }
-
-  ngOnInit(): void {
+export class CalorieBarComponent {
+  constructor(public calorieBarService: CalorieBarService) {
   }
 
 }

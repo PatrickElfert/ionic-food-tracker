@@ -9,7 +9,8 @@ import {CalorieBarService} from '../calorie-bar.service';
   styleUrls: ['./ingredient-search-modal.component.sass'],
 })
 export class IngredientSearchModalComponent implements OnInit {
-  private ingredientSearchResult: (Ingredient & {selected: boolean})[] = [];
+  private ingredientSearchResult: Ingredient[] = [];
+  private selectedIngredients: Ingredient[] = [];
 
   constructor(private calorieBarService: CalorieBarService, private ingredientService: IngredientService, private modalController: ModalController) { }
 
@@ -21,15 +22,16 @@ export class IngredientSearchModalComponent implements OnInit {
   ngOnInit() {};
 
   public async dismissModal(): Promise<void> {
-    await this.modalController.dismiss(this.ingredientSearchResult.filter(i => i.selected));
+    await this.modalController.dismiss(this.selectedIngredients);
   }
 
-  selectionChanged($event: boolean, ingredient: (Ingredient & {selected: boolean})) {
-   ingredient.selected = $event;
+  selectionChanged($event: boolean, ingredient: Ingredient ) {
    if($event) {
-     this.calorieBarService.currentCalories += ingredient.calories;
+     this.selectedIngredients.push(ingredient);
+     this.calorieBarService.addCalories(ingredient.calories);
    } else {
-     this.calorieBarService.currentCalories -= ingredient.calories;
+     this.selectedIngredients.splice(this.selectedIngredients.findIndex(s => s.name === ingredient.name),1);
+     this.calorieBarService.reduceCalories(ingredient.calories);
    }
   }
 }

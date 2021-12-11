@@ -6,8 +6,8 @@
           <img class="edit" src="assets/icons/edit-svgrepo-com%201.svg">
           <img class="bin" src="assets/icons/bin-svgrepo-com%201.svg">
       </div>
-    <div #slider class="grid">
-      <div class="icon-wrapper">
+    <div #slider class="grid" [ngStyle]="{'grid-template-columns': selectable ? '0.1fr 1fr 1fr' : '1fr 1fr'}">
+      <div class="icon-wrapper" *ngIf="selectable">
         <ion-icon [tabindex]="1"
           (click)="$event.stopImmediatePropagation(); isSelected = !isSelected; this.selected.emit(isSelected)"
           *ngIf='isSelected; else unchecked' class="checkIcon" name="checkmark-circle"></ion-icon>

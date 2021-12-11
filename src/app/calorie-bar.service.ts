@@ -1,10 +1,18 @@
 import { Injectable } from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CalorieBarService {
-  public currentCalories = 0;
+ public currentCalories = new BehaviorSubject(0);
   public calorieLimit = 2000;
-  constructor() { }
+
+  public addCalories(calories: number) {
+    this.currentCalories.next(this.currentCalories.value + calories);
+  }
+
+  public reduceCalories(calories: number) {
+    this.currentCalories.next(this.currentCalories.value - calories);
+  }
 }

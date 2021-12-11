@@ -1,13 +1,14 @@
 <ion-header>
-  <ion-row class="first-row">
+  <ion-row>
     <ion-col>
-        <ion-back-button (click)="addMeal()"></ion-back-button>
+        <ion-back-button (click)="safeMeal()"></ion-back-button>
     </ion-col>
-    <ion-col>
-      <ion-title class="ion-text-center" size="large" > MEAL </ion-title>
+    <ion-col size="8">
+      <ion-input #input placeholder="name" [(ngModel)]="name"></ion-input>
     </ion-col>
     <ion-col></ion-col>
   </ion-row>
+  <app-macro-header></app-macro-header>
 </ion-header>
 
 <ion-content>
@@ -21,3 +22,4 @@
     <div (click)="presentModal()" class="newItem">add new</div>
   </ion-list>
 </ion-content>
+<app-calorie-bar></app-calorie-bar>
