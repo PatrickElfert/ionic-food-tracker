@@ -3,6 +3,14 @@
 	"appName": "Strong Track",
 	"webDir": "www",
 	"bundledWebRuntime": false,
+	"plugins": {
+		"FirebaseAuthentication": {
+			"skipNativeAuth": true,
+			"providers": [
+				"google.com"
+			]
+		}
+	},
 	"server": {
 		"url": "http://192.168.178.23:8100"
 	}
