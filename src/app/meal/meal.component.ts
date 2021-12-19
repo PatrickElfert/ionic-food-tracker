@@ -13,6 +13,9 @@ import { MealService } from '../meal.service';
 import { Meal } from '../meal-card/meal-card.component';
 import { ActivatedRoute } from '@angular/router';
 import { CalorieBarService } from '../calorie-bar.service';
+import { v4 } from 'uuid';
+import { updateDoc } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-meal',
@@ -23,7 +26,6 @@ export class MealComponent implements OnInit, AfterViewChecked {
   @ViewChild('input', { static: false }) ionInput:
     | { setFocus: () => void }
     | undefined;
-  selectedIngredients: Ingredient[] = [];
   meal: Meal | undefined;
   name = '';
   private needsFocus = false;
@@ -36,12 +38,16 @@ export class MealComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-    this.activatedRoute.paramMap.subscribe((params) => {
-      this.meal = this.mealService.meals.find(
-        (m) => m.name === params.get('id')
-      );
-      this.name = this.meal ? this.meal.name : '';
-      this.selectedIngredients = this.meal?.ingredients ?? [];
+    this.activatedRoute.paramMap.subscribe(async (params) => {
+      const id = params.get('id');
+      if (id) {
+        this.mealService.subscribeToMeal(id).subscribe((m) => {
+          console.log('new meal');
+          this.meal = m;
+        });
+      } else {
+        this.meal = new Meal([], '', v4());
+      }
     });
   }
 
@@ -50,27 +56,19 @@ export class MealComponent implements OnInit, AfterViewChecked {
       component: IngredientSearchModalComponent,
     });
     await modal.present();
-    this.selectedIngredients.push(
+    this.meal?.ingredients.push(
       ...((await modal.onWillDismiss()).data as Ingredient[])
     );
-  }
-
-  public deleteIngredient(index: number): void {
-    this.calorieBarService.reduceCalories(
-      this.selectedIngredients[index].calories
-    );
-    this.selectedIngredients.splice(index, 1);
-    this.changedDetector.detectChanges();
-  }
-
-  public safeMeal(): void {
     if (this.meal) {
-      this.meal = new Meal(this.selectedIngredients, this.meal.name);
+      console.log('update meal');
+      await this.mealService.updateMeal(this.meal);
     }
-    if (this.selectedIngredients.length > 0) {
-      this.mealService.meals.push(
-        new Meal(this.selectedIngredients, this.name)
-      );
+  }
+
+  public async deleteIngredient(index: number): Promise<void> {
+    if (this.meal) {
+      this.meal.ingredients.splice(index, 1);
+      await this.mealService.updateMeal(this.meal);
     }
   }
 

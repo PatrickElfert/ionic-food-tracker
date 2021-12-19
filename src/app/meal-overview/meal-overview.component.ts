@@ -1,8 +1,9 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {MealService} from '../meal.service';
-import {ActionSheetController} from '@ionic/angular';
-import {CalorieBarService} from '../calorie-bar.service';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MealService } from '../meal.service';
+import { ActionSheetController } from '@ionic/angular';
+import { CalorieBarService } from '../calorie-bar.service';
+import { Meal } from '../meal-card/meal-card.component';
 
 @Component({
   selector: 'app-meal-overview',
@@ -12,34 +13,45 @@ import {CalorieBarService} from '../calorie-bar.service';
 export class MealOverviewComponent implements OnInit {
   today = new Date().toLocaleDateString();
 
-  constructor(private router: Router,
-              private activatedRoute: ActivatedRoute,
-              private mealService: MealService,
-              private actionSheetController: ActionSheetController,
-              private changeDetector: ChangeDetectorRef,
-              private calorieBarService: CalorieBarService
-              ) { }
+  constructor(
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private mealService: MealService,
+    private actionSheetController: ActionSheetController,
+    private changeDetector: ChangeDetectorRef,
+    private calorieBarService: CalorieBarService
+  ) {}
 
   ngOnInit() {}
 
   navigate() {
-      this.router.navigate(['meal'], {relativeTo: this.activatedRoute });
+    this.router.navigate(['meal'], { relativeTo: this.activatedRoute });
   }
 
-  public async openActionSheet(index: number): Promise<void> {
+  public async openActionSheet(index: number, meal: Meal): Promise<void> {
     const actionSheet = await this.actionSheetController.create({
-     header: 'Meal',
+      header: 'Meal',
       buttons: [
-        {text: 'Delete', role: 'destructive', icon: 'trash', handler: () => {
-            this.calorieBarService.reduceCalories(this.mealService.meals[index].calories);
-            this.mealService.meals.splice(index,1);
-            this.changeDetector.detectChanges();
-          }},
-        {text: 'Edit', icon: 'pencil-outline', handler: () => {
-          this.router.navigate(['meal', this.mealService.meals[index].name], {relativeTo: this.activatedRoute});
-          }},
-        {text: 'Cancel', role: 'cancel', icon: 'close'}
-      ]
+        {
+          text: 'Delete',
+          role: 'destructive',
+          icon: 'trash',
+          handler: async () => {
+            this.calorieBarService.reduceCalories(meal.calories);
+            await this.mealService.removeMeal(meal.id);
+          },
+        },
+        {
+          text: 'Edit',
+          icon: 'pencil-outline',
+          handler: () => {
+            this.router.navigate(['meal', meal.id], {
+              relativeTo: this.activatedRoute,
+            });
+          },
+        },
+        { text: 'Cancel', role: 'cancel', icon: 'close' },
+      ],
     });
     await actionSheet.present();
   }

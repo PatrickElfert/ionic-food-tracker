@@ -1,12 +1,10 @@
-import {Component } from '@angular/core';
-import {CalorieBarService} from '../calorie-bar.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
-  styleUrls: ['tabs.page.sass']
+  styleUrls: ['tabs.page.sass'],
 })
 export class TabsPage {
-  constructor(private calorieBarService: CalorieBarService) {}
-
+  constructor() {}
 }

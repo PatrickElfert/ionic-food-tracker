@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { Ingredient } from '../ingredient.service';
 import { Macros } from '../macros';
 
@@ -6,7 +6,11 @@ export class Meal {
   public macros: Macros;
   public calories: number;
 
-  constructor(public ingredients: Ingredient[], public name: string) {
+  constructor(
+    public ingredients: Ingredient[],
+    public name: string,
+    public id: string
+  ) {
     this.macros = this.ingredients.reduce(
       (acc, i) => {
         acc.protein += i.macros.protein;

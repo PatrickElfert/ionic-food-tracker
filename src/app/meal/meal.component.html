@@ -1,25 +1,27 @@
-<ion-header>
-  <ion-row>
-    <ion-col>
-        <ion-back-button (click)="safeMeal()"></ion-back-button>
-    </ion-col>
-    <ion-col size="8">
-      <ion-input #input placeholder="name" [(ngModel)]="name"></ion-input>
-    </ion-col>
-    <ion-col></ion-col>
-  </ion-row>
-  <app-macro-header></app-macro-header>
-</ion-header>
+<ng-container *ngIf="meal">
+  <ion-header>
+    <ion-row>
+      <ion-col>
+        <ion-back-button></ion-back-button>
+      </ion-col>
+      <ion-col size="8">
+        <ion-input #input placeholder="name" (ionChange)="this.mealService.updateMeal(this.meal)" [(ngModel)]="meal.name"></ion-input>
+      </ion-col>
+      <ion-col></ion-col>
+    </ion-row>
+    <app-macro-header></app-macro-header>
+  </ion-header>
 
-<ion-content>
-  <ion-list>
-    <app-food-card
-      [selectable]="false"
-      (deleted)="deleteIngredient(i)"
-      *ngFor="let ingredient of selectedIngredients; let i = index"
-      [data]="ingredient"
-    ></app-food-card>
-    <div (click)="presentModal()" class="newItem">add new</div>
-  </ion-list>
-</ion-content>
-<app-calorie-bar></app-calorie-bar>
+  <ion-content>
+    <ion-list>
+      <app-food-card
+        [selectable]="false"
+        (deleted)="deleteIngredient(i)"
+        *ngFor="let ingredient of meal?.ingredients let i = index"
+        [data]="ingredient"
+      ></app-food-card>
+      <div (click)="presentModal()" class="newItem">add new</div>
+    </ion-list>
+  </ion-content>
+  <app-calorie-bar></app-calorie-bar>
+</ng-container>
