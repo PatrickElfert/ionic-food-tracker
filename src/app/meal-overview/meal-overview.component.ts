@@ -4,6 +4,8 @@ import { MealService } from '../meal.service';
 import { ActionSheetController } from '@ionic/angular';
 import { CalorieBarService } from '../calorie-bar.service';
 import { Meal } from '../meal-card/meal-card.component';
+import { format } from 'date-fns';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-meal-overview',
@@ -11,7 +13,8 @@ import { Meal } from '../meal-card/meal-card.component';
   styleUrls: ['./meal-overview.component.sass'],
 })
 export class MealOverviewComponent implements OnInit {
-  today = new Date().toLocaleDateString();
+  public currentDateFormated: string | undefined;
+  public meals: Observable<Meal[]> | undefined;
 
   constructor(
     private router: Router,
@@ -22,9 +25,13 @@ export class MealOverviewComponent implements OnInit {
     private calorieBarService: CalorieBarService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.meals = this.mealService.subscribeToMeals(new Date());
+    this.currentDateFormated = format(new Date(), 'cccc');
+  }
 
   navigate() {
+    this.mealService.selectedDate = new Date();
     this.router.navigate(['meal'], { relativeTo: this.activatedRoute });
   }
 

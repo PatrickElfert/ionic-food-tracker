@@ -38,6 +38,16 @@ export class FoodCardComponent implements AfterViewInit {
     this.registerSlider();
   }
 
+  public updateMacros(selectedAmount: number) {
+    if (this.data) {
+      this.data = new Ingredient(
+        this.data.name,
+        this.data.macros,
+        selectedAmount
+      );
+    }
+  }
+
   private registerSlider() {
     if (!this.actions || !this.slider) {
       return;

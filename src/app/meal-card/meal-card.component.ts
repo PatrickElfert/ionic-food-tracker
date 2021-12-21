@@ -9,7 +9,8 @@ export class Meal {
   constructor(
     public ingredients: Ingredient[],
     public name: string,
-    public id: string
+    public id: string,
+    public date: string
   ) {
     this.macros = this.ingredients.reduce(
       (acc, i) => {

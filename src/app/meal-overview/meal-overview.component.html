@@ -1,10 +1,10 @@
   <ion-header>
     <div class="title">
-      {{today}}
+      {{}}
     </div>
   </ion-header>
   <ion-content>
-    <app-meal-card (click)="openActionSheet(i, meal)" [meal]="meal" *ngFor="let meal of mealService.meals | async; let i = index"></app-meal-card>
+    <app-meal-card (click)="openActionSheet(i, meal)" [meal]="meal" *ngFor="let meal of meals | async; let i = index"></app-meal-card>
     <div (click)="navigate()" class="newItem">add new</div>
   </ion-content>
   <app-calorie-bar></app-calorie-bar>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanLoad, Route, UrlSegment, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { UserService } from './user.service';
-import { Auth } from '@angular/fire/auth';
+import { Auth, browserLocalPersistence } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',

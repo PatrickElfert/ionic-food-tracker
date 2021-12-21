@@ -7,7 +7,9 @@ import {
   doc,
   Firestore,
   onSnapshot,
+  query,
   setDoc,
+  where,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
 import { Observable } from 'rxjs';
@@ -17,12 +19,10 @@ import { v4 } from 'uuid';
   providedIn: 'root',
 })
 export class MealService {
-  public meals: Observable<Meal[]>;
   mealsCollection!: CollectionReference<Meal>;
+  selectedDate: Date | undefined;
 
-  constructor(private firestore: Firestore, private userService: UserService) {
-    this.meals = this.subscribeToMeals();
-  }
+  constructor(private firestore: Firestore, private userService: UserService) {}
 
   public async removeMeal(id: string): Promise<void> {
     await deleteDoc(doc<Meal>(this.mealsCollection, id));
@@ -42,27 +42,37 @@ export class MealService {
           new Meal(
             snapshot.data()?.ingredients ?? [],
             snapshot.data()?.name ?? '',
-            snapshot.data()?.id ?? v4()
+            snapshot.data()?.id ?? v4(),
+            snapshot.data()?.date ?? new Date().toISOString()
           )
         );
       });
     });
   }
 
-  private subscribeToMeals(): Observable<Meal[]> {
+  public subscribeToMeals(date: Date): Observable<Meal[]> {
     if (this.userService.userDocumentReference) {
       this.mealsCollection = collection(
         this.userService.userDocumentReference,
         'meal'
       ) as CollectionReference<Meal>;
       return new Observable((subscriber) => {
-        onSnapshot(this.mealsCollection, (col) => {
-          subscriber.next(
-            col.docs.map(
-              (d) => new Meal(d.data().ingredients, d.data().name, d.data().id)
-            )
-          );
-        });
+        onSnapshot(
+          query(this.mealsCollection, where('date', '==', date)),
+          (col) => {
+            subscriber.next(
+              col.docs.map(
+                (d) =>
+                  new Meal(
+                    d.data().ingredients,
+                    d.data().name,
+                    d.data().id,
+                    d.data().date
+                  )
+              )
+            );
+          }
+        );
       });
     }
     throw new Error('User Document not defined');

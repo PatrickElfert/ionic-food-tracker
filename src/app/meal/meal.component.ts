@@ -42,11 +42,16 @@ export class MealComponent implements OnInit, AfterViewChecked {
       const id = params.get('id');
       if (id) {
         this.mealService.subscribeToMeal(id).subscribe((m) => {
-          console.log('new meal');
           this.meal = m;
         });
       } else {
-        this.meal = new Meal([], '', v4());
+        this.meal = new Meal(
+          [],
+          '',
+          v4(),
+          this.mealService.selectedDate?.toISOString() ??
+            new Date().toISOString()
+        );
       }
     });
   }
