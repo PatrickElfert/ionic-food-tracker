@@ -44,22 +44,36 @@ export class IngredientService {
       .toPromise();
     return searchResult?.products
       .slice(0, 10)
-      .map(
-        (s) =>
-          new Ingredient(
-            s.product_name,
-            {
-              carbs: this.formatNutrient(s.nutriments.proteins),
-              fat: this.formatNutrient(s.nutriments.fat),
-              protein: this.formatNutrient(s.nutriments.carbohydrates),
-            },
-            100
-          )
-      )
+      .map((p) => this.toIngredient(p))
       .filter((i) => i.name);
+  }
+
+  public async loadIngredientsByBarcode(
+    barcode: string
+  ): Promise<Ingredient[]> {
+    const searchResult: FoodSearchResult | undefined = await this.httpClient
+      .get<FoodSearchResult>(
+        `https://world.openfoodfacts.org/api/v2/search?code=${barcode}&fields=product_name,nutriments,brands`
+      )
+      .toPromise();
+    return searchResult.products
+      .map((p) => this.toIngredient(p))
+      .filter((s) => s.name);
   }
 
   private formatNutrient(nutrient: number | undefined) {
     return nutrient ? Math.round(nutrient * 100) / 100 : 0;
+  }
+
+  private toIngredient(product: Product): Ingredient {
+    return new Ingredient(
+      product.product_name,
+      {
+        carbs: this.formatNutrient(product.nutriments.proteins),
+        fat: this.formatNutrient(product.nutriments.fat),
+        protein: this.formatNutrient(product.nutriments.carbohydrates),
+      },
+      100
+    );
   }
 }

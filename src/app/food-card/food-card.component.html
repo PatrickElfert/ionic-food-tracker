@@ -24,7 +24,7 @@
           <div class="carbs">{{data?.macros?.carbs}} g</div>
       </div>
         <div class="input-container">
-          <ion-item class="item-wrapper">
+          <ion-item lines="none" class="item-wrapper">
             <ion-input [tabindex]="2" type="number" class="input" (click)="$event.stopPropagation()" (ngModelChange)="updateMacros($event)" [ngModel]="data?.selectedAmount">
             </ion-input>
           </ion-item>

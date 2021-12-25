@@ -60,17 +60,11 @@ export class MealService {
         onSnapshot(
           query(this.mealsCollection, where('date', '==', date)),
           (col) => {
-            subscriber.next(
-              col.docs.map(
-                (d) =>
-                  new Meal(
-                    d.data().ingredients,
-                    d.data().name,
-                    d.data().id,
-                    d.data().date
-                  )
-              )
-            );
+            const meals = col.docs.map((d) => {
+              const data = d.data();
+              return new Meal(data.ingredients, data.name, data.id, data.date);
+            });
+            subscriber.next(meals);
           }
         );
       });

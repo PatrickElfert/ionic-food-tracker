@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from './user.service';
+import { BarcodeScannerService } from './barcode-scanner.service';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +7,11 @@ import { UserService } from './user.service';
   styleUrls: ['app.component.sass'],
 })
 export class AppComponent implements OnInit {
-  constructor(userService: UserService) {}
+  constructor(public barcodeScannerService: BarcodeScannerService) {}
 
   async ngOnInit(): Promise<void> {}
+
+  async closeScanner() {
+    await this.barcodeScannerService.closeBarcodeScanner();
+  }
 }

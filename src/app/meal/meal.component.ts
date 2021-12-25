@@ -1,21 +1,18 @@
 import {
   AfterViewChecked,
-  AfterViewInit,
   ChangeDetectorRef,
   Component,
   OnInit,
   ViewChild,
 } from '@angular/core';
 import { Ingredient } from '../ingredient.service';
-import { IonInput, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { IngredientSearchModalComponent } from '../ingredient-search-modal/ingredient-search-modal.component';
 import { MealService } from '../meal.service';
 import { Meal } from '../meal-card/meal-card.component';
 import { ActivatedRoute } from '@angular/router';
 import { CalorieBarService } from '../calorie-bar.service';
 import { v4 } from 'uuid';
-import { updateDoc } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-meal',
@@ -86,6 +83,13 @@ export class MealComponent implements OnInit, AfterViewChecked {
       this.ionInput?.setFocus();
       this.needsFocus = false;
       this.changedDetector.detectChanges();
+    }
+  }
+
+  public async updateIngredientMacros(ingredient: Ingredient, index: number) {
+    if (this.meal?.ingredients) {
+      this.meal.ingredients[index].macros = ingredient.macros;
+      await this.mealService.updateMeal(this.meal);
     }
   }
 }

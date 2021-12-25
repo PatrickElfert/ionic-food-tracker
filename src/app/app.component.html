@@ -1,3 +1,20 @@
-<ion-app>
+<ion-app
+  [ngStyle]="
+    barcodeScannerService.scannerShown ? { display: 'none' } : undefined
+  "
+>
   <ion-router-outlet></ion-router-outlet>
 </ion-app>
+<div class="scannerWrapper"
+  [ngStyle]="
+    barcodeScannerService.scannerShown ? undefined : { display: 'none' }
+  "
+>
+  <ion-header
+    ><ion-icon (click)="closeScanner()" name="close-circle-outline"></ion-icon
+  ></ion-header>
+  <div
+    class="scanner">
+    <ion-icon name="barcode-outline"></ion-icon>
+  </div>
+</div>

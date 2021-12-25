@@ -1,6 +1,7 @@
 <ion-header>
   <ion-row class="first-row">
-    <ion-col size="3">
+    <ion-col size="3" class="flex ion-align-items-center ion-justify-content-center">
+      <ion-icon size="large" (click)="scanBarcode()" name="barcode-outline"></ion-icon>
     </ion-col>
     <ion-col size="6">
       <ion-title size="large" > INGREDIENTS </ion-title>
@@ -10,9 +11,9 @@
     </ion-col>
   </ion-row>
   <ion-row class="ion-justify-content-center">
-    <ion-item class="input">
+    <ion-item lines="none" class="input">
       <ion-icon slot="end" name="search-circle-outline"></ion-icon>
-      <ion-input (change)="onSearchChanged($event)"> </ion-input>
+      <ion-input (change)="onSearchChanged($event)"></ion-input>
     </ion-item>
   </ion-row>
   <app-macro-header></app-macro-header>

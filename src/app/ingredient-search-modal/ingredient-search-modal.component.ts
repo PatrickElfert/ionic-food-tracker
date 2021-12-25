@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Ingredient, IngredientService } from '../ingredient.service';
 import { ModalController } from '@ionic/angular';
 import { CalorieBarService } from '../calorie-bar.service';
+import { BarcodeScannerService } from '../barcode-scanner.service';
 
 @Component({
   selector: 'app-ingredient-search-modal',
@@ -13,6 +14,7 @@ export class IngredientSearchModalComponent implements OnInit {
   private selectedIngredients: Ingredient[] = [];
 
   constructor(
+    private barcodeScannerService: BarcodeScannerService,
     private calorieBarService: CalorieBarService,
     private ingredientService: IngredientService,
     private modalController: ModalController
@@ -26,9 +28,7 @@ export class IngredientSearchModalComponent implements OnInit {
     ).map((i) => ({ ...i, selected: false }));
   }
 
-  ngOnInit() {
-    console.log('init');
-  }
+  ngOnInit() {}
 
   public async dismissModal(): Promise<void> {
     await this.modalController.dismiss(this.selectedIngredients);
@@ -44,6 +44,16 @@ export class IngredientSearchModalComponent implements OnInit {
         1
       );
       this.calorieBarService.reduceCalories(ingredient.calories);
+    }
+  }
+
+  async scanBarcode(): Promise<void> {
+    const scannerResult = await this.barcodeScannerService.openBarcodeScanner();
+    if (scannerResult) {
+      console.log(scannerResult);
+      this.ingredientSearchResult = (
+        await this.ingredientService.loadIngredientsByBarcode(scannerResult)
+      ).map((i) => ({ ...i, selected: false }));
     }
   }
 }

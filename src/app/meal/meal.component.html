@@ -5,7 +5,7 @@
         <ion-back-button></ion-back-button>
       </ion-col>
       <ion-col size="8">
-        <ion-input #input placeholder="name" (ionChange)="this.mealService.updateMeal(this.meal)" [(ngModel)]="meal.name"></ion-input>
+        <ion-input #input placeholder="name" (change)="this.mealService.updateMeal(this.meal)" [(ngModel)]="meal.name"></ion-input>
       </ion-col>
       <ion-col></ion-col>
     </ion-row>
@@ -19,6 +19,7 @@
         (deleted)="deleteIngredient(i)"
         *ngFor="let ingredient of meal?.ingredients let i = index"
         [data]="ingredient"
+        (dataChange)="updateIngredient($event, i)"
       ></app-food-card>
       <div (click)="presentModal()" class="newItem">add new</div>
     </ion-list>

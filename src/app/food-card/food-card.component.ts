@@ -19,6 +19,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 export class FoodCardComponent implements AfterViewInit {
   @ViewChild('slider') slider: ElementRef | undefined;
   @Input() data: Ingredient | undefined;
+  @Output() dataChange = new EventEmitter<Ingredient>();
   @Input() actions = true;
   @Input() selectable = true;
   @Output() deleted = new EventEmitter<boolean>();
@@ -45,6 +46,7 @@ export class FoodCardComponent implements AfterViewInit {
         this.data.macros,
         selectedAmount
       );
+      this.dataChange.emit(this.data);
     }
   }
 

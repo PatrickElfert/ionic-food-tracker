@@ -13,8 +13,8 @@ import { Observable } from 'rxjs';
   styleUrls: ['./meal-overview.component.sass'],
 })
 export class MealOverviewComponent implements OnInit {
-  public currentDateFormated: string | undefined;
-  public meals: Observable<Meal[]> | undefined;
+  public currentDateFormatted: string | undefined;
+  public meals: Meal[] | undefined;
 
   constructor(
     private router: Router,
@@ -26,11 +26,13 @@ export class MealOverviewComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.meals = this.mealService.subscribeToMeals(new Date());
-    this.currentDateFormated = format(new Date(), 'cccc');
+    this.mealService.subscribeToMeals(new Date()).subscribe((meals) => {
+      this.updateCurrentCalories(meals);
+    });
+    this.currentDateFormatted = format(new Date(), 'cccc');
   }
 
-  navigate() {
+  public navigate() {
     this.mealService.selectedDate = new Date();
     this.router.navigate(['meal'], { relativeTo: this.activatedRoute });
   }
@@ -61,5 +63,15 @@ export class MealOverviewComponent implements OnInit {
       ],
     });
     await actionSheet.present();
+  }
+
+  private updateCurrentCalories(meals: Meal[]) {
+    this.calorieBarService.currentCalories.next(
+      meals.reduce((acc, m) => {
+        acc += m.calories;
+        return acc;
+      }, 0)
+    );
+    this.meals = meals;
   }
 }
