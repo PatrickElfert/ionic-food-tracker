@@ -13,6 +13,8 @@ import { Meal } from '../meal-card/meal-card.component';
 import { ActivatedRoute } from '@angular/router';
 import { CalorieBarService } from '../calorie-bar.service';
 import { v4 } from 'uuid';
+import { format } from 'date-fns';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-meal',
@@ -46,8 +48,14 @@ export class MealComponent implements OnInit, AfterViewChecked {
           [],
           '',
           v4(),
-          this.mealService.selectedDate?.toISOString() ??
-            new Date().toISOString()
+          this.mealService.selectedDate
+            ? format(
+                (await this.mealService.selectedDate
+                  .pipe(take(1))
+                  .toPromise()) ?? new Date(),
+                'MM/dd/yyyy'
+              )
+            : format(new Date(), 'MM/dd/yyyy')
         );
       }
     });
@@ -62,15 +70,14 @@ export class MealComponent implements OnInit, AfterViewChecked {
       ...((await modal.onWillDismiss()).data as Ingredient[])
     );
     if (this.meal) {
-      console.log('update meal');
-      await this.mealService.updateMeal(this.meal);
+      await this.mealService.setMeal(this.meal);
     }
   }
 
   public async deleteIngredient(index: number): Promise<void> {
     if (this.meal) {
       this.meal.ingredients.splice(index, 1);
-      await this.mealService.updateMeal(this.meal);
+      await this.mealService.setMeal(this.meal);
     }
   }
 
@@ -89,7 +96,14 @@ export class MealComponent implements OnInit, AfterViewChecked {
   public async updateIngredientMacros(ingredient: Ingredient, index: number) {
     if (this.meal?.ingredients) {
       this.meal.ingredients[index].macros = ingredient.macros;
-      await this.mealService.updateMeal(this.meal);
+      await this.mealService.setMeal(this.meal);
+    }
+  }
+
+  public async updateIngredient(ingredient: Ingredient, i: number) {
+    if (this.meal) {
+      this.meal.ingredients[i] = ingredient;
+      await this.mealService.setMeal(this.meal);
     }
   }
 }

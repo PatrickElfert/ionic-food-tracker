@@ -12,15 +12,18 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { v4 } from 'uuid';
+import { format } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MealService {
   mealsCollection!: CollectionReference<Meal>;
-  selectedDate: Date | undefined;
+  selectedDate: BehaviorSubject<Date | undefined> = new BehaviorSubject<
+    Date | undefined
+  >(undefined);
 
   constructor(private firestore: Firestore, private userService: UserService) {}
 
@@ -28,7 +31,7 @@ export class MealService {
     await deleteDoc(doc<Meal>(this.mealsCollection, id));
   }
 
-  public async updateMeal(meal: Meal): Promise<void> {
+  public async setMeal(meal: Meal): Promise<void> {
     await setDoc<Meal>(
       doc<Meal>(this.mealsCollection, meal.id),
       Object.assign({}, meal)
@@ -58,7 +61,10 @@ export class MealService {
       ) as CollectionReference<Meal>;
       return new Observable((subscriber) => {
         onSnapshot(
-          query(this.mealsCollection, where('date', '==', date)),
+          query(
+            this.mealsCollection,
+            where('date', '==', format(date, 'MM/dd/yyyy'))
+          ),
           (col) => {
             const meals = col.docs.map((d) => {
               const data = d.data();

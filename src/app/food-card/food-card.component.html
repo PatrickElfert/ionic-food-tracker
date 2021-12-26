@@ -25,7 +25,7 @@
       </div>
         <div class="input-container">
           <ion-item lines="none" class="item-wrapper">
-            <ion-input [tabindex]="2" type="number" class="input" (click)="$event.stopPropagation()" (ngModelChange)="updateMacros($event)" [ngModel]="data?.selectedAmount">
+            <ion-input [tabindex]="2" type="number" class="input" (click)="$event.stopPropagation()" (ngModelChange)="updateMacros($event)" (ionChange)="emitIngredient()" [ngModel]="data?.selectedAmount">
             </ion-input>
           </ion-item>
         </div>

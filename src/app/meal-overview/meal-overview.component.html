@@ -1,6 +1,10 @@
   <ion-header>
-    <div class="title">
-      {{currentDateFormatted}}
+    <div class="current-day">
+      <ion-icon (click)="previousDay()" name="chevron-back-outline"></ion-icon>
+      <div class="title">
+        {{currentDateFormatted}}
+      </div>
+      <ion-icon (click)="nextDay()" name="chevron-forward-outline"></ion-icon>
     </div>
   </ion-header>
   <ion-content>

@@ -42,6 +42,7 @@ export class IngredientService {
         `https://world.openfoodfacts.org/cgi/search.pl?action=process&search_terms=${search}&search_simple=1&json=1&fields=product_name,nutriments,brands`
       )
       .toPromise();
+    console.log(searchResult);
     return searchResult?.products
       .slice(0, 10)
       .map((p) => this.toIngredient(p))
@@ -69,9 +70,9 @@ export class IngredientService {
     return new Ingredient(
       product.product_name,
       {
-        carbs: this.formatNutrient(product.nutriments.proteins),
+        carbs: this.formatNutrient(product.nutriments.carbohydrates),
         fat: this.formatNutrient(product.nutriments.fat),
-        protein: this.formatNutrient(product.nutriments.carbohydrates),
+        protein: this.formatNutrient(product.nutriments.proteins),
       },
       100
     );

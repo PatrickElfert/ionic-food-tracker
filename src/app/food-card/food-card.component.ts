@@ -25,6 +25,7 @@ export class FoodCardComponent implements AfterViewInit {
   @Output() deleted = new EventEmitter<boolean>();
   @Output() edited = new EventEmitter<boolean>();
   @Output() selected = new EventEmitter<boolean>();
+  @Output() change = new EventEmitter<Ingredient>();
 
   public isSelected = false;
   public delete = false;
@@ -46,8 +47,11 @@ export class FoodCardComponent implements AfterViewInit {
         this.data.macros,
         selectedAmount
       );
-      this.dataChange.emit(this.data);
     }
+  }
+
+  public emitIngredient(): void {
+    this.dataChange.emit(this.data);
   }
 
   private registerSlider() {
