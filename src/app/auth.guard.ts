@@ -19,12 +19,11 @@ export class AuthGuard implements CanLoad {
     | UrlTree {
     return new Observable((subscriber) => {
       this.auth.onAuthStateChanged(async (user) => {
-        console.log('auth stateChanged');
         if (user) {
-          await this.userService.signIn();
+          await this.userService.handleAuth();
           subscriber.next(true);
         } else {
-          await this.userService.signIn();
+          await this.userService.handleAuth();
         }
       });
     });

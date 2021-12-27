@@ -12,31 +12,26 @@ import {
 } from '@angular/fire/firestore';
 import { User } from './interfaces/user';
 import { DocumentReference } from 'rxfire/firestore/interfaces';
+import { User as FirebaseUser } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  public userDocumentReference: DocumentReference<User> | undefined;
+  public userDocumentReference!: DocumentReference<User>;
 
   constructor(private auth: Auth, private firestore: Firestore) {}
 
-  async signIn() {
+  async handleAuth(): Promise<void> {
     if (this.auth.currentUser) {
-      this.userDocumentReference = doc<User>(
-        collection(this.firestore, 'user') as CollectionReference<User>,
-        `${this.auth.currentUser.uid}`
-      );
+      this.setUserDocumentReference(this.auth.currentUser);
     } else {
       const loginResult = await FirebaseAuthentication.signInWithGoogle();
       const credential = GoogleAuthProvider.credential(
         loginResult.credential?.idToken
       );
       const signInResult = await signInWithCredential(this.auth, credential);
-      this.userDocumentReference = doc<User>(
-        collection(this.firestore, 'user') as CollectionReference<User>,
-        `${signInResult.user.uid}`
-      );
+      this.setUserDocumentReference(signInResult.user);
       const userDocument = await getDoc<User>(this.userDocumentReference);
       if (!userDocument.exists()) {
         await setDoc(this.userDocumentReference, {
@@ -45,5 +40,12 @@ export class UserService {
         });
       }
     }
+  }
+
+  private setUserDocumentReference(user: FirebaseUser): void {
+    this.userDocumentReference = doc<User>(
+      collection(this.firestore, 'user') as CollectionReference<User>,
+      `${user.uid}`
+    );
   }
 }

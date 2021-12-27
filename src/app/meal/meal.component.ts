@@ -5,16 +5,16 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { Ingredient } from '../ingredient.service';
 import { ModalController } from '@ionic/angular';
 import { IngredientSearchModalComponent } from '../ingredient-search-modal/ingredient-search-modal.component';
 import { MealService } from '../meal.service';
-import { Meal } from '../meal-card/meal-card.component';
 import { ActivatedRoute } from '@angular/router';
 import { CalorieBarService } from '../calorie-bar.service';
 import { v4 } from 'uuid';
 import { format } from 'date-fns';
 import { take } from 'rxjs/operators';
+import { Meal } from '../interfaces/meal';
+import { Ingredient } from '../interfaces/ingredient';
 
 @Component({
   selector: 'app-meal',
@@ -93,16 +93,9 @@ export class MealComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  public async updateIngredientMacros(ingredient: Ingredient, index: number) {
-    if (this.meal?.ingredients) {
-      this.meal.ingredients[index].macros = ingredient.macros;
-      await this.mealService.setMeal(this.meal);
-    }
-  }
-
   public async updateIngredient(ingredient: Ingredient, i: number) {
     if (this.meal) {
-      this.meal.ingredients[i] = ingredient;
+      Object.assign(this.meal.ingredients[i], ingredient);
       await this.mealService.setMeal(this.meal);
     }
   }

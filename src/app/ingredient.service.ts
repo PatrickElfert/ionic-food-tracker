@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Macros } from './macros';
+import { Ingredient } from './interfaces/ingredient';
 
 interface Product {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -11,22 +11,6 @@ interface Product {
 
 interface FoodSearchResult {
   products: Product[];
-}
-
-export class Ingredient {
-  public readonly calories: number;
-  public selectedAmount: number;
-
-  constructor(
-    public name: string,
-    public macros: Macros,
-    public defaultAmount: number
-  ) {
-    this.calories =
-      ((macros.carbs * 4 + macros.fat * 9 + macros.protein * 4) / 100) *
-      defaultAmount;
-    this.selectedAmount = defaultAmount;
-  }
 }
 
 @Injectable({

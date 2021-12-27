@@ -1,80 +1,104 @@
 import { Injectable } from '@angular/core';
-import { Meal } from './meal-card/meal-card.component';
 import {
   collection,
   CollectionReference,
   deleteDoc,
   doc,
   Firestore,
-  onSnapshot,
   query,
   setDoc,
   where,
+  docData,
+  collectionData,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { v4 } from 'uuid';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { format } from 'date-fns';
+import { map } from 'rxjs/operators';
+import { CalorieBarService } from './calorie-bar.service';
+import { Meal } from './interfaces/meal';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MealService {
-  mealsCollection!: CollectionReference<Meal>;
   selectedDate: BehaviorSubject<Date | undefined> = new BehaviorSubject<
     Date | undefined
   >(undefined);
+  private mealsSubscription: Subscription | undefined;
 
-  constructor(private firestore: Firestore, private userService: UserService) {}
+  constructor(
+    private firestore: Firestore,
+    private userService: UserService,
+    private calorieBarService: CalorieBarService
+  ) {}
+
+  public getMealCollection(): CollectionReference<Meal> {
+    return collection(
+      this.userService.userDocumentReference,
+      'meal'
+    ) as CollectionReference<Meal>;
+  }
 
   public async removeMeal(id: string): Promise<void> {
-    await deleteDoc(doc<Meal>(this.mealsCollection, id));
+    await deleteDoc(doc<Meal>(this.getMealCollection(), id));
   }
 
   public async setMeal(meal: Meal): Promise<void> {
     await setDoc<Meal>(
-      doc<Meal>(this.mealsCollection, meal.id),
+      doc<Meal>(this.getMealCollection(), meal.id),
       Object.assign({}, meal)
     );
   }
 
   public subscribeToMeal(id: string): Observable<Meal | undefined> {
-    return new Observable<Meal | undefined>((subscriber) => {
-      onSnapshot<Meal>(doc(this.mealsCollection, id), (snapshot) => {
-        subscriber.next(
-          new Meal(
-            snapshot.data()?.ingredients ?? [],
-            snapshot.data()?.name ?? '',
-            snapshot.data()?.id ?? v4(),
-            snapshot.data()?.date ?? new Date().toISOString()
-          )
-        );
-      });
-    });
+    return docData(doc(this.getMealCollection(), id)).pipe(
+      map((m) => new Meal(m.ingredients, m.name, m.id, m.date))
+    );
   }
 
   public subscribeToMeals(date: Date): Observable<Meal[]> {
-    if (this.userService.userDocumentReference) {
-      this.mealsCollection = collection(
-        this.userService.userDocumentReference,
-        'meal'
-      ) as CollectionReference<Meal>;
-      return new Observable((subscriber) => {
-        onSnapshot(
-          query(
-            this.mealsCollection,
-            where('date', '==', format(date, 'MM/dd/yyyy'))
-          ),
-          (col) => {
-            const meals = col.docs.map((d) => {
-              const data = d.data();
-              return new Meal(data.ingredients, data.name, data.id, data.date);
-            });
-            subscriber.next(meals);
-          }
-        );
-      });
+    return collectionData<Meal>(
+      query(
+        this.getMealCollection(),
+        where('date', '==', format(date, 'MM/dd/yyyy'))
+      )
+    ).pipe(
+      map((meals) =>
+        meals.map((m) => new Meal(m.ingredients, m.name, m.id, m.date))
+      )
+    );
+  }
+
+  public subscribeToCurrentTrackerDate(
+    callback: (meals: Meal[], currentDate: Date) => void
+  ): void {
+    this.selectedDate.subscribe((date) => {
+      if (date) {
+        this.subscribeToMealsForCurrentTrackerDate(date, callback);
+      }
+    });
+  }
+
+  private subscribeToMealsForCurrentTrackerDate(
+    date: Date,
+    callback: (meals: Meal[], currentDate: Date) => void
+  ) {
+    if (this.mealsSubscription) {
+      this.mealsSubscription.unsubscribe();
     }
-    throw new Error('User Document not defined');
+    this.mealsSubscription = this.subscribeToMeals(date).subscribe((meals) => {
+      console.log(meals[0].ingredients);
+      this.updateCurrentCalories(meals);
+      callback(meals, date);
+    });
+  }
+
+  private updateCurrentCalories(meals: Meal[]) {
+    const calories = meals.reduce((acc, m) => {
+      acc += m.calories;
+      return acc;
+    }, 0);
+    this.calorieBarService.currentCalories.next(calories);
   }
 }

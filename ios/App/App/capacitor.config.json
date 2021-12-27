@@ -10,8 +10,5 @@
 				"google.com"
 			]
 		}
-	},
-	"server": {
-		"url": "http://localhost:8100"
 	}
 }

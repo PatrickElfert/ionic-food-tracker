@@ -1,8 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { Ingredient, IngredientService } from '../ingredient.service';
+import { IngredientService } from '../ingredient.service';
 import { ModalController } from '@ionic/angular';
 import { CalorieBarService } from '../calorie-bar.service';
 import { BarcodeScannerService } from '../barcode-scanner.service';
+import { Ingredient } from '../interfaces/ingredient';
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Constructor = new (...args: any[]) => {};
+
+// eslint-disable-next-line @typescript-eslint/naming-convention,prefer-arrow/prefer-arrow-functions
+const Select = <T extends Constructor>(base: T) =>
+  class Selectable extends base {
+    selected = false;
+  };
+
+const selectableIngredient = Select(Ingredient);
 
 @Component({
   selector: 'app-ingredient-search-modal',
@@ -10,7 +22,7 @@ import { BarcodeScannerService } from '../barcode-scanner.service';
   styleUrls: ['./ingredient-search-modal.component.sass'],
 })
 export class IngredientSearchModalComponent implements OnInit {
-  private ingredientSearchResult: Ingredient[] = [];
+  private ingredientSearchResult: (Ingredient & { selected: boolean })[] = [];
   private selectedIngredients: Ingredient[] = [];
 
   constructor(
@@ -25,7 +37,7 @@ export class IngredientSearchModalComponent implements OnInit {
       await this.ingredientService.loadIngredients(
         $event.target.value as string
       )
-    ).map((i) => ({ ...i, selected: false }));
+    ).map((i) => new selectableIngredient(i.name, i.macros, i.amount));
   }
 
   ngOnInit() {}
@@ -53,7 +65,7 @@ export class IngredientSearchModalComponent implements OnInit {
       console.log(scannerResult);
       this.ingredientSearchResult = (
         await this.ingredientService.loadIngredientsByBarcode(scannerResult)
-      ).map((i) => ({ ...i, selected: false }));
+      ).map((i) => new selectableIngredient(i.name, i.macros, i.amount));
     }
   }
 }

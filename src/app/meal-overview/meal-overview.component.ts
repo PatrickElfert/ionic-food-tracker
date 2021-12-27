@@ -3,9 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MealService } from '../meal.service';
 import { ActionSheetController } from '@ionic/angular';
 import { CalorieBarService } from '../calorie-bar.service';
-import { Meal } from '../meal-card/meal-card.component';
 import { addDays, format } from 'date-fns';
-import { Subscription } from 'rxjs';
+import { Meal } from '../interfaces/meal';
 
 @Component({
   selector: 'app-meal-overview',
@@ -15,7 +14,6 @@ import { Subscription } from 'rxjs';
 export class MealOverviewComponent implements OnInit {
   public currentDateFormatted: string | undefined;
   public meals: Meal[] | undefined;
-  private mealsSubscription: Subscription | undefined;
   private currentDate!: Date;
 
   constructor(
@@ -28,7 +26,11 @@ export class MealOverviewComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.subscribeToCurrentTrackerDate();
+    this.mealService.subscribeToCurrentTrackerDate((meals, date) => {
+      this.meals = meals;
+      this.currentDate = date;
+      this.currentDateFormatted = format(date, 'cccc');
+    });
     this.mealService.selectedDate?.next(new Date());
   }
 
@@ -69,37 +71,5 @@ export class MealOverviewComponent implements OnInit {
 
   public previousDay(): void {
     this.mealService.selectedDate?.next(addDays(this.currentDate, -1));
-  }
-
-  private subscribeToCurrentTrackerDate() {
-    this.mealService.selectedDate.subscribe((date) => {
-      if (date) {
-        this.subscribeToMealsForCurrentTrackerDate(date);
-        this.currentDate = date;
-        this.currentDateFormatted = format(date, 'cccc');
-      }
-    });
-  }
-
-  private subscribeToMealsForCurrentTrackerDate(date: Date) {
-    if (this.mealsSubscription) {
-      this.mealsSubscription.unsubscribe();
-    }
-    this.mealsSubscription = this.mealService
-      .subscribeToMeals(date)
-      .subscribe((meals) => {
-        this.meals = meals;
-        this.updateCurrentCalories(meals);
-      });
-  }
-
-  private updateCurrentCalories(meals: Meal[]) {
-    this.calorieBarService.currentCalories.next(
-      meals.reduce((acc, m) => {
-        acc += m.calories;
-        return acc;
-      }, 0)
-    );
-    this.meals = meals;
   }
 }

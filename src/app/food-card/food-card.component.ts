@@ -8,8 +8,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import { GestureController } from '@ionic/angular';
-import { Ingredient, IngredientService } from '../ingredient.service';
+import { IngredientService } from '../ingredient.service';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Ingredient } from '../interfaces/ingredient';
 
 @Component({
   selector: 'app-food-card',

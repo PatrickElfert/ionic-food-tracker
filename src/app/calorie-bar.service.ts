@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { MealService } from './meal.service';
 
 @Injectable({
   providedIn: 'root',
