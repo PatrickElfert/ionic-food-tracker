@@ -18,7 +18,7 @@ export class MealCardComponent implements OnChanges {
     const allMacros = protein + fat + carbs;
     this.macroStyle =
       allMacros === 0
-        ? { p: 0, c: 0, f: 0 }
+        ? { p: 1, c: 1, f: 1 }
         : {
             p: protein / allMacros,
             f: fat / allMacros,

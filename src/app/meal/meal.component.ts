@@ -95,7 +95,7 @@ export class MealComponent implements OnInit, AfterViewChecked {
 
   public async updateIngredient(ingredient: Ingredient, i: number) {
     if (this.meal) {
-      Object.assign(this.meal.ingredients[i], ingredient);
+      this.meal.ingredients[i] = ingredient;
       await this.mealService.setMeal(this.meal);
     }
   }
