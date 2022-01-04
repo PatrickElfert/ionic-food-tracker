@@ -1,0 +1,21 @@
+<ion-header>
+  <div class="heading">Intake</div>
+  <div class="secondary--heading">
+    {{
+      onboardingService.knowsIntake
+        ? "Please enter your \n target intake"
+        : "Please enter all fields so we can \n calculate your target intake"
+    }}
+  </div>
+</ion-header>
+<ion-content>
+  <div class="container">
+    <ion-item lines="none" class="item-wrapper">
+      <ion-input
+        type="number"
+        class="input"
+      >
+      </ion-input>
+    </ion-item>
+  </div>
+</ion-content>

@@ -13,18 +13,29 @@ import {
 import { User } from './interfaces/user';
 import { DocumentReference } from 'rxfire/firestore/interfaces';
 import { User as FirebaseUser } from '@angular/fire/auth';
+import { Router } from '@angular/router';
+
+export interface UserSettings {
+  dailyIntake: number;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   public userDocumentReference!: DocumentReference<User>;
+  public userSettings: UserSettings | undefined;
 
-  constructor(private auth: Auth, private firestore: Firestore) {}
+  constructor(
+    private router: Router,
+    private auth: Auth,
+    private firestore: Firestore
+  ) {}
 
   async handleAuth(): Promise<void> {
     if (this.auth.currentUser) {
       this.setUserDocumentReference(this.auth.currentUser);
+      await this.router.navigate(['onboarding', 'welcome']);
     } else {
       const loginResult = await FirebaseAuthentication.signInWithGoogle();
       const credential = GoogleAuthProvider.credential(
@@ -33,11 +44,12 @@ export class UserService {
       const signInResult = await signInWithCredential(this.auth, credential);
       this.setUserDocumentReference(signInResult.user);
       const userDocument = await getDoc<User>(this.userDocumentReference);
-      if (!userDocument.exists()) {
+      if (!userDocument.exists() && signInResult.user.email) {
         await setDoc(this.userDocumentReference, {
           userId: signInResult.user.uid,
           email: signInResult.user.email,
         });
+        await this.router.navigate(['onboarding', 'welcome']);
       }
     }
   }
