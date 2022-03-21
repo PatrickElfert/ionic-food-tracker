@@ -48,9 +48,9 @@ export class MealComponent implements OnInit, AfterViewChecked {
           [],
           '',
           v4(),
-          this.mealService.selectedDate
+          this.mealService.selectedDateChangedAction
             ? format(
-                (await this.mealService.selectedDate
+                (await this.mealService.selectedDateChangedAction
                   .pipe(take(1))
                   .toPromise()) ?? new Date(),
                 'MM/dd/yyyy'

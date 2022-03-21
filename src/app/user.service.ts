@@ -35,7 +35,7 @@ export class UserService {
   async handleAuth(): Promise<void> {
     if (this.auth.currentUser) {
       this.setUserDocumentReference(this.auth.currentUser);
-      await this.router.navigate(['onboarding', 'welcome']);
+      //await this.router.navigate(['onboarding', 'welcome']);
     } else {
       const loginResult = await FirebaseAuthentication.signInWithGoogle();
       const credential = GoogleAuthProvider.credential(
@@ -49,7 +49,7 @@ export class UserService {
           userId: signInResult.user.uid,
           email: signInResult.user.email,
         });
-        await this.router.navigate(['onboarding', 'welcome']);
+        //await this.router.navigate(['onboarding', 'welcome']);
       }
     }
   }
