@@ -12,9 +12,9 @@ import {
   collectionData,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import { format } from 'date-fns';
-import { map } from 'rxjs/operators';
+import {map, mergeMap, tap} from 'rxjs/operators';
 import { CalorieBarService } from './calorie-bar.service';
 import { IngredientPayload, Meal, MealPayload } from './interfaces/meal';
 import { Ingredient } from './interfaces/ingredient';
@@ -23,9 +23,43 @@ import { Ingredient } from './interfaces/ingredient';
   providedIn: 'root',
 })
 export class MealService {
-  selectedDate: BehaviorSubject<Date | undefined> = new BehaviorSubject<
-    Date | undefined
-  >(undefined);
+  selectedDateChangedAction: BehaviorSubject<Date> = new BehaviorSubject<Date>(new Date());
+  selectedDateChangedAction$ = this.selectedDateChangedAction.asObservable();
+
+  mealsCollectionReference = collection(this.userService.userDocumentReference, 'meal') as CollectionReference<MealPayload>;
+
+  setMealAction: Subject<Meal> = new Subject<Meal>();
+  setMealAction$ = this.setMealAction.asObservable().pipe(
+    tap(async m => {
+      await setDoc<MealPayload>(doc<MealPayload>(this.mealsCollectionReference, m.id), this.toMealPayload(m));
+    })
+  );
+
+  removeMealAction: Subject<string> = new Subject<string>();
+  removeMealAction$ = this.removeMealAction.asObservable().pipe(tap(async id =>
+    await deleteDoc(doc<MealPayload>(this.mealsCollectionReference, id))
+  ));
+
+  selectMealAction: Subject<Meal> = new Subject<Meal>();
+  selectMealAction$ = this.selectMealAction.asObservable();
+
+  mealsAtSelectedDate$ = this.selectedDateChangedAction$.pipe(mergeMap(date =>
+    collectionData<MealPayload>(
+      query(
+        this.mealsCollectionReference,
+        where('date', '==', format(date, 'MM/dd/yyyy'))
+      )
+    ).pipe(map((meals) => meals.map((m) => this.toMeal(m))))
+  ));
+
+  selectedMeal$ = this.selectMealAction$.pipe(mergeMap(s =>
+    docData<MealPayload>(doc(this.mealsCollectionReference, s.id)).pipe(map(m => this.toMeal(m))
+  )));
+
+  currentCalories$ = this.mealsAtSelectedDate$.pipe(map(meals =>
+    meals.reduce((acc, m) => {acc += m.calories; return acc;}, 0)
+  ));
+
   private mealsSubscription: Subscription | undefined;
 
   constructor(
@@ -34,68 +68,12 @@ export class MealService {
     private calorieBarService: CalorieBarService
   ) {}
 
-  public getMealCollection(): CollectionReference<MealPayload> {
-    return collection(
-      this.userService.userDocumentReference,
-      'meal'
-    ) as CollectionReference<MealPayload>;
-  }
-
   public async removeMeal(id: string): Promise<void> {
-    await deleteDoc(doc<MealPayload>(this.getMealCollection(), id));
+    this.removeMealAction.next(id);
   }
 
   public async setMeal(meal: Meal): Promise<void> {
-    await setDoc<MealPayload>(
-      doc<MealPayload>(this.getMealCollection(), meal.id),
-      this.toMealPayload(meal)
-    );
-  }
-
-  public subscribeToMeal(id: string): Observable<Meal | undefined> {
-    return docData<MealPayload>(doc(this.getMealCollection(), id)).pipe(
-      map((m) => this.toMeal(m))
-    );
-  }
-
-  public subscribeToMeals(date: Date): Observable<Meal[]> {
-    return collectionData<MealPayload>(
-      query(
-        this.getMealCollection(),
-        where('date', '==', format(date, 'MM/dd/yyyy'))
-      )
-    ).pipe(map((meals) => meals.map((m) => this.toMeal(m))));
-  }
-
-  public subscribeToCurrentTrackerDate(
-    callback: (meals: Meal[], currentDate: Date) => void
-  ): void {
-    this.selectedDate.subscribe((date) => {
-      if (date) {
-        this.subscribeToMealsForCurrentTrackerDate(date, callback);
-      }
-    });
-  }
-
-  private subscribeToMealsForCurrentTrackerDate(
-    date: Date,
-    callback: (meals: Meal[], currentDate: Date) => void
-  ) {
-    if (this.mealsSubscription) {
-      this.mealsSubscription.unsubscribe();
-    }
-    this.mealsSubscription = this.subscribeToMeals(date).subscribe((meals) => {
-      this.updateCurrentCalories(meals);
-      callback(meals, date);
-    });
-  }
-
-  private updateCurrentCalories(meals: Meal[]) {
-    const calories = meals.reduce((acc, m) => {
-      acc += m.calories;
-      return acc;
-    }, 0);
-    this.calorieBarService.currentCalories.next(calories);
+    this.setMealAction.next(meal);
   }
 
   private toIngredientPayload(ingredient: Ingredient): IngredientPayload {

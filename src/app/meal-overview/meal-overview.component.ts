@@ -1,15 +1,16 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MealService } from '../meal.service';
-import { ActionSheetController } from '@ionic/angular';
-import { CalorieBarService } from '../calorie-bar.service';
-import { addDays, format } from 'date-fns';
-import { Meal } from '../interfaces/meal';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {MealService} from '../meal.service';
+import {ActionSheetController} from '@ionic/angular';
+import {CalorieBarService} from '../calorie-bar.service';
+import {addDays, format} from 'date-fns';
+import {Meal} from '../interfaces/meal';
 
 @Component({
   selector: 'app-meal-overview',
   templateUrl: './meal-overview.component.html',
   styleUrls: ['./meal-overview.component.sass'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MealOverviewComponent implements OnInit {
   public currentDateFormatted: string | undefined;
@@ -31,7 +32,6 @@ export class MealOverviewComponent implements OnInit {
       this.currentDate = date;
       this.currentDateFormatted = format(date, 'cccc');
     });
-    this.mealService.selectedDate?.next(new Date());
   }
 
   public navigate() {
@@ -66,10 +66,10 @@ export class MealOverviewComponent implements OnInit {
     await actionSheet.present();
   }
   public nextDay(): void {
-    this.mealService.selectedDate?.next(addDays(this.currentDate, 1));
+    this.mealService.selectedDateChangedAction?.next(addDays(this.currentDate, 1));
   }
 
   public previousDay(): void {
-    this.mealService.selectedDate?.next(addDays(this.currentDate, -1));
+    this.mealService.selectedDateChangedAction?.next(addDays(this.currentDate, -1));
   }
 }
