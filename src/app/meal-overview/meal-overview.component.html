@@ -1,15 +1,20 @@
+<ng-container *ngIf="($vm | async) as vm">
   <ion-header>
     <div class="current-day">
       <ion-icon (click)="previousDay()" name="chevron-back-outline"></ion-icon>
       <div class="title">
-        {{currentDateFormatted}}
+        {{ vm.selectedDate }}
       </div>
       <ion-icon (click)="nextDay()" name="chevron-forward-outline"></ion-icon>
     </div>
   </ion-header>
   <ion-content>
-    <app-meal-card (click)="openActionSheet(i, meal)" [meal]="meal" *ngFor="let meal of meals; let i = index"></app-meal-card>
-    <div (click)="navigate()" class="newItem">add new</div>
+    <app-meal-card
+      (click)="openActionSheet(i, meal)"
+      [meal]="meal"
+      *ngFor="let meal of vm.mealsAtSelectedDate; let i = index"
+    ></app-meal-card>
+    <div (click)="onCreateNewMeal()" class="newItem">add new</div>
   </ion-content>
   <app-calorie-bar></app-calorie-bar>
-
+</ng-container>

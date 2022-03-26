@@ -1,41 +1,52 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {MealService} from '../meal.service';
-import {ActionSheetController} from '@ionic/angular';
-import {CalorieBarService} from '../calorie-bar.service';
-import {addDays, format} from 'date-fns';
-import {Meal} from '../interfaces/meal';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MealService } from '../meal.service';
+import { ActionSheetController } from '@ionic/angular';
+import { Meal } from '../interfaces/meal';
+import { v4 } from 'uuid';
+import { map, take } from 'rxjs/operators';
+import { combineLatest } from 'rxjs';
+import {addDays, format} from 'date-fns/esm';
 
 @Component({
   selector: 'app-meal-overview',
   templateUrl: './meal-overview.component.html',
   styleUrls: ['./meal-overview.component.sass'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MealOverviewComponent implements OnInit {
-  public currentDateFormatted: string | undefined;
-  public meals: Meal[] | undefined;
-  private currentDate!: Date;
+export class MealOverviewComponent {
+  $vm = combineLatest([
+    this.mealService.mealsAtSelectedDate$,
+    this.mealService.selectedDateFormatted$,
+  ]).pipe(
+    map(([meals, date]) => ({ selectedDate: date, mealsAtSelectedDate: meals }))
+  );
+
+  private currentDate: Date = new Date();
 
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private mealService: MealService,
     private actionSheetController: ActionSheetController,
-    private changeDetector: ChangeDetectorRef,
-    private calorieBarService: CalorieBarService
   ) {}
 
-  ngOnInit() {
-    this.mealService.subscribeToCurrentTrackerDate((meals, date) => {
-      this.meals = meals;
-      this.currentDate = date;
-      this.currentDateFormatted = format(date, 'cccc');
-    });
-  }
+  ionViewDidEnter() {}
 
-  public navigate() {
-    this.router.navigate(['meal'], { relativeTo: this.activatedRoute });
+  public async onCreateNewMeal() {
+    const id = v4();
+    this.mealService.setMeal(
+      new Meal(
+        [],
+        '',
+        id,
+        format(
+          this.currentDate,
+          'MM/dd/yyyy'
+        ).toString()
+      )
+    );
+    await this.router.navigate(['meal', id ], { relativeTo: this.activatedRoute });
   }
 
   public async openActionSheet(index: number, meal: Meal): Promise<void> {
@@ -47,15 +58,14 @@ export class MealOverviewComponent implements OnInit {
           role: 'destructive',
           icon: 'trash',
           handler: async () => {
-            this.calorieBarService.reduceCalories(meal.calories);
             await this.mealService.removeMeal(meal.id);
           },
         },
         {
           text: 'Edit',
           icon: 'pencil-outline',
-          handler: () => {
-            this.router.navigate(['meal', meal.id], {
+          handler: async () => {
+            await this.router.navigate(['meal', meal.id], {
               relativeTo: this.activatedRoute,
             });
           },
@@ -66,10 +76,12 @@ export class MealOverviewComponent implements OnInit {
     await actionSheet.present();
   }
   public nextDay(): void {
-    this.mealService.selectedDateChangedAction?.next(addDays(this.currentDate, 1));
+    this.currentDate = addDays(this.currentDate, 1);
+    this.mealService.setSelectedDate(this.currentDate);
   }
 
   public previousDay(): void {
-    this.mealService.selectedDateChangedAction?.next(addDays(this.currentDate, -1));
+    this.currentDate = addDays(this.currentDate, -1);
+    this.mealService.setSelectedDate(this.currentDate);
   }
 }
