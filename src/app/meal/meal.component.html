@@ -1,11 +1,11 @@
-<ng-container *ngIf="meal">
+<ng-container *ngIf="selectedMeal$ | async as selectedMeal">
   <ion-header>
     <ion-row>
       <ion-col>
         <ion-back-button></ion-back-button>
       </ion-col>
       <ion-col size="8">
-        <ion-input #input placeholder="name" (change)="this.mealService.setMeal(this.meal)" [(ngModel)]="meal.name"></ion-input>
+        <ion-input #input placeholder="name" (change)="this.setMeal($event)" [ngModel]="selectedMeal.name"></ion-input>
       </ion-col>
       <ion-col></ion-col>
     </ion-row>
@@ -17,7 +17,7 @@
       <app-food-card
         [selectable]="false"
         (deleted)="deleteIngredient(i)"
-        *ngFor="let ingredient of meal?.ingredients let i = index"
+        *ngFor="let ingredient of selectedMeal.ingredients; let i = index"
         [data]="ingredient"
         (dataChange)="updateIngredient($event, i)"
       ></app-food-card>

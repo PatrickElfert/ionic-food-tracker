@@ -1,4 +1,15 @@
-<div class="bar">
- <div [ngStyle]="{width: (this.calorieBarService.currentCalories | async) / this.calorieBarService.calorieLimit | percent }" class="row percentage"></div>
-  <div class="label">{{this.calorieBarService.currentCalories | async | number}} / {{this.calorieBarService.calorieLimit | number}} kcal</div>
+<div
+  class="bar"
+  *ngIf="(calorieBarService.vm$ | async) as vm"
+>
+  <div
+    [ngStyle]="{
+      width: vm.currentCalories / calorieBarService.calorieLimit | percent
+    }"
+    class="row percentage"
+  ></div>
+  <div class="label">
+    {{ vm.currentCalories | number }} /
+    {{ calorieBarService.calorieLimit | number }} kcal
+  </div>
 </div>

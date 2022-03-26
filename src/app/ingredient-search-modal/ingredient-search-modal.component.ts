@@ -27,9 +27,9 @@ export class IngredientSearchModalComponent implements OnInit {
 
   constructor(
     private barcodeScannerService: BarcodeScannerService,
-    private calorieBarService: CalorieBarService,
     private ingredientService: IngredientService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private calorieBarService: CalorieBarService
   ) {}
 
   public async onSearchChanged($event: any): Promise<void> {
@@ -49,20 +49,19 @@ export class IngredientSearchModalComponent implements OnInit {
   selectionChanged($event: boolean, ingredient: Ingredient) {
     if ($event) {
       this.selectedIngredients.push(ingredient);
-      this.calorieBarService.addCalories(ingredient.calories);
+      this.calorieBarService.changeCaloriesManualAction.next(this.selectedIngredients);
     } else {
       this.selectedIngredients.splice(
         this.selectedIngredients.findIndex((s) => s.name === ingredient.name),
         1
       );
-      this.calorieBarService.reduceCalories(ingredient.calories);
+      this.calorieBarService.changeCaloriesManualAction.next(this.selectedIngredients);
     }
   }
 
   async scanBarcode(): Promise<void> {
     const scannerResult = await this.barcodeScannerService.openBarcodeScanner();
     if (scannerResult) {
-      console.log(scannerResult);
       this.ingredientSearchResult = (
         await this.ingredientService.loadIngredientsByBarcode(scannerResult)
       ).map((i) => new selectableIngredient(i.name, i.macros, i.amount));
