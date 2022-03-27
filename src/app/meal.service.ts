@@ -8,15 +8,13 @@ import {
   query,
   setDoc,
   where,
-  docData,
   collectionData,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import { format } from 'date-fns';
 import {
   map,
-  startWith,
   switchMap,
   tap,
 } from 'rxjs/operators';
@@ -47,7 +45,6 @@ export class MealService {
         )
       ).pipe(map((meals) => meals.map((m) => this.toMeal(m))))
     ),
-    tap(m => console.log(m))
   );
 
   constructor(private firestore: Firestore, private userService: UserService) {}

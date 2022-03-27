@@ -16,11 +16,8 @@ import { ActivatedRoute } from '@angular/router';
 import { map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { doc, docData } from '@angular/fire/firestore';
 import {
-  combineLatest,
-  forkJoin,
   from,
   merge,
-  of,
   Subject,
   Subscription,
 } from 'rxjs';
