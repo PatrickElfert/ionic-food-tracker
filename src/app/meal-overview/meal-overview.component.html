@@ -9,7 +9,7 @@
     </div>
   </ion-header>
   <ion-content>
-    <app-meal-card
+    <app-meal-card id="mealCard"
       (click)="openActionSheet(i, meal)"
       [meal]="meal"
       *ngFor="let meal of vm.mealsAtSelectedDate; let i = index"

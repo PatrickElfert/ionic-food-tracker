@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MealService } from '../meal.service';
 import { ActionSheetController } from '@ionic/angular';
 import { Meal } from '../interfaces/meal';
 import { v4 } from 'uuid';
-import { map, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 import {addDays, format} from 'date-fns/esm';
 
