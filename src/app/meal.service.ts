@@ -11,13 +11,9 @@ import {
   collectionData,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
-import {BehaviorSubject} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { format } from 'date-fns';
-import {
-  map,
-  switchMap,
-  tap,
-} from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { IngredientPayload, Meal, MealPayload } from './interfaces/meal';
 import { Ingredient } from './interfaces/ingredient';
 
@@ -37,14 +33,9 @@ export class MealService {
   ) as CollectionReference<MealPayload>;
 
   mealsAtSelectedDate$ = this.selectedDateChangedAction.pipe(
-    switchMap((date) =>
-      collectionData<MealPayload>(
-        query(
-          this.mealsCollectionReference,
-          where('date', '==', format(date, 'MM/dd/yyyy'))
-        )
-      ).pipe(map((meals) => meals.map((m) => this.toMeal(m))))
-    ),
+    switchMap((date) => this.queryMealsAtDate(date as Date).pipe(
+        map((meals) => meals.map((m) => this.toMeal(m)))
+      ))
   );
 
   constructor(private firestore: Firestore, private userService: UserService) {}
@@ -72,6 +63,15 @@ export class MealService {
       mealPayload.name,
       mealPayload.id,
       mealPayload.date
+    );
+  }
+
+  private queryMealsAtDate(date: Date): Observable<MealPayload[]> {
+    return collectionData<MealPayload>(
+      query(
+        this.mealsCollectionReference,
+        where('date', '==', format(date, 'MM/dd/yyyy'))
+      )
     );
   }
 
