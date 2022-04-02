@@ -12,8 +12,8 @@ import {
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
 import { Observable, ReplaySubject } from 'rxjs';
-import { format } from 'date-fns';
-import { map, switchMap } from 'rxjs/operators';
+import {format, startOfTomorrow, startOfToday, startOfDay, endOfDay} from 'date-fns';
+import {map, switchMap, tap} from 'rxjs/operators';
 import { IngredientPayload, Meal, MealPayload } from './interfaces/meal';
 import { Ingredient } from './interfaces/ingredient';
 import { v4 } from 'uuid';
@@ -63,7 +63,7 @@ export class MealService {
       doc<MealPayload>(this.getMealCollectionReference(), id),
       {
         id,
-        date: date.getTime().toString(),
+        date: date.getTime(),
         name: '',
         ingredients: [],
       }
@@ -90,7 +90,8 @@ export class MealService {
     return collectionData<MealPayload>(
       query(
         this.getMealCollectionReference(),
-        where('date', '==', date.getTime().toString())
+        where('date', '>', startOfDay(date).getTime()),
+        where('date', '<', endOfDay(date).getTime())
       )
     );
   }
@@ -107,7 +108,7 @@ export class MealService {
     return {
       name: meal.name,
       id: meal.id,
-      date: meal.date.getTime().toString(),
+      date: meal.date.getTime(),
       ingredients: meal.ingredients.map((i) => this.toIngredientPayload(i)),
     };
   }

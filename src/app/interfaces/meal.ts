@@ -33,6 +33,6 @@ export type IngredientPayload = Pick<
   'name' | 'macros' | 'currentAmount'
 >;
 export type MealPayload = Pick<Meal, 'name' | 'id' > & {
-  date: string;
+  date: number;
   ingredients: IngredientPayload[];
 };

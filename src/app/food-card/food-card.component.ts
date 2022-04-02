@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -7,15 +8,15 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { GestureController } from '@ionic/angular';
-import { IngredientService } from '../ingredient.service';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Ingredient } from '../interfaces/ingredient';
+import {GestureController} from '@ionic/angular';
+import {Haptics, ImpactStyle} from '@capacitor/haptics';
+import {Ingredient} from '../interfaces/ingredient';
 
 @Component({
   selector: 'app-food-card',
   templateUrl: './food-card.component.html',
   styleUrls: ['./food-card.component.sass'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FoodCardComponent implements AfterViewInit {
   @ViewChild('slider') slider: ElementRef | undefined;
@@ -33,8 +34,7 @@ export class FoodCardComponent implements AfterViewInit {
   public edit = false;
 
   constructor(
-    private gestureController: GestureController,
-    public ingredientService: IngredientService
+    private gestureController: GestureController
   ) {}
 
   ngAfterViewInit(): void {

@@ -29,17 +29,17 @@ describe('MealOverview', () => {
     ],
     'ToastBrot',
     '123',
-    format(today, 'MM/dd/yyyy').toString()
+    today
   );
 
-  const mealServiceStub = {
+  const mealServiceStub ={
     selectedDateFormatted$: scheduled(
       of(format(new Date(), 'cccc')),
       asapScheduler
     ),
     mealsAtSelectedDate$: scheduled(of([meal]), asapScheduler),
     setSelectedDate: (date: Date) => undefined,
-    setMeal: (mealInput: Meal) => undefined,
+    createEmptyMeal: (date: Date) => '',
   };
 
   beforeEach(
@@ -58,6 +58,8 @@ describe('MealOverview', () => {
       }).compileComponents();
       fixture = TestBed.createComponent(MealOverviewComponent);
       component = fixture.componentInstance;
+      // @ts-ignore
+      component.currentDate = today;
     })
   );
 
@@ -99,20 +101,10 @@ describe('MealOverview', () => {
   });
 
   it('calls set meal with correct data', () => {
-    const setMealSpy = spyOn(mealServiceStub, 'setMeal');
+    const createEmptyMealSpy = spyOn(mealServiceStub, 'createEmptyMeal');
     fixture.componentInstance.onCreateNewMeal();
-    expect(setMealSpy.calls.count()).toEqual(1);
-    const args = setMealSpy.calls.first().args[0];
-    expect({ ...args, id: '', date: args.date.toString() }).toEqual({
-      ingredients: [],
-      name: '',
-      id: '',
-      date:
-        format(
-          today,
-          'MM/dd/yyyy'
-        ).toString()
-
-    });
+    expect(createEmptyMealSpy.calls.count()).toEqual(1);
+    const args = createEmptyMealSpy.calls.first().args[0];
+    expect(args.getTime()).toBe(today.getTime());
   });
 });
