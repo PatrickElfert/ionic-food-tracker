@@ -6,7 +6,7 @@ export class Meal {
     public ingredients: Ingredient[],
     public name: string,
     public id: string,
-    public date: string
+    public date: Date
   ) {}
 
   get calories() {
@@ -32,6 +32,7 @@ export type IngredientPayload = Pick<
   Ingredient,
   'name' | 'macros' | 'currentAmount'
 >;
-export type MealPayload = Pick<Meal, 'name' | 'id' | 'date'> & {
+export type MealPayload = Pick<Meal, 'name' | 'id' > & {
+  date: string;
   ingredients: IngredientPayload[];
 };

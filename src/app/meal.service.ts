@@ -11,44 +11,64 @@ import {
   collectionData,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { format } from 'date-fns';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { IngredientPayload, Meal, MealPayload } from './interfaces/meal';
 import { Ingredient } from './interfaces/ingredient';
+import { v4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MealService {
-  selectedDateChangedAction = new BehaviorSubject<Date>(new Date());
+  selectedDateChangedAction = new ReplaySubject<Date>();
+  public onSelectDateChanged$ = this.selectedDateChangedAction.asObservable();
 
-  selectedDateFormatted$ = this.selectedDateChangedAction.pipe(
+  selectedDateFormatted$ = this.onSelectDateChanged$.pipe(
     map((date) => format(date, 'cccc'))
   );
 
-  mealsCollectionReference = collection(
-    this.userService.userDocumentReference,
-    'meal'
-  ) as CollectionReference<MealPayload>;
-
   mealsAtSelectedDate$ = this.selectedDateChangedAction.pipe(
-    switchMap((date) => this.queryMealsAtDate(date as Date).pipe(
+    switchMap((date) =>
+      this.queryMealsAtDate(date).pipe(
         map((meals) => meals.map((m) => this.toMeal(m)))
-      ))
+      )
+    )
   );
 
   constructor(private firestore: Firestore, private userService: UserService) {}
 
   public async removeMeal(id: string): Promise<void> {
-    await deleteDoc(doc<MealPayload>(this.mealsCollectionReference, id));
+    await deleteDoc(doc<MealPayload>(this.getMealCollectionReference(), id));
+  }
+
+  public getMealCollectionReference(): CollectionReference<MealPayload> {
+    return collection(
+      this.userService.userDocumentReference,
+      'meal'
+    ) as CollectionReference<MealPayload>;
   }
 
   public async setMeal(meal: Meal): Promise<void> {
     await setDoc<MealPayload>(
-      doc<MealPayload>(this.mealsCollectionReference, meal.id),
+      doc<MealPayload>(this.getMealCollectionReference(), meal.id),
       this.toMealPayload(meal)
     );
+  }
+
+  public async createEmptyMeal(date: Date): Promise<string> {
+    const id = v4();
+    await setDoc<MealPayload>(
+      doc<MealPayload>(this.getMealCollectionReference(), id),
+      {
+        id,
+        date: date.getTime().toString(),
+        name: '',
+        ingredients: [],
+      }
+    );
+    return id;
   }
 
   public setSelectedDate(date: Date): void {
@@ -62,15 +82,15 @@ export class MealService {
       ),
       mealPayload.name,
       mealPayload.id,
-      mealPayload.date
+      new Date(mealPayload.date)
     );
   }
 
-  private queryMealsAtDate(date: Date): Observable<MealPayload[]> {
+  public queryMealsAtDate(date: Date): Observable<MealPayload[]> {
     return collectionData<MealPayload>(
       query(
-        this.mealsCollectionReference,
-        where('date', '==', format(date, 'MM/dd/yyyy'))
+        this.getMealCollectionReference(),
+        where('date', '==', date.getTime().toString())
       )
     );
   }
@@ -87,7 +107,7 @@ export class MealService {
     return {
       name: meal.name,
       id: meal.id,
-      date: meal.date,
+      date: meal.date.getTime().toString(),
       ingredients: meal.ingredients.map((i) => this.toIngredientPayload(i)),
     };
   }

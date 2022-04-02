@@ -38,7 +38,7 @@ export class MealComponent implements OnInit, AfterViewChecked {
     map((p) => p.get('id') as string),
     switchMap((i) =>
       docData<MealPayload>(
-        doc(this.mealService.mealsCollectionReference, i)
+        doc(this.mealService.getMealCollectionReference(), i)
       ).pipe(map((m) => this.mealService.toMeal(m)))
     )
   );
