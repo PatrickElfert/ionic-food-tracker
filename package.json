@@ -7,7 +7,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test": "ng test",
+    "test": "ng test --watch",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
@@ -49,6 +49,7 @@
     "@angular/compiler-cli": "~12.1.1",
     "@angular/language-service": "~12.0.1",
     "@capacitor/cli": "3.3.2",
+    "@chiragrupani/karma-chromium-edge-launcher": "^2.2.1",
     "@ionic/angular-toolkit": "^4.0.0",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",

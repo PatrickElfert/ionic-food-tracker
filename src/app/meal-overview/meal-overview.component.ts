@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MealService } from '../meal.service';
 import { ActionSheetController } from '@ionic/angular';
@@ -31,21 +31,12 @@ export class MealOverviewComponent {
     private actionSheetController: ActionSheetController,
   ) {}
 
-  ionViewDidEnter() {}
+  ionViewDidEnter() {
+    this.mealService.selectedDateChangedAction.next(this.currentDate);
+  }
 
   public async onCreateNewMeal() {
-    const id = v4();
-    this.mealService.setMeal(
-      new Meal(
-        [],
-        '',
-        id,
-        format(
-          this.currentDate,
-          'MM/dd/yyyy'
-        ).toString()
-      )
-    );
+    const id  = await this.mealService.createEmptyMeal(this.currentDate );
     await this.router.navigate(['meal', id ], { relativeTo: this.activatedRoute });
   }
 
