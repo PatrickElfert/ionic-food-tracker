@@ -18,7 +18,7 @@ describe('MealOverviewComponent', () => {
       ],
       'RandomMeal',
       '1',
-      new Date().toString()
+      new Date()
     );
   });
 

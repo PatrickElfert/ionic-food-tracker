@@ -64,7 +64,7 @@ describe('MealService', () => {
     const exampleFirebaseMeal: MealPayload = {
       name: 'Meal',
       id: '1',
-      date: onDatesChangedSubscriptionsMock.a.getTime().toString(),
+      date: onDatesChangedSubscriptionsMock.a.getTime(),
       ingredients: [],
     };
 
@@ -74,13 +74,13 @@ describe('MealService', () => {
         ...exampleFirebaseMeal,
         name: 'Meal2',
         id: '2',
-        date: onDatesChangedSubscriptionsMock.b.getTime().toString(),
+        date: onDatesChangedSubscriptionsMock.b.getTime(),
       },
     ];
 
     spyOn(service, 'queryMealsAtDate').and.callFake((date) => {
       const filteredMeals = mealsFromFirebase.filter(
-        (m) => m.date === date.getTime().toString()
+        (m) => m.date === date.getTime()
       );
       return of(filteredMeals);
     });
