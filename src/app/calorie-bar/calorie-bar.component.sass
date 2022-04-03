@@ -1,21 +1,21 @@
-@import 'variables'
 
 .bar
+  background: var(--ion-color-primary-tint)
   position: relative
   padding-bottom: 1.8rem
   padding-top: 1.8rem
-  background: $secondaryColor
   width: 100%
   display: flex
   .label
-    font-family: $mainFont
+    font-family: var(--ion-font-family)
+    color: var(--ion-color-primary-contrast)
     position: absolute
     width: 100%
     text-align: center
     align-self: center
   .percentage
+    background: var(--ion-color-success-tint)
     align-self: center
     position: absolute
     height: 100%
     width: 0%
-    background: #17B890
