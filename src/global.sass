@@ -25,23 +25,39 @@
 @import "~@ionic/angular/css/text-transformation.css"
 @import "~@ionic/angular/css/flex-utils.css"
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@300&display=swap')
-@import './variables'
 
 body
   box-sizing: border-box
 
+ion-content
+  --background: var(--ion-color-primary-shade)
+
 ion-header
+  color: var(--ion-text-color)
+  background: var(--ion-color-primary-tint)
   padding-top: var(--ion-safe-area-top)
+
+ion-back-button
+  --color: var(--ion-color-primary-contrast)
+
+.meal-action-sheet
+  --button-color: var(--ion-color-primary-contrast)
+
+ion-tab-bar
+  --background: var(--ion-color-step-100)
+
+ion-tab-button
+  --color: var(--ion-color-primary-tint)
+  --color-selected: var(--ion-color-primary-contrast)
 
 .line
   height: 2px
   width: 100%
-  background: $secondaryColor
+  background: var(--ion-color-primary-tint)
 
 .row
   display: flex
   flex-direction: row
   align-items: center
 
-body
-  background: $mainColor
+

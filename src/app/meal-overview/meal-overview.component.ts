@@ -43,6 +43,7 @@ export class MealOverviewComponent {
   public async openActionSheet(index: number, meal: Meal): Promise<void> {
     const actionSheet = await this.actionSheetController.create({
       header: 'Meal',
+      cssClass: 'meal-action-sheet',
       buttons: [
         {
           text: 'Delete',

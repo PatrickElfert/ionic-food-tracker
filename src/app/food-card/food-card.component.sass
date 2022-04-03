@@ -1,12 +1,10 @@
-@import 'variables'
-
 
 ion-icon
   outline: none
 
 .list-entry
   width: 100%
-  --background: #364156
+  --background: var(--ion-color-primary-shade)
   --padding-start: 0px
   --min-height: 100px
 
@@ -19,7 +17,6 @@ ion-icon
     margin-right: 2rem
   div
     margin: 0 0.5rem 0
-    font-family: $secondaryFont
 
 .slider
   height: 100%
@@ -46,7 +43,7 @@ ion-icon
 
 .container
   div
-    font-family: $secondaryFont
+    font-family: var(--ion-secondary-font-family)
   &.selected
     .line
       background: #17B890
@@ -62,7 +59,7 @@ ion-icon
 
 .grid
   transform: translate(0)
-  background: $mainColor
+  background: var(--ion-color-primary)
   height: 100%
   justify-items: center
   display: grid
@@ -71,9 +68,9 @@ ion-icon
 
 .item-wrapper
   border-radius: 5px
-  --background: #364156
-  --highlight-color-focused: white
-  --highlight-color-valid: white
+  --background: var(--ion-color-primary-tint)
+  --highlight-color-focused: var(--ion-color-primary-contrast)
+  --highlight-color-valid: var(--ion-color-primary-contrast)
 
 .item-wrapper::part(native)
   width: 10rem
