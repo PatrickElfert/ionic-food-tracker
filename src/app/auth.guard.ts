@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
 import { CanLoad, Route, UrlSegment, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { UserService } from './user.service';
-import { Auth, browserLocalPersistence } from '@angular/fire/auth';
+import { Auth } from '@angular/fire/auth';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGuard implements CanLoad {
-  constructor(private auth: Auth, private userService: UserService) {}
+  constructor(private auth: Auth, private userService: UserService) {
+    this.auth.onAuthStateChanged(this.userService.handleAuthStateChangesAction);
+  }
   canLoad(
     route: Route,
     segments: UrlSegment[]
@@ -17,15 +20,8 @@ export class AuthGuard implements CanLoad {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    return new Observable((subscriber) => {
-      this.auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          await this.userService.handleAuth();
-          subscriber.next(true);
-        } else {
-          await this.userService.handleAuth();
-        }
-      });
-    });
+    return this.userService.handleAuthStateChanges$.pipe(
+      map((user) => user ? true : false),
+    );
   }
 }

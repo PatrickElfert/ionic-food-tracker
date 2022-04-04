@@ -14,6 +14,9 @@ import { User } from './interfaces/user';
 import { DocumentReference } from 'rxfire/firestore/interfaces';
 import { User as FirebaseUser } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { EMPTY, from, of, ReplaySubject } from 'rxjs';
+import {filter, map, switchMap, tap} from 'rxjs/operators';
+import { isNotUndefinedOrNull} from '../utils';
 
 export interface UserSettings {
   dailyIntake: number;
@@ -23,8 +26,53 @@ export interface UserSettings {
   providedIn: 'root',
 })
 export class UserService {
-  public userDocumentReference!: DocumentReference<User>;
   public userSettings: UserSettings | undefined;
+  public handleAuthStateChangesAction =
+    new ReplaySubject<FirebaseUser | null>();
+  public handleAuthStateChanges$ = this.handleAuthStateChangesAction
+    .asObservable()
+    .pipe(
+      switchMap((user) => {
+        console.log('user', user);
+        if (!user && !this.auth.currentUser) {
+          return from(FirebaseAuthentication.signInWithGoogle()).pipe(
+            map((signInResult) =>
+              GoogleAuthProvider.credential(signInResult.credential?.idToken)
+            ),
+            switchMap((credential) =>
+              from(signInWithCredential(this.auth, credential))
+            ),
+            map((credentials) => credentials.user)
+          );
+        } else {
+          return of(user);
+        }
+      }),
+    );
+
+  public userDocumentReference = this.handleAuthStateChanges$.pipe(
+    filter(isNotUndefinedOrNull),
+    map((user) => ({
+      user,
+      userDocumentReference: this.buildUserDocumentReference(user),
+    })),
+    switchMap(({ user, userDocumentReference }) =>
+      from(getDoc<User>(userDocumentReference)).pipe(
+        switchMap((userDoc) => {
+          if (userDoc.exists()) {
+            return of(userDoc.ref);
+          } else {
+            return from(
+              setDoc(userDocumentReference, {
+                userId: user.uid,
+                email: user.email,
+              })
+            ).pipe(map(() => userDocumentReference));
+          }
+        })
+      )
+    )
+  );
 
   constructor(
     private router: Router,
@@ -32,30 +80,10 @@ export class UserService {
     private firestore: Firestore
   ) {}
 
-  async handleAuth(): Promise<void> {
-    if (this.auth.currentUser) {
-      this.setUserDocumentReference(this.auth.currentUser);
-      //await this.router.navigate(['onboarding', 'welcome']);
-    } else {
-      const loginResult = await FirebaseAuthentication.signInWithGoogle();
-      const credential = GoogleAuthProvider.credential(
-        loginResult.credential?.idToken
-      );
-      const signInResult = await signInWithCredential(this.auth, credential);
-      this.setUserDocumentReference(signInResult.user);
-      const userDocument = await getDoc<User>(this.userDocumentReference);
-      if (!userDocument.exists() && signInResult.user.email) {
-        await setDoc(this.userDocumentReference, {
-          userId: signInResult.user.uid,
-          email: signInResult.user.email,
-        });
-        //await this.router.navigate(['onboarding', 'welcome']);
-      }
-    }
-  }
-
-  private setUserDocumentReference(user: FirebaseUser): void {
-    this.userDocumentReference = doc<User>(
+  private buildUserDocumentReference(
+    user: FirebaseUser
+  ): DocumentReference<User> {
+    return doc<User>(
       collection(this.firestore, 'user') as CollectionReference<User>,
       `${user.uid}`
     );

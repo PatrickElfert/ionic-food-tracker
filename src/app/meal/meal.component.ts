@@ -16,11 +16,13 @@ import { ActivatedRoute } from '@angular/router';
 import { map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { doc, docData } from '@angular/fire/firestore';
 import {
+  combineLatest,
   from,
   merge,
   Subject,
   Subscription,
 } from 'rxjs';
+import {UserService} from '../user.service';
 
 @Component({
   selector: 'app-meal',
@@ -34,11 +36,10 @@ export class MealComponent implements OnInit, AfterViewChecked {
     | undefined;
   name = '';
 
-  selectedMeal$ = this.activatedRoute.paramMap.pipe(
-    map((p) => p.get('id') as string),
-    switchMap((i) =>
+  selectedMeal$ = combineLatest([this.activatedRoute.paramMap, this.userService.userDocumentReference]).pipe(
+    switchMap(([p, userDocumentReference]) =>
       docData<MealPayload>(
-        doc(this.mealService.getMealCollectionReference(), i)
+        doc(this.mealService.getMealCollectionReference(userDocumentReference), p.get('id') as string)
       ).pipe(map((m) => this.mealService.toMeal(m)))
     )
   );
@@ -124,6 +125,7 @@ export class MealComponent implements OnInit, AfterViewChecked {
   private onMealChanged: Subscription | undefined;
 
   constructor(
+    public userService: UserService,
     public activatedRoute: ActivatedRoute,
     public modalController: ModalController,
     private calorieBarService: CalorieBarService,
