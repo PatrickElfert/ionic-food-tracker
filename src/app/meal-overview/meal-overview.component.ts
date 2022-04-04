@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MealService } from '../meal.service';
 import { ActionSheetController } from '@ionic/angular';
@@ -14,7 +14,7 @@ import {addDays, format} from 'date-fns/esm';
   styleUrls: ['./meal-overview.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MealOverviewComponent {
+export class MealOverviewComponent implements OnInit {
   $vm = combineLatest([
     this.mealService.mealsAtSelectedDate$,
     this.mealService.selectedDateFormatted$,
@@ -76,4 +76,6 @@ export class MealOverviewComponent {
     this.currentDate = addDays(this.currentDate, -1);
     this.mealService.setSelectedDate(this.currentDate);
   }
+
+  ngOnInit(): void {}
 }

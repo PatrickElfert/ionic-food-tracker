@@ -9,11 +9,12 @@ import {
   setDoc,
   where,
   collectionData,
+  DocumentReference,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
-import { Observable, ReplaySubject } from 'rxjs';
-import {format, startOfTomorrow, startOfToday, startOfDay, endOfDay} from 'date-fns';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
+import { format, startOfDay, endOfDay } from 'date-fns';
+import {filter, map, mergeMap, switchMap, take} from 'rxjs/operators';
 import { IngredientPayload, Meal, MealPayload } from './interfaces/meal';
 import { Ingredient } from './interfaces/ingredient';
 import { v4 } from 'uuid';
@@ -22,57 +23,82 @@ import { v4 } from 'uuid';
   providedIn: 'root',
 })
 export class MealService {
-  selectedDateChangedAction = new ReplaySubject<Date>();
+  public selectedDateChangedAction = new ReplaySubject<Date>();
   public onSelectDateChanged$ = this.selectedDateChangedAction.asObservable();
 
-  selectedDateFormatted$ = this.onSelectDateChanged$.pipe(
+  public deleteMealAction = new Subject<Meal>();
+  public setMealAction = new Subject<Meal>();
+
+  public selectedDateFormatted$ = this.onSelectDateChanged$.pipe(
     map((date) => format(date, 'cccc'))
   );
 
-  mealsAtSelectedDate$ = this.selectedDateChangedAction.pipe(
-    switchMap((date) =>
-      this.queryMealsAtDate(date).pipe(
+  public mealsAtSelectedDate$ = combineLatest([
+    this.selectedDateChangedAction,
+    this.userService.userDocumentReference,
+  ]).pipe(
+    switchMap(([date, userDocumentReference]) =>
+      this.queryMealsAtDate(date, userDocumentReference).pipe(
         map((meals) => meals.map((m) => this.toMeal(m)))
       )
     )
   );
 
+  public onDeleteMeal$ = combineLatest([
+    this.deleteMealAction,
+    this.userService.userDocumentReference,
+  ]).pipe(
+    mergeMap(([meal, user]) =>
+      deleteDoc(
+        doc<MealPayload>(this.getMealCollectionReference(user), meal.id)
+      )
+    )
+  );
+
+  public onSetMeal$ = combineLatest([
+    this.setMealAction,
+    this.userService.userDocumentReference,
+  ]).pipe(
+    mergeMap(([meal, user]) =>
+      setDoc(
+        doc<MealPayload>(this.getMealCollectionReference(user), meal.id),
+        this.toMealPayload(meal)
+      )
+    )
+  );
+
+  public onMealChanged$ = merge(this.onDeleteMeal$, this.onSetMeal$);
+
   constructor(private firestore: Firestore, private userService: UserService) {}
 
-  public async removeMeal(id: string): Promise<void> {
-    await deleteDoc(doc<MealPayload>(this.getMealCollectionReference(), id));
-  }
-
-  public getMealCollectionReference(): CollectionReference<MealPayload> {
+  public getMealCollectionReference(
+    userDocumentReference: DocumentReference
+  ): CollectionReference<MealPayload> {
     return collection(
-      this.userService.userDocumentReference,
+      userDocumentReference,
       'meal'
     ) as CollectionReference<MealPayload>;
   }
 
-  public async setMeal(meal: Meal): Promise<void> {
-    await setDoc<MealPayload>(
-      doc<MealPayload>(this.getMealCollectionReference(), meal.id),
-      this.toMealPayload(meal)
-    );
-  }
-
-  public async createEmptyMeal(date: Date): Promise<string> {
+  public createEmptyMeal(date: Date): string {
     const id = v4();
-    await setDoc<MealPayload>(
-      doc<MealPayload>(this.getMealCollectionReference(), id),
-      {
-        id,
-        date: date.getTime(),
-        name: '',
-        ingredients: [],
-      }
-    );
+    this.onSetMeal$.pipe(take(1)).subscribe();
+    this.setMealAction.next(new Meal([], '', id, date));
     return id;
   }
 
   public setSelectedDate(date: Date): void {
     this.selectedDateChangedAction.next(date);
+  }
+
+  public removeMeal(id: string): void {
+    this.onDeleteMeal$.pipe(take(1)).subscribe();
+    this.deleteMealAction.next(new Meal([], '', id, new Date()));
+  }
+
+  public setMeal(meal: Meal): void {
+    this.onSetMeal$.pipe(take(1)).subscribe();
+    this.setMealAction.next(meal);
   }
 
   public toMeal(mealPayload: MealPayload): Meal {
@@ -86,10 +112,13 @@ export class MealService {
     );
   }
 
-  public queryMealsAtDate(date: Date): Observable<MealPayload[]> {
+  public queryMealsAtDate(
+    date: Date,
+    userDocumentReference: DocumentReference
+  ): Observable<MealPayload[]> {
     return collectionData<MealPayload>(
       query(
-        this.getMealCollectionReference(),
+        this.getMealCollectionReference(userDocumentReference),
         where('date', '>', startOfDay(date).getTime()),
         where('date', '<', endOfDay(date).getTime())
       )
