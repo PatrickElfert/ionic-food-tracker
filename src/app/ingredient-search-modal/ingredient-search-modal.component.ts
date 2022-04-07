@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { IngredientService } from '../ingredient.service';
-import { ModalController } from '@ionic/angular';
-import { CalorieBarService } from '../calorie-bar.service';
-import { BarcodeScannerService } from '../barcode-scanner.service';
-import { Ingredient } from '../interfaces/ingredient';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {IngredientService} from '../ingredient.service';
+import {ModalController} from '@ionic/angular';
+import {CalorieBarService} from '../calorie-bar.service';
+import {BarcodeScannerService} from '../barcode-scanner.service';
+import {Ingredient} from '../interfaces/ingredient';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Constructor = new (...args: any[]) => {};
@@ -65,6 +65,22 @@ export class IngredientSearchModalComponent implements OnInit {
       this.ingredientSearchResult = (
         await this.ingredientService.loadIngredientsByBarcode(scannerResult)
       ).map((i) => new selectableIngredient(i.name, i.macros, i.amount));
+    }
+  }
+
+  public recalculateCalories(): void {
+    this.calorieBarService.changeCaloriesManualAction.next(this.selectedIngredients);
+  }
+
+  public updateIngredient(ingredient: Ingredient): void {
+    const index = this.selectedIngredients.findIndex((s) => s.name === ingredient.name)
+    if(index !== -1) {
+      this.selectedIngredients.splice(
+        index,
+        1,
+        ingredient
+      );
+      this.calorieBarService.changeCaloriesManualAction.next(this.selectedIngredients);
     }
   }
 }

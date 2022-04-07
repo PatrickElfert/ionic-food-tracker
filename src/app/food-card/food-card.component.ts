@@ -48,6 +48,7 @@ export class FoodCardComponent implements AfterViewInit {
   }
 
   public emitIngredient(): void {
+    console.log(this.data);
     this.dataChange.emit(this.data);
   }
 
