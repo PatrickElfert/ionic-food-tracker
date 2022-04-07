@@ -35,7 +35,7 @@ export class MealService {
 
   public mealsAtSelectedDate$ = combineLatest([
     this.selectedDateChangedAction,
-    this.userService.userDocumentReference,
+    this.userService.userDocumentReference$,
   ]).pipe(
     switchMap(([date, userDocumentReference]) =>
       this.queryMealsAtDate(date, userDocumentReference).pipe(
@@ -46,7 +46,7 @@ export class MealService {
 
   public onDeleteMeal$ = combineLatest([
     this.deleteMealAction,
-    this.userService.userDocumentReference,
+    this.userService.userDocumentReference$,
   ]).pipe(
     mergeMap(([meal, user]) =>
       deleteDoc(
@@ -57,7 +57,7 @@ export class MealService {
 
   public onSetMeal$ = combineLatest([
     this.setMealAction,
-    this.userService.userDocumentReference,
+    this.userService.userDocumentReference$,
   ]).pipe(
     mergeMap(([meal, user]) =>
       setDoc(

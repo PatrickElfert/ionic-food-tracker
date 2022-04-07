@@ -24,6 +24,7 @@
     <app-food-card [actions]="false" (selected)="selectionChanged($event, ingredient)"
       *ngFor="let ingredient of ingredientSearchResult"
       [data]="ingredient"
+       (dataChange)="updateIngredient($event)">
     ></app-food-card>
   </ion-list>
 </ion-content>

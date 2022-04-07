@@ -3,7 +3,7 @@ import { TestScheduler } from 'rxjs/testing';
 import { tap } from 'rxjs/operators';
 import { MealService } from './meal.service';
 import { UserService } from './user.service';
-import { of } from 'rxjs';
+import {asapScheduler, of, scheduled} from 'rxjs';
 import { TestBed } from '@angular/core/testing';
 import { MealPayload } from './interfaces/meal';
 import { Firestore } from '@angular/fire/firestore';
@@ -16,7 +16,9 @@ describe('MealService', () => {
     TestBed.configureTestingModule({
       providers: [
         MealService,
-        { provide: UserService, useValue: {} },
+        { provide: UserService, useValue: {
+          userDocumentReference$: scheduled(of({}), asapScheduler),
+          } },
         { provide: Firestore, useValue: {} },
       ],
     });

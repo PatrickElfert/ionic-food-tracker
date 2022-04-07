@@ -14,8 +14,8 @@ import { User } from './interfaces/user';
 import { DocumentReference } from 'rxfire/firestore/interfaces';
 import { User as FirebaseUser } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { EMPTY, from, of, ReplaySubject } from 'rxjs';
-import {filter, map, switchMap, tap} from 'rxjs/operators';
+import { from, of, ReplaySubject } from 'rxjs';
+import {filter, map, switchMap } from 'rxjs/operators';
 import { isNotUndefinedOrNull} from '../utils';
 
 export interface UserSettings {
@@ -50,7 +50,7 @@ export class UserService {
       }),
     );
 
-  public userDocumentReference = this.handleAuthStateChanges$.pipe(
+  public userDocumentReference$ = this.handleAuthStateChanges$.pipe(
     filter(isNotUndefinedOrNull),
     map((user) => ({
       user,

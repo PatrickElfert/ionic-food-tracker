@@ -36,7 +36,7 @@ export class MealComponent implements OnInit, AfterViewChecked {
     | undefined;
   name = '';
 
-  selectedMeal$ = combineLatest([this.activatedRoute.paramMap, this.userService.userDocumentReference]).pipe(
+  selectedMeal$ = combineLatest([this.activatedRoute.paramMap, this.userService.userDocumentReference$]).pipe(
     switchMap(([p, userDocumentReference]) =>
       docData<MealPayload>(
         doc(this.mealService.getMealCollectionReference(userDocumentReference), p.get('id') as string)
