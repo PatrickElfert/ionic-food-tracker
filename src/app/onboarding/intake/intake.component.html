@@ -12,7 +12,7 @@
 <ion-content>
   <div class="container">
     <label>Age</label>
-    <ion-item lines="none" class="item-wrapper">
+    <ion-item lines="none" class="ion-item-input">
       <ion-input
         [(ngModel)]="caloricIntakeVariables.ageInYears"
         type="number"
@@ -21,14 +21,14 @@
       </ion-input>
     </ion-item>
     <label>Gender</label>
-    <ion-item lines="none" class="item-wrapper">
+    <ion-item lines="none" class="ion-item-input">
       <ion-select [(ngModel)]="caloricIntakeVariables.gender">
         <ion-select-option value="FEMALE">Female</ion-select-option>
         <ion-select-option value="MALE">Male</ion-select-option>
       </ion-select>
     </ion-item>
     <label>Height</label>
-    <ion-item lines="none" class="item-wrapper">
+    <ion-item lines="none" class="ion-item-input">
       <ion-input
         [(ngModel)]="caloricIntakeVariables.heightInCm"
         type="number"
@@ -37,7 +37,7 @@
       </ion-input>
     </ion-item>
     <label>Bodyweight</label>
-    <ion-item lines="none" class="item-wrapper">
+    <ion-item lines="none" class="ion-item-input">
       <ion-input
         [(ngModel)]="caloricIntakeVariables.weightInKg"
         type="number"
@@ -46,7 +46,7 @@
       </ion-input>
     </ion-item>
     <label>Goal</label>
-    <ion-item lines="none" class="item-wrapper">
+    <ion-item lines="none" class="ion-item-input">
       <ion-select [(ngModel)]="caloricIntakeVariables.goal">
         <ion-select-option value="KEEP">Keep</ion-select-option>
         <ion-select-option value="GAIN">Gain</ion-select-option>
@@ -54,7 +54,7 @@
       </ion-select>
     </ion-item>
     <label>Activity Level</label>
-    <ion-item lines="none" class="item-wrapper">
+    <ion-item lines="none" class="ion-item-input">
       <ion-select [(ngModel)]="caloricIntakeVariables.activityLevel">
         <ion-select-option value="FAT FUCK">Fat fuck</ion-select-option>
         <ion-select-option value="LIGHT">Light</ion-select-option>
