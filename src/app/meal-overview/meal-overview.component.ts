@@ -36,7 +36,7 @@ export class MealOverviewComponent implements OnInit {
   }
 
   public async onCreateNewMeal() {
-    const id  = await this.mealService.createEmptyMeal(this.currentDate );
+    const id  = this.mealService.createEmptyMeal(this.currentDate );
     await this.router.navigate(['meal', id ], { relativeTo: this.activatedRoute });
   }
 

@@ -28,6 +28,7 @@
 
 body
   box-sizing: border-box
+  --ion-safe-area-top: 2rem
 
 ion-content
   --background: var(--ion-color-primary-shade)
@@ -50,6 +51,26 @@ ion-tab-button
   --color: var(--ion-color-primary-tint)
   --color-selected: var(--ion-color-primary-contrast)
 
+ion-item
+  max-width: 16rem
+  margin-top: 0.5rem
+  margin-bottom: 0.5rem
+  border-radius: 5px
+  --background: var(--ion-color-primary-tint)
+
+.select-interface-option .alert-radio-label
+  color: var(--ion-color-primary-contrast) !important
+
+.select-interface-option[aria-checked='true'] .alert-radio-label
+  color: var(--ion-color-primary-contrast) !important
+
+.alert-button-inner
+  color: var(--ion-color-primary-contrast) !important
+
+.alert-radio-inner
+  border-color: var(--ion-color-primary-contrast) !important
+
+
 .line
   height: 2px
   width: 100%
@@ -59,5 +80,18 @@ ion-tab-button
   display: flex
   flex-direction: row
   align-items: center
+
+.stylized--button
+  font-family: var(--ion-secondary-font-family)
+  color: white
+  border-radius: 5px
+  font-size: 1rem
+  padding-left: 4rem
+  padding-right: 4rem
+  min-width: 200px
+  width: 300px
+  height: 53px
+  background:  rgba(76, 89, 114, 0.43)
+  margin-bottom: 1rem
 
 

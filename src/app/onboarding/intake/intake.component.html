@@ -1,21 +1,72 @@
 <ion-header>
   <div class="heading">Intake</div>
-  <div class="secondary--heading">
-    {{
-      onboardingService.knowsIntake
-        ? "Please enter your \n target intake"
-        : "Please enter all fields so we can \n calculate your target intake"
-    }}
+  <div *ngIf="onboardingService.knowsIntake">
+    <div class="secondary--heading">Please enter your</div>
+    <div class="secondary--heading">target intake</div>
+  </div>
+  <div *ngIf="!onboardingService.knowsIntake">
+    <div class="secondary--heading">Please enter details</div>
+    <div class="secondary--heading">to calculate your target intake</div>
   </div>
 </ion-header>
 <ion-content>
   <div class="container">
+    <label>Age</label>
     <ion-item lines="none" class="item-wrapper">
       <ion-input
+        [(ngModel)]="caloricIntakeVariables.ageInYears"
         type="number"
         class="input"
       >
       </ion-input>
     </ion-item>
+    <label>Gender</label>
+    <ion-item lines="none" class="item-wrapper">
+      <ion-select [(ngModel)]="caloricIntakeVariables.gender">
+        <ion-select-option value="FEMALE">Female</ion-select-option>
+        <ion-select-option value="MALE">Male</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <label>Height</label>
+    <ion-item lines="none" class="item-wrapper">
+      <ion-input
+        [(ngModel)]="caloricIntakeVariables.heightInCm"
+        type="number"
+        class="input"
+      >
+      </ion-input>
+    </ion-item>
+    <label>Bodyweight</label>
+    <ion-item lines="none" class="item-wrapper">
+      <ion-input
+        [(ngModel)]="caloricIntakeVariables.weightInKg"
+        type="number"
+        class="input"
+      >
+      </ion-input>
+    </ion-item>
+    <label>Goal</label>
+    <ion-item lines="none" class="item-wrapper">
+      <ion-select [(ngModel)]="caloricIntakeVariables.goal">
+        <ion-select-option value="KEEP">Keep</ion-select-option>
+        <ion-select-option value="GAIN">Gain</ion-select-option>
+        <ion-select-option value="LOSS">Loss</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <label>Activity Level</label>
+    <ion-item lines="none" class="item-wrapper">
+      <ion-select [(ngModel)]="caloricIntakeVariables.activityLevel">
+        <ion-select-option value="FAT FUCK">Fat fuck</ion-select-option>
+        <ion-select-option value="LIGHT">Light</ion-select-option>
+        <ion-select-option value="ACTIVE">Active</ion-select-option>
+        <ion-select-option value="VERY ACTIVE">Very Active</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <button
+      (click)="updateIntakeOnUserSettings()"
+      class="ion-margin-top stylized--button"
+    >
+      Calculate my Intake
+    </button>
   </div>
 </ion-content>

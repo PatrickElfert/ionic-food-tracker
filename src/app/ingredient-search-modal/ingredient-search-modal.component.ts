@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import {IngredientService} from '../ingredient.service';
 import {ModalController} from '@ionic/angular';
 import {CalorieBarService} from '../calorie-bar.service';
