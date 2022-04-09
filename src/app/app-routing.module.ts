@@ -10,8 +10,8 @@ const routes: Routes = [
   {
     path: 'onboarding',
     loadChildren: () =>
-      import('./onboarding/onboarding-routing.module').then(
-        (m) => m.OnboardingRoutingModule
+      import('./onboarding/onboarding.module').then(
+        (m) => m.OnboardingModule
       ),
   },
 ];
