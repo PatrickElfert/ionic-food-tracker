@@ -1,19 +1,58 @@
 
 .bar
+  border-radius: 5px
   background: var(--ion-color-primary-tint)
   position: relative
   padding-bottom: 1.8rem
   padding-top: 1.8rem
-  width: 100%
   display: flex
-  .label
+  .button-wrapper
+    z-index: 2
+    display: flex
+    justify-content: center
+    align-items: center
+    position: absolute
+    border-radius: 50%
+    background: var(--ion-color-primary-shade)
+    width: 60px
+    height: 60px
+    left: 0
+    right: 0
+    margin: auto
+    top: -25px
+  .button
+    border-radius: 50%
+    background: var(--ion-color-primary-tint)
+    width: 40px
+    height: 40px
+    display: flex
+    justify-content: center
+    align-items: center
+    .icon
+      font-size: 1.5rem
+      color: var(--ion-color-primary-shade)
+    display: flex
+    justify-content: center
+    align-items: center
+    background: var(--ion-color-primary-tint)
+  .action-label
     font-family: var(--ion-font-family)
+    font-size: 0.9rem
     color: var(--ion-color-primary-contrast)
     position: absolute
     width: 100%
     text-align: center
+    bottom: 0
+  .standalone-label
+    font-family: var(--ion-font-family)
+    font-size: 1.4rem
+    color: var(--ion-color-primary-contrast)
+    position: absolute
+    width: 100%
     align-self: center
+    text-align: center
   .percentage
+    border-radius: 5px 0 0 5px
     background: var(--ion-color-success-tint)
     align-self: center
     position: absolute

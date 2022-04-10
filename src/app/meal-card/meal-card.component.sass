@@ -2,13 +2,9 @@
   height: 15%
   width: 100%
 
-.container
-  background: var(--ion-color-primary-tint)
-  color: var(--ion-color-primary-contrast)
-  margin: 1rem 1rem 1rem
-  border-radius: 5px 5px 5px 5px
-  div
-    height: 50%
+ion-card
+  --color: var(--ion-color-primary-contrast)
+  --background: var(--ion-color-primary-tint)
 
 .food
   :nth-child(1)
@@ -35,6 +31,7 @@
     height: 100%
   :nth-child(1)
     height: 100%
+    border-top-left-radius: 5px
     border-bottom-left-radius: 5px
     background: #A4243B
   :nth-child(2)
@@ -42,5 +39,6 @@
     background: #D2D33F
   :nth-child(3)
     height: 100%
+    border-top-right-radius: 5px
     border-bottom-right-radius: 5px
     background: #2E86AB
