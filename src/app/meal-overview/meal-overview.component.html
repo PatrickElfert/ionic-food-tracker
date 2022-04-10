@@ -21,9 +21,6 @@
       [meal]="meal"
       *ngFor="let meal of vm.mealsAtSelectedDate; let i = index"
     ></app-meal-card>
-    <div (click)="onCreateNewMeal()" class="newItem">add new</div>
   </ion-content>
-  <ion-footer>
-    <app-calorie-bar></app-calorie-bar>
-  </ion-footer>
+  <app-calorie-bar (actionClick)="onCreateNewMeal()"></app-calorie-bar>
 </ng-container>

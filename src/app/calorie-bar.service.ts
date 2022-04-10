@@ -39,25 +39,27 @@ export class CalorieBarService {
 
   calorieLimit$ = this.userService.userSettings$.pipe(
     map((settings) => {
-      if(settings.fixedCalories) {
+      if (settings.fixedCalories) {
         return settings.fixedCalories;
-      } else if(settings.caloricIntakeVariables) {
+      } else if (settings.caloricIntakeVariables) {
         return this.calculateCaloricIntake(settings.caloricIntakeVariables);
       }
-    }
-    )
+    })
   );
 
   vm$ = combineLatest([
     this.changeCaloriesManualAction$,
     this.caloriesFromMeals$,
-    this.calorieLimit$
+    this.calorieLimit$,
   ]).pipe(
-    tap((c) => console.log('caloriesFromMeals')),
-    map(([manual, caloriesFromMeals, calorieLimit]) => ({
-      currentCalories: caloriesFromMeals + manual,
-      calorieLimit
-    }))
+    map(([manual, caloriesFromMeals, calorieLimit]) => {
+      const calorieFillWidth = (caloriesFromMeals + manual) / (calorieLimit ?? 0);
+        return {
+          currentCalories: caloriesFromMeals + manual,
+          calorieFillWidth: calorieFillWidth > 1 ? 1 : calorieFillWidth,
+          calorieLimit,
+        };
+    })
   );
 
   constructor(
@@ -73,10 +75,16 @@ export class CalorieBarService {
         ? 1.53
         : activityLevel === 'ACTIVE'
         ? 1.76
-        : activityLevel === 'NOT ACTIVE' ? 1 : 2.25;
+        : activityLevel === 'NOT ACTIVE'
+        ? 1
+        : 2.25;
     const goalFactor = goal === 'LOSS' ? -10 : goal === 'GAIN' ? 10 : 0;
-     const BMR = (10 * weightInKg) + (6.25 * heightInCm) - (5 * ageInYears) + (gender === 'MALE' ? M_FACTOR : W_FACTOR);
-     const bmrIncludingActivity = BMR * activityFactor;
-     return Math.round(bmrIncludingActivity / 100 * (100 + goalFactor));
+    const BMR =
+      10 * weightInKg +
+      6.25 * heightInCm -
+      5 * ageInYears +
+      (gender === 'MALE' ? M_FACTOR : W_FACTOR);
+    const bmrIncludingActivity = BMR * activityFactor;
+    return Math.round((bmrIncludingActivity / 100) * (100 + goalFactor));
   }
 }
