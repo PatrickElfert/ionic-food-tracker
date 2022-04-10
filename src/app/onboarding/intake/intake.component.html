@@ -1,16 +1,21 @@
 <ion-header>
-  <div class="heading">Intake</div>
-  <div *ngIf="onboardingService.knowsIntake">
-    <div class="secondary--heading">Please enter your</div>
-    <div class="secondary--heading">target intake</div>
-  </div>
-  <div *ngIf="!onboardingService.knowsIntake">
-    <div class="secondary--heading">Please enter details</div>
-    <div class="secondary--heading">to calculate your target intake</div>
-  </div>
+  <ion-toolbar>
+    <ion-title class="primary"> Intake </ion-title>
+  </ion-toolbar>
+  <ion-toolbar *ngIf="onboardingService.knowsIntake">
+    <ion-title size="small" class="secondary">
+      Please enter your <br />
+      target intake
+    </ion-title>
+  </ion-toolbar>
+  <ion-toolbar *ngIf="!onboardingService.knowsIntake">
+    <ion-title size="small" class="secondary"
+      >Please enter your details</ion-title
+    >
+  </ion-toolbar>
 </ion-header>
 <ion-content>
-  <div class="container">
+  <div class="container" *ngIf="!onboardingService.knowsIntake">
     <label>Age</label>
     <ion-item lines="none" class="ion-item-input">
       <ion-input
@@ -56,8 +61,10 @@
     <label>Activity Level</label>
     <ion-item lines="none" class="ion-item-input">
       <ion-select [(ngModel)]="caloricIntakeVariables.activityLevel">
-        <ion-select-option value="FAT FUCK">Fat fuck</ion-select-option>
-        <ion-select-option value="LIGHT">Light</ion-select-option>
+        <ion-select-option value="NOT ACTIVE">Not active</ion-select-option>
+        <ion-select-option value="LIGHTLY ACTIVE"
+          >Lightly Active</ion-select-option
+        >
         <ion-select-option value="ACTIVE">Active</ion-select-option>
         <ion-select-option value="VERY ACTIVE">Very Active</ion-select-option>
       </ion-select>
@@ -67,6 +74,19 @@
       class="ion-margin-top stylized--button"
     >
       Calculate my Intake
+    </button>
+  </div>
+  <div class="container" *ngIf="this.onboardingService.knowsIntake">
+    <label>Calories</label>
+    <ion-item lines="none" class="ion-item-input">
+      <ion-input [(ngModel)]="fixedCalories" type="number" class="input">
+      </ion-input>
+    </ion-item>
+    <button
+      (click)="saveUserSetCalories()"
+      class="ion-margin-top stylized--button"
+    >
+      Save my Intake
     </button>
   </div>
 </ion-content>

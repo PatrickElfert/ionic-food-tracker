@@ -1,12 +1,17 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MealService } from '../meal.service';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, AlertController } from '@ionic/angular';
 import { Meal } from '../interfaces/meal';
 import { v4 } from 'uuid';
 import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import {addDays, format} from 'date-fns/esm';
+import { addDays, format } from 'date-fns/esm';
 
 @Component({
   selector: 'app-meal-overview',
@@ -29,6 +34,7 @@ export class MealOverviewComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private mealService: MealService,
     private actionSheetController: ActionSheetController,
+    private alertController: AlertController
   ) {}
 
   ionViewDidEnter() {
@@ -36,8 +42,33 @@ export class MealOverviewComponent implements OnInit {
   }
 
   public async onCreateNewMeal() {
-    const id  = this.mealService.createEmptyMeal(this.currentDate );
-    await this.router.navigate(['meal', id ], { relativeTo: this.activatedRoute });
+    const alert = await this.alertController.create({
+      header: 'New Meal',
+      message: 'What is the name of the meal?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Create',
+          handler: async (handler) => {
+              const id = this.mealService.createEmptyMeal(this.currentDate, handler.name);
+              await this.router.navigate(['meal', id], {
+                relativeTo: this.activatedRoute,
+              });
+          },
+        },
+      ],
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Name',
+        },
+      ],
+    });
+    await alert.present();
   }
 
   public async openActionSheet(index: number, meal: Meal): Promise<void> {

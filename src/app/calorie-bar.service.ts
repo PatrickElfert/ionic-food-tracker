@@ -38,8 +38,13 @@ export class CalorieBarService {
   );
 
   calorieLimit$ = this.userService.userSettings$.pipe(
-    map((settings) =>
-      this.calculateCaloricIntake(settings.caloricIntakeVariables)
+    map((settings) => {
+      if(settings.fixedCalories) {
+        return settings.fixedCalories;
+      } else if(settings.caloricIntakeVariables) {
+        return this.calculateCaloricIntake(settings.caloricIntakeVariables);
+      }
+    }
     )
   );
 
@@ -64,11 +69,11 @@ export class CalorieBarService {
     const { ageInYears, weightInKg, heightInCm, gender, activityLevel, goal } =
       variables;
     const activityFactor =
-      activityLevel === 'LIGHT'
+      activityLevel === 'LIGHTLY ACTIVE'
         ? 1.53
         : activityLevel === 'ACTIVE'
         ? 1.76
-        : activityLevel === 'FAT FUCK' ? 1 : 2.25;
+        : activityLevel === 'NOT ACTIVE' ? 1 : 2.25;
     const goalFactor = goal === 'LOSS' ? -10 : goal === 'GAIN' ? 10 : 0;
      const BMR = (10 * weightInKg) + (6.25 * heightInCm) - (5 * ageInYears) + (gender === 'MALE' ? M_FACTOR : W_FACTOR);
      const bmrIncludingActivity = BMR * activityFactor;

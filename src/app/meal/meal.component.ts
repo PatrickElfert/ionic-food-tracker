@@ -6,7 +6,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import {Animation, ModalController} from '@ionic/angular';
+import {ModalController} from '@ionic/angular';
 import { IngredientSearchModalComponent } from '../ingredient-search-modal/ingredient-search-modal.component';
 import { MealService } from '../meal.service';
 import { CalorieBarService } from '../calorie-bar.service';
@@ -169,8 +169,4 @@ export class MealComponent implements OnInit, AfterViewChecked {
   public setMeal($event: Event): void {
     this.mealNameChangeAction.next(($event as any).target.value);
   }
-
-  anim(baseEl: any, opts?: any): Animation | undefined {
-     return undefined;
-}
 }

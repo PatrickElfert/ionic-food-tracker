@@ -18,8 +18,11 @@ export class IntakeComponent implements OnInit {
     weightInKg: 70,
     gender: 'MALE',
     goal: 'KEEP',
-    activityLevel: 'LIGHT',
+    activityLevel: 'LIGHTLY ACTIVE',
   };
+
+  public fixedCalories = 1800;
+
   constructor(
     public onboardingService: OnboardingService,
     public userService: UserService,
@@ -28,11 +31,19 @@ export class IntakeComponent implements OnInit {
 
   ngOnInit() {}
 
-  updateIntakeOnUserSettings() {
+  public updateIntakeOnUserSettings() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     this.userService.setUserSettings({
       userId: '',
       caloricIntakeVariables: this.caloricIntakeVariables,
     }),
     this.router.navigate(['tabs/tab1']);
+  }
+
+  public saveUserSetCalories() {
+    this.userService.setUserSettings({
+      userId: '',
+      fixedCalories: this.fixedCalories
+    });
   }
 }
