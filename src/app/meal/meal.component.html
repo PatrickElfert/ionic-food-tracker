@@ -1,18 +1,15 @@
 <ng-container *ngIf="selectedMeal$ | async as selectedMeal">
   <ion-header>
-    <ion-row>
-      <ion-col>
-        <ion-back-button [routerAnimation]="anim"></ion-back-button>
-      </ion-col>
-      <ion-col size="8">
-        <ion-input #input placeholder="name" (change)="this.setMeal($event)" [ngModel]="selectedMeal.name"></ion-input>
-      </ion-col>
-      <ion-col></ion-col>
-    </ion-row>
-    <app-macro-header></app-macro-header>
+    <ion-toolbar>
+      <ion-buttons>
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <ion-title>{{selectedMeal.name}}</ion-title>
+    </ion-toolbar>
   </ion-header>
 
   <ion-content>
+    <app-macro-header></app-macro-header>
     <ion-list>
       <app-food-card
         [selectable]="false"
@@ -24,5 +21,7 @@
       <div (click)="presentModal()" class="newItem">add new</div>
     </ion-list>
   </ion-content>
-  <app-calorie-bar></app-calorie-bar>
+  <ion-footer>
+    <app-calorie-bar></app-calorie-bar>
+  </ion-footer>
 </ng-container>

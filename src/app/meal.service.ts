@@ -80,10 +80,10 @@ export class MealService {
     ) as CollectionReference<MealPayload>;
   }
 
-  public createEmptyMeal(date: Date): string {
+  public createEmptyMeal(date: Date, name: string): string {
     const id = v4();
     this.onSetMeal$.pipe(take(1)).subscribe();
-    this.setMealAction.next(new Meal([], '', id, date));
+    this.setMealAction.next(new Meal([], name, id, date));
     return id;
   }
 

@@ -7,7 +7,7 @@ export interface CaloricIntakeVariables {
   weightInKg: number;
   heightInCm: number;
   gender: 'MALE' | 'FEMALE';
-  activityLevel: 'LIGHT' | 'ACTIVE' | 'VERY ACTIVE' | 'FAT FUCK';
+  activityLevel: 'NOT ACTIVE' | 'LIGHTLY ACTIVE' | 'ACTIVE' | 'VERY ACTIVE';
   goal: 'LOSS' | 'GAIN' | 'KEEP';
 }
 

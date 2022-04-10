@@ -7,5 +7,6 @@ export interface User {
 
 export interface UserSettings {
   userId: string;
-  caloricIntakeVariables: CaloricIntakeVariables;
+  caloricIntakeVariables?: CaloricIntakeVariables;
+  fixedCalories?: number;
 }
