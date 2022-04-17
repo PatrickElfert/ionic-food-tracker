@@ -17,6 +17,7 @@ import {
 } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { Capacitor } from '@capacitor/core';
+import {enterAnimation} from './animations';
 
 const whichAuth = () => {
   let auth;
@@ -33,7 +34,9 @@ const whichAuth = () => {
   entryComponents: [],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(),
+    IonicModule.forRoot({
+      navAnimation: enterAnimation
+    }),
     AppRoutingModule,
     HttpClientModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),

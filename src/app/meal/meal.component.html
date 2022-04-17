@@ -6,10 +6,10 @@
       </ion-buttons>
       <ion-title>{{selectedMeal.name}}</ion-title>
     </ion-toolbar>
+    <app-macro-header></app-macro-header>
   </ion-header>
 
   <ion-content>
-      <app-macro-header></app-macro-header>
     <app-food-card
         [selectable]="false"
         (deleted)="deleteIngredient(i)"
