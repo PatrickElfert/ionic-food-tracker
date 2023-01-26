@@ -30,21 +30,20 @@ const whichAuth = () => {
 };
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
-  imports: [
-    BrowserModule,
-    IonicModule.forRoot({
-      navAnimation: enterAnimation
-    }),
-    AppRoutingModule,
-    HttpClientModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => whichAuth()),
-    provideFirestore(() => getFirestore()),
-  ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent],
-  exports: [],
+    declarations: [AppComponent],
+    imports: [
+        BrowserModule,
+        IonicModule.forRoot({
+            navAnimation: enterAnimation
+        }),
+        AppRoutingModule,
+        HttpClientModule,
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideAuth(() => whichAuth()),
+        provideFirestore(() => getFirestore()),
+    ],
+    providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+    bootstrap: [AppComponent],
+    exports: []
 })
 export class AppModule {}
