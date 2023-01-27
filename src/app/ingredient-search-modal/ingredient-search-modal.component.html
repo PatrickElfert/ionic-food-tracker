@@ -7,7 +7,7 @@
       <ion-title size="large" > INGREDIENTS </ion-title>
     </ion-col>
     <ion-col size="3" class="flex ion-align-items-end ion-justify-content-end">
-        <ion-button class="close" fill="clear" (click)="dismissModal()">Close</ion-button>
+        <ion-button class="close" fill="clear" (click)="onDismiss()">Close</ion-button>
     </ion-col>
   </ion-row>
   <ion-row class="ion-justify-content-center">
@@ -22,7 +22,7 @@
 <ion-content>
   <ion-list>
     <app-food-card [actions]="false" (selected)="selectionChanged($event, ingredient)"
-      *ngFor="let ingredient of ingredientSearchResult"
+      *ngFor="let ingredient of ingredientSearchResult$ | async"
       [data]="ingredient"
        (dataChange)="updateIngredient($event)">
     ></app-food-card>

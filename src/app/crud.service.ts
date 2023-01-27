@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { first, switchMap, tap } from 'rxjs/operators';
+import { first, switchMap, tap, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -16,12 +16,12 @@ export abstract class CrudService<T> {
   public onDelete$ = this.deleteAction.asObservable();
   public onUpdate$ = this.updateAction.asObservable();
 
-  protected abstract queryMeal(id: string): Observable<T>;
-  protected abstract onDeleteMeal(id: string): Observable<void>;
-  protected abstract onUpdateMeal(payload: Partial<T>): Observable<void>;
+  protected abstract queryByIds(ids: string[]): Observable<T[]>;
+  protected abstract onDelete(id: string): Observable<void>;
+  protected abstract onUpdate(payload: Partial<T>): Observable<void>;
   protected abstract onSetMeal(payload: T): Observable<void>;
 
-  public setMeal(payload: T) {
+  public set(payload: T) {
     this.onSetMeal(payload)
       .pipe(
         tap(() => this.setAction.next(payload)),
@@ -30,10 +30,12 @@ export abstract class CrudService<T> {
       .subscribe();
   }
 
-  public updateMeal(payload: Partial<T> & { id: string }) {
-    this.onUpdateMeal(payload)
+  public update(payload: Partial<T> & { id: string }) {
+    this.onUpdate(payload)
       .pipe(
-        switchMap(() => this.queryMeal(payload.id)),
+        switchMap(() =>
+          this.queryByIds([payload.id]).pipe(map((meals) => meals[0]))
+        ),
         tap((created) => this.updateAction.next(created)),
         first()
       )

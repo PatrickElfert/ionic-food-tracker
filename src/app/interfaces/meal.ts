@@ -1,5 +1,5 @@
 import { Macros } from '../macros';
-import { Ingredient } from './ingredient';
+import { Ingredient, IngredientPayload } from './ingredient';
 
 export class Meal {
   constructor(
@@ -28,10 +28,6 @@ export class Meal {
   }
 }
 
-export type IngredientPayload = Pick<
-  Ingredient,
-  'name' | 'macros' | 'currentAmount'
->;
 export type MealPayload = Pick<Meal, 'name' | 'id' > & {
   date: number;
   ingredients: IngredientPayload[];
