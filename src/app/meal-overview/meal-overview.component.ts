@@ -1,17 +1,13 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MealService } from '../meal.service';
-import { ActionSheetController, AlertController } from '@ionic/angular';
+import { ActionSheetController } from '@ionic/angular';
 import { Meal } from '../interfaces/meal';
-import { v4 } from 'uuid';
 import { map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
-import { addDays, format } from 'date-fns/esm';
+import { addDays } from 'date-fns/esm';
+import { flatMap } from 'lodash';
+import { DiaryService } from '../diary.service';
 
 @Component({
   selector: 'app-meal-overview',
@@ -20,93 +16,24 @@ import { addDays, format } from 'date-fns/esm';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MealOverviewComponent implements OnInit {
+
+
   $vm = combineLatest([
-    this.mealService.mealsAtSelectedDate$,
     this.mealService.selectedDateFormatted$,
   ]).pipe(
-    map(([meals, date]) => ({ selectedDate: date, mealsAtSelectedDate: meals }))
+    map(([meals, date]) => ({
+      selectedDate: date,
+      ingredients: flatMap(meals, (meal) => meal.ingredients),
+    }))
   );
 
-  private currentDate: Date = new Date();
 
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private mealService: MealService,
-    private actionSheetController: ActionSheetController,
-    private alertController: AlertController
+    private diaryService: DiaryService,
   ) {}
-
-  ionViewDidEnter() {
-    this.mealService.selectedDateChangedAction.next(this.currentDate);
-  }
-
-  public async onCreateNewMeal() {
-    const alert = await this.alertController.create({
-      header: 'New Meal',
-      message: 'What is the name of the meal?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-        },
-        {
-          text: 'Create',
-          handler: async (handler) => {
-              const id = this.mealService.createEmptyMeal(this.currentDate, handler.name);
-              await this.router.navigate(['meal', id], {
-                relativeTo: this.activatedRoute,
-              });
-          },
-        },
-      ],
-      inputs: [
-        {
-          name: 'name',
-          type: 'text',
-          placeholder: 'Name',
-        },
-      ],
-    });
-    await alert.present();
-  }
-
-  public async openActionSheet(index: number, meal: Meal): Promise<void> {
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Meal',
-      cssClass: 'meal-action-sheet',
-      buttons: [
-        {
-          text: 'Delete',
-          role: 'destructive',
-          icon: 'trash',
-          handler: async () => {
-            await this.mealService.removeMeal(meal.id);
-          },
-        },
-        {
-          text: 'Edit',
-          icon: 'pencil-outline',
-          handler: async () => {
-            await this.router.navigate(['meal', meal.id], {
-              relativeTo: this.activatedRoute,
-            });
-          },
-        },
-        { text: 'Cancel', role: 'cancel', icon: 'close' },
-      ],
-    });
-    await actionSheet.present();
-  }
-  public nextDay(): void {
-    this.currentDate = addDays(this.currentDate, 1);
-    this.mealService.setSelectedDate(this.currentDate);
-  }
-
-  public previousDay(): void {
-    this.currentDate = addDays(this.currentDate, -1);
-    this.mealService.setSelectedDate(this.currentDate);
-  }
 
   ngOnInit(): void {}
 }
