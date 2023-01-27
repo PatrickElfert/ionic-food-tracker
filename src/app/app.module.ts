@@ -34,6 +34,7 @@ const whichAuth = () => {
     imports: [
         BrowserModule,
         IonicModule.forRoot({
+            mode: 'ios',
             navAnimation: enterAnimation
         }),
         AppRoutingModule,

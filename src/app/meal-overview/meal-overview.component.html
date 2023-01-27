@@ -15,12 +15,13 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <app-meal-card
-      id="mealCard"
-      (click)="openActionSheet(i, meal)"
-      [meal]="meal"
-      *ngFor="let meal of vm.mealsAtSelectedDate; let i = index"
-    ></app-meal-card>
+    <app-food-card
+        [selectable]="false"
+        (deleted)="deleteIngredient(i)"
+        *ngFor="let ingredient of selectedMeal.ingredients; let i = index"
+        [data]="ingredient"
+        (dataChange)="updateIngredient($event, i)"
+      ></app-food-card>
   </ion-content>
-  <app-calorie-bar (actionClick)="onCreateNewMeal()"></app-calorie-bar>
+  <app-calorie-bar (actionClick)="presentModal()"></app-calorie-bar>
 </ng-container>

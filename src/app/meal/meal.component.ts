@@ -134,15 +134,7 @@ export class MealComponent implements OnInit, AfterViewChecked {
   ) {}
 
   async ngOnInit(): Promise<void> {}
-
-  public async deleteIngredient(index: number): Promise<void> {
-    this.deleteIngredientAction.next(index);
-  }
-
-  public async updateIngredient(ingredient: Ingredient, index: number) {
-    this.updateIngredientAction.next({ ingredient, index });
-  }
-
+  
   async ionViewDidEnter() {
     this.onMealChanged = this.onMealChanged$.subscribe((m) => {
       this.mealService.setMeal(m);
