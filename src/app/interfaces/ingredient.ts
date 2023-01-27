@@ -4,6 +4,7 @@ export class Ingredient {
   public currentAmount: number;
 
   constructor(
+    public id: string,
     public name: string,
     public macros: Macros,
     private defaultAmount: number
@@ -30,4 +31,11 @@ export class Ingredient {
       this.macros.carbs * 4 + this.macros.fat * 9 + this.macros.protein * 4
     );
   }
+}
+
+export interface IngredientPayload {
+  id: string;
+  name: string;
+  macros: Macros;
+  currentAmount: number;
 }

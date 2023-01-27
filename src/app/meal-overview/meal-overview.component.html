@@ -2,26 +2,35 @@
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="secondary">
-        <ion-button (click)="previousDay()">
+        <ion-button (click)="diaryService.previousDay()">
           <ion-icon name="chevron-back-outline"></ion-icon>
         </ion-button>
       </ion-buttons>
       <ion-buttons slot="primary">
-        <ion-button (click)="nextDay()">
+        <ion-button (click)="diaryService.nextDay()">
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ vm.selectedDate }}</ion-title>
+      <ion-title>{{ vm.date }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <app-food-card
+    <ng-container *ngFor="let meal of vm.meals">
+      <app-food-card
+        *ngFor="let ingredient of meal.ingredients; let i = index"
         [selectable]="false"
-        (deleted)="deleteIngredient(i)"
-        *ngFor="let ingredient of selectedMeal.ingredients; let i = index"
+        (deleted)="onDeleteIngredient(meal, ingredient)"
         [data]="ingredient"
-        (dataChange)="updateIngredient($event, i)"
+        (dataChange)="onUpdateIngredient(meal, ingredient)"
       ></app-food-card>
+    </ng-container>
   </ion-content>
-  <app-calorie-bar (actionClick)="presentModal()"></app-calorie-bar>
+  <ion-modal #modal>
+    <ng-template>
+      <app-ingredient-search-modal
+        (dismiss)="modal.dismiss(); onUpdateIngredients($event)"
+      ></app-ingredient-search-modal>
+    </ng-template>
+  </ion-modal>
+  <app-calorie-bar (actionClick)="modal.present()"></app-calorie-bar>
 </ng-container>

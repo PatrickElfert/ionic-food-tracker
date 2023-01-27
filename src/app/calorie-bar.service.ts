@@ -5,6 +5,7 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import { Ingredient } from './interfaces/ingredient';
 import { CaloricIntakeVariables } from './onboarding/onboarding.service';
 import { UserService } from './user.service';
+import { DiaryService } from './diary.service';
 
 const W_FACTOR = 161;
 const M_FACTOR = 5;
@@ -25,9 +26,8 @@ export class CalorieBarService {
       )
     );
 
-  caloriesFromMeals$ = this.mealService.mealsAtSelectedDate$.pipe(
-    tap((m) => console.log('meals')),
-    map((meals) =>
+  caloriesFromMeals$ = this.diaryService.diaryDay$.pipe(
+    map(({meals}) =>
       meals
         ? meals.reduce((acc, m) => {
             acc += m.calories;
@@ -64,7 +64,8 @@ export class CalorieBarService {
 
   constructor(
     public mealService: MealService,
-    public userService: UserService
+    public userService: UserService,
+    public diaryService: DiaryService
   ) {}
 
   public calculateCaloricIntake(variables: CaloricIntakeVariables) {

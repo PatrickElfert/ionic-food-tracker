@@ -1,20 +1,15 @@
-import { Injectable } from '@angular/core';
-import { format, addDays } from 'date-fns';
-import { Observable, Subject } from 'rxjs';
-import { map, scan } from 'rxjs/operators';
+import { addDays } from 'date-fns';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { scan } from 'rxjs/operators';
 import { Meal } from './interfaces/meal';
 
-@Injectable({
-  providedIn: 'root',
-})
 export abstract class DiaryService {
-  public selectedDateChangedAction = new Subject<number>();
+  public selectedDateChangedAction = new BehaviorSubject<number>(0);
   public selectedDate$ = this.selectedDateChangedAction.pipe(
     scan((currentDate,increment) => addDays(currentDate, increment), new Date()),
-    map((date) => this.formatDate(date)),
   );
 
-  abstract meals: Observable<Meal[]>;
+  abstract diaryDay$: Observable<DiaryDay>;
 
   public nextDay() {
     this.selectedDateChangedAction.next(1);
@@ -23,8 +18,9 @@ export abstract class DiaryService {
   public previousDay() {
     this.selectedDateChangedAction.next(-1);
   }
+}
 
-  private formatDate(date: Date) {
-    return format(date, 'cccc');
-  }
+export interface DiaryDay {
+  date: Date;
+  meals: Meal[];
 }

@@ -1,9 +1,10 @@
-import { Component, OnInit} from '@angular/core';
-import {IngredientService} from '../ingredient.service';
-import {ModalController} from '@ionic/angular';
-import {CalorieBarService} from '../calorie-bar.service';
-import {BarcodeScannerService} from '../barcode-scanner.service';
-import {Ingredient} from '../interfaces/ingredient';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { CalorieBarService } from '../calorie-bar.service';
+import { BarcodeScannerService } from '../barcode-scanner.service';
+import { Ingredient } from '../interfaces/ingredient';
+import { IngredientDiscoveryService } from '../ingredient-discovery.service';
+import { map, switchMap } from 'rxjs/operators';
+import { merge, Subject } from 'rxjs';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Constructor = new (...args: any[]) => {};
@@ -22,65 +23,90 @@ const selectableIngredient = Select(Ingredient);
   styleUrls: ['./ingredient-search-modal.component.sass'],
 })
 export class IngredientSearchModalComponent implements OnInit {
-  private ingredientSearchResult: (Ingredient & { selected: boolean })[] = [];
+  private nameSearchAction = new Subject<string>();
+  private barcodeSearchAction = new Subject<string>();
+
+  public barcodeSearchResult$ = this.barcodeSearchAction.pipe(
+    switchMap((barcode) =>
+      this.ingredientDiscoveryService.queryIngredientsByBarcode(barcode)
+    )
+  );
+  public nameSearchResult$ = this.nameSearchAction.pipe(
+    switchMap((name) =>
+      this.ingredientDiscoveryService.queryIngredientsByName(name)
+    )
+  );
+
+  public ingredientSearchResult$ = merge(
+    this.barcodeSearchResult$,
+    this.nameSearchResult$
+  ).pipe(
+    map((ingredients) =>
+      ingredients.map(
+        (i) => new selectableIngredient(i.id, i.name, i.macros, i.amount)
+      )
+    )
+  );
+
   private selectedIngredients: Ingredient[] = [];
+
+  @Output() dismiss = new EventEmitter<Ingredient[]>();
 
   constructor(
     private barcodeScannerService: BarcodeScannerService,
-    private ingredientService: IngredientService,
-    private modalController: ModalController,
+    private ingredientDiscoveryService: IngredientDiscoveryService,
     private calorieBarService: CalorieBarService
   ) {}
 
   public async onSearchChanged($event: any): Promise<void> {
-    this.ingredientSearchResult = (
-      await this.ingredientService.loadIngredients(
-        $event.target.value as string
-      )
-    ).map((i) => new selectableIngredient(i.name, i.macros, i.amount));
+    this.nameSearchAction.next($event.target.value);
   }
 
   ngOnInit() {}
 
-  public async dismissModal(): Promise<void> {
-    await this.modalController.dismiss(this.selectedIngredients);
-  }
-
   selectionChanged($event: boolean, ingredient: Ingredient) {
     if ($event) {
       this.selectedIngredients.push(ingredient);
-      this.calorieBarService.changeCaloriesManualAction.next(this.selectedIngredients);
+      this.calorieBarService.changeCaloriesManualAction.next(
+        this.selectedIngredients
+      );
     } else {
       this.selectedIngredients.splice(
         this.selectedIngredients.findIndex((s) => s.name === ingredient.name),
         1
       );
-      this.calorieBarService.changeCaloriesManualAction.next(this.selectedIngredients);
+      this.calorieBarService.changeCaloriesManualAction.next(
+        this.selectedIngredients
+      );
     }
   }
 
-  async scanBarcode(): Promise<void> {
+  public onDismiss(): void {
+    this.dismiss.emit(this.selectedIngredients);
+  }
+
+  public async scanBarcode(): Promise<void> {
     const scannerResult = await this.barcodeScannerService.openBarcodeScanner();
     if (scannerResult) {
-      this.ingredientSearchResult = (
-        await this.ingredientService.loadIngredientsByBarcode(scannerResult)
-      ).map((i) => new selectableIngredient(i.name, i.macros, i.amount));
+      this.barcodeSearchAction.next(scannerResult);
     }
   }
 
   public recalculateCalories(): void {
-    this.calorieBarService.changeCaloriesManualAction.next(this.selectedIngredients);
+    this.calorieBarService.changeCaloriesManualAction.next(
+      this.selectedIngredients
+    );
   }
 
   public updateIngredient(ingredient: Ingredient): void {
-    const index = this.selectedIngredients.findIndex((s) => s.name === ingredient.name)
-    if(index !== -1) {
-      this.selectedIngredients.splice(
-        index,
-        1,
-        ingredient
+    const index = this.selectedIngredients.findIndex(
+      (s) => s.name === ingredient.name
+    );
+    if (index !== -1) {
+      this.selectedIngredients.splice(index, 1, ingredient);
+      this.calorieBarService.changeCaloriesManualAction.next(
+        this.selectedIngredients
       );
-      this.calorieBarService.changeCaloriesManualAction.next(this.selectedIngredients);
     }
   }
 }

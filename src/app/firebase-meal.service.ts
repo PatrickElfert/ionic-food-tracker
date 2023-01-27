@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
   collection,
   CollectionReference,
@@ -13,21 +12,34 @@ import {
 import { UserService } from './user.service';
 import { from, Observable } from 'rxjs';
 import { startOfDay, endOfDay } from 'date-fns';
-import { first, map, switchMap, take } from 'rxjs/operators';
-import { IngredientPayload, Meal, MealPayload } from './interfaces/meal';
-import { Ingredient } from './interfaces/ingredient';
+import { first, map, switchMap } from 'rxjs/operators';
+import { Meal, MealPayload } from './interfaces/meal';
+import { Ingredient, IngredientPayload } from './interfaces/ingredient';
 import { MealService } from './meal.service';
 import { updateDoc } from 'firebase/firestore';
+import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class FirebaseMealService extends MealService {
   constructor(private userService: UserService) {
     super();
   }
 
-  protected onDeleteMeal(id: string): Observable<Meal> {
+  protected queryByIds(ids: string[]): Observable<Meal[]> {
+    return this.userService.userDocumentReference$.pipe(
+      switchMap((userDocRef) =>
+        collectionData<MealPayload>(
+          query(
+            this.getMealCollectionReference(userDocRef),
+            where('id', 'in', ids)
+          )
+        )
+      ),
+      map((mealPayloads) => mealPayloads.map(this.toMeal))
+    );
+  }
+
+  protected onDelete(id: string): Observable<void> {
     return this.userService.userDocumentReference$.pipe(
       switchMap((userDocRef) =>
         from(
@@ -39,13 +51,21 @@ export class FirebaseMealService extends MealService {
     );
   }
 
-  protected onUpdateMeal(meal: Partial<Meal> & {id: string}): Observable<Meal> {
+  protected onUpdate(meal: Partial<Meal> & { id: string }): Observable<void> {
     return this.userService.userDocumentReference$.pipe(
-      switchMap((userDocRef) => from(updateDoc(
-        doc<MealPayload>(this.getMealCollectionReference(userDocRef), meal.id),
-        this.toUpdateMeal(meal)
-      ))
-    ), first());
+      switchMap((userDocRef) =>
+        from(
+          updateDoc(
+            doc<MealPayload>(
+              this.getMealCollectionReference(userDocRef),
+              meal.id
+            ),
+            this.toUpdateMeal(meal)
+          )
+        )
+      ),
+      first()
+    );
   }
 
   protected onSetMeal(meal: Meal): Observable<void> {
@@ -65,7 +85,7 @@ export class FirebaseMealService extends MealService {
     );
   }
 
-  protected queryMealsAtDate(date: Date): Observable<Meal[]> {
+  public queryMealsAtDate(date: Date): Observable<Meal[]> {
     return this.userService.userDocumentReference$.pipe(
       switchMap((userDocRef) =>
         collectionData<MealPayload>(
@@ -92,7 +112,7 @@ export class FirebaseMealService extends MealService {
   private toMeal(mealPayload: MealPayload): Meal {
     return new Meal(
       mealPayload.ingredients?.map(
-        (i) => new Ingredient(i.name, i.macros, i.currentAmount)
+        (i) => new Ingredient(i.id, i.name, i.macros, i.currentAmount)
       ),
       mealPayload.name,
       mealPayload.id,
@@ -102,6 +122,7 @@ export class FirebaseMealService extends MealService {
 
   private toIngredientPayload(ingredient: Ingredient): IngredientPayload {
     return {
+      id: ingredient.id,
       name: ingredient.name,
       currentAmount: ingredient.currentAmount,
       macros: ingredient.macros,
