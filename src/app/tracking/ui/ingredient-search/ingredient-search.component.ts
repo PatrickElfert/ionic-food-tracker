@@ -1,28 +1,19 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { CalorieBarService } from '../calorie-bar.service';
-import { BarcodeScannerService } from '../barcode-scanner.service';
-import { Ingredient } from '../interfaces/ingredient';
-import { IngredientDiscoveryService } from '../ingredient-discovery.service';
-import { map, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap, tap } from "rxjs/operators";
 import { merge, Subject } from 'rxjs';
+import { BarcodeScannerService } from '../../../barcode-scanner.service';
+import { Ingredient } from '../../../interfaces/ingredient';
+import { CalorieBarService } from '../../data-access/calorie-bar.service';
+import { IngredientDiscoveryService } from '../../../ingredient-discovery.service';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-type Constructor = new (...args: any[]) => {};
-
-// eslint-disable-next-line @typescript-eslint/naming-convention,prefer-arrow/prefer-arrow-functions
-const Select = <T extends Constructor>(base: T) =>
-  class Selectable extends base {
-    selected = false;
-  };
-
-const selectableIngredient = Select(Ingredient);
 
 @Component({
   selector: 'app-ingredient-search-modal',
-  templateUrl: './ingredient-search-modal.component.html',
-  styleUrls: ['./ingredient-search-modal.component.sass'],
+  templateUrl: './ingredient-search.component.html',
+  styleUrls: ['./ingredient-search.component.sass'],
 })
-export class IngredientSearchModalComponent implements OnInit {
+export class IngredientSearchComponent implements OnInit {
   private nameSearchAction = new Subject<string>();
   private barcodeSearchAction = new Subject<string>();
 
@@ -40,17 +31,9 @@ export class IngredientSearchModalComponent implements OnInit {
   public ingredientSearchResult$ = merge(
     this.barcodeSearchResult$,
     this.nameSearchResult$
-  ).pipe(
-    map((ingredients) =>
-      ingredients.map(
-        (i) => new selectableIngredient(i.id, i.name, i.macros, i.amount)
-      )
-    )
-  );
+  ).pipe(map(ingredients => ingredients.filter(ingredient => ingredient.name)));
 
   private selectedIngredients: Ingredient[] = [];
-
-  @Output() dismiss = new EventEmitter<Ingredient[]>();
 
   constructor(
     private barcodeScannerService: BarcodeScannerService,
@@ -64,8 +47,8 @@ export class IngredientSearchModalComponent implements OnInit {
 
   ngOnInit() {}
 
-  selectionChanged($event: boolean, ingredient: Ingredient) {
-    if ($event) {
+  selectionChanged(selected: boolean, ingredient: Ingredient) {
+    if (selected) {
       this.selectedIngredients.push(ingredient);
       this.calorieBarService.changeCaloriesManualAction.next(
         this.selectedIngredients
@@ -79,10 +62,6 @@ export class IngredientSearchModalComponent implements OnInit {
         this.selectedIngredients
       );
     }
-  }
-
-  public onDismiss(): void {
-    this.dismiss.emit(this.selectedIngredients);
   }
 
   public async scanBarcode(): Promise<void> {
@@ -108,5 +87,8 @@ export class IngredientSearchModalComponent implements OnInit {
         this.selectedIngredients
       );
     }
+  }
+
+  onClick(ingredient: Ingredient) {
   }
 }

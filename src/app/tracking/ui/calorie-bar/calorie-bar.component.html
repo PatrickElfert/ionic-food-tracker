@@ -1,6 +1,6 @@
 <div class="bar" *ngIf="calorieBarService.vm$ | async as vm">
   <div *ngIf="displayAction" class="button-wrapper">
-    <div class="button" (click)="actionClick.emit()">
+    <div class="button" (click)="click.emit()">
       <ion-icon size="large" icon="add-outline"></ion-icon>
     </div>
   </div>

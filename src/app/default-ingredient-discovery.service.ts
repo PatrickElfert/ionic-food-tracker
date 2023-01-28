@@ -5,8 +5,11 @@ import { Ingredient } from './interfaces/ingredient';
 import { flatMap } from 'lodash';
 import { IngredientDiscoveryService } from './ingredient-discovery.service';
 import { v4 } from 'uuid';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export class DefaultIngredientDiscoveryService extends IngredientDiscoveryService {
+
   public queryIngredientsByBarcode(barcode: string): Observable<Ingredient[]> {
     return from(
       this.httpClient.get<FoodSearchResult>(
@@ -40,6 +43,7 @@ export class DefaultIngredientDiscoveryService extends IngredientDiscoveryServic
     return new Ingredient(
       v4(),
       product.product_name,
+      product.brands,
       {
         carbs: this.formatNutrient(product.nutriments.carbohydrates),
         fat: this.formatNutrient(product.nutriments.fat),

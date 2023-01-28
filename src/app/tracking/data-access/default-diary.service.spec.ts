@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-
-import { DiaryService } from './date.service';
+import { DiaryService } from './diary.service';
 
 describe('DateService', () => {
   let service: DiaryService;

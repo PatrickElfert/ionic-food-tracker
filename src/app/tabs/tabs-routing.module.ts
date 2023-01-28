@@ -11,7 +11,7 @@ const routes: Routes = [
       {
         path: 'tab1',
         loadChildren: () =>
-          import('../tab1/tab1.module').then((m) => m.Tab1PageModule),
+          import('../tracking/feature/tab1/tab1.module').then((m) => m.Tab1PageModule),
         canLoad: [AuthGuard],
       },
       {

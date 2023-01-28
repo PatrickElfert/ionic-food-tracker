@@ -1,0 +1,14 @@
+<ion-item-sliding>
+  <ion-item (click)="onClick()" [button]="true" [detail]="false">
+    <ion-label>
+      <h2>{{ ingredient.name }}</h2>
+      <p>{{ ingredient.brand }}</p>
+    </ion-label>
+    <ion-badge slot="end" color="primary">{{ ingredient.calories | number: '1.0-0' }}</ion-badge>
+  </ion-item>
+  <ion-item-options (ionSwipe)="onDelete()">
+    <ion-item-option on color="danger" expandable>
+      <ion-icon  name="trash" slot="icon-only"></ion-icon>
+    </ion-item-option>
+  </ion-item-options>
+</ion-item-sliding>

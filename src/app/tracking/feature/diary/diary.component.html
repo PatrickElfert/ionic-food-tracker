@@ -11,26 +11,20 @@
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ vm.date }}</ion-title>
+      <ion-title>{{ vm.date | date:'EEEEEE, MMMM d' }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
     <ng-container *ngFor="let meal of vm.meals">
-      <app-food-card
-        *ngFor="let ingredient of meal.ingredients; let i = index"
-        [selectable]="false"
-        (deleted)="onDeleteIngredient(meal, ingredient)"
-        [data]="ingredient"
-        (dataChange)="onUpdateIngredient(meal, ingredient)"
-      ></app-food-card>
+      <ion-list>
+        <ion-item-divider>
+          <ion-label>{{ meal.name }}</ion-label>
+        </ion-item-divider>
+        <ng-container *ngFor="let ingredient of meal.ingredients">
+         <app-ingredient-item (delete)="onDeleteIngredient(meal, ingredient)" [ingredient]="ingredient"></app-ingredient-item>
+        </ng-container>
+      </ion-list>
     </ng-container>
   </ion-content>
-  <ion-modal #modal>
-    <ng-template>
-      <app-ingredient-search-modal
-        (dismiss)="modal.dismiss(); onUpdateIngredients($event)"
-      ></app-ingredient-search-modal>
-    </ng-template>
-  </ion-modal>
-  <app-calorie-bar (actionClick)="modal.present()"></app-calorie-bar>
+  <app-calorie-bar (click)="routeToSearch()"></app-calorie-bar>
 </ng-container>

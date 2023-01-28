@@ -1,0 +1,8 @@
+<ion-item
+  (click)="onClick()" [button]="true">
+  <ion-label>
+    <h2>{{ ingredient.name }}</h2>
+    <p>{{ ingredient.brand }}</p>
+  </ion-label>
+  <ion-badge slot="end" color="primary">{{ ingredient.calories | number: '1.0-0' }}</ion-badge>
+</ion-item>

@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button default-href="" ></ion-back-button>
+    </ion-buttons>
+    <ion-title>Ingredients</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="scanBarcode()">
+        <ion-icon size="large" name="barcode-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Search for ingredients"
+      [debounce]="1000"
+      (ionChange)="onSearchChanged($event)"
+    ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <app-ingredient-search-item
+      [ingredient]="ingredient"
+      (click)="onClick(ingredient)"
+      *ngFor="let ingredient of ingredientSearchResult$ | async"
+    >
+    </app-ingredient-search-item>
+  </ion-list>
+</ion-content>
+
+<ion-modal [initialBreakpoint]="0.25" [isOpen]="true">
+  <app-add-ingredient></app-add-ingredient>
+</ion-modal>

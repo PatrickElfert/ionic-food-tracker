@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CalorieBarService} from '../calorie-bar.service';
+import { CalorieBarService } from '../../data-access/calorie-bar.service';
 
 
 @Component({
@@ -9,7 +9,7 @@ import {CalorieBarService} from '../calorie-bar.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CalorieBarComponent implements  OnInit{
-  @Output() actionClick = new EventEmitter<string>();
+  @Output() click = new EventEmitter<string>();
   @Input() displayAction = true;
 
   constructor(public calorieBarService: CalorieBarService) {}
