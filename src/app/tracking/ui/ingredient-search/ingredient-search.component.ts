@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { filter, map, switchMap, tap } from "rxjs/operators";
-import { merge, Subject } from 'rxjs';
+import { filter, finalize, map, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, merge, Subject } from 'rxjs';
 import { BarcodeScannerService } from '../../../barcode-scanner.service';
 import { Ingredient } from '../../../interfaces/ingredient';
 import { CalorieBarService } from '../../data-access/calorie-bar.service';
@@ -16,13 +16,21 @@ import { IngredientDiscoveryService } from '../../../ingredient-discovery.servic
 export class IngredientSearchComponent implements OnInit {
   private nameSearchAction = new Subject<string>();
   private barcodeSearchAction = new Subject<string>();
+  private ingredientSelectedAction = new BehaviorSubject<
+    Ingredient | undefined
+  >(undefined);
+  public selectedIngredient$ = this.ingredientSelectedAction.asObservable();
+
+  public loading = false;
 
   public barcodeSearchResult$ = this.barcodeSearchAction.pipe(
+    tap(() => (this.loading = true)),
     switchMap((barcode) =>
       this.ingredientDiscoveryService.queryIngredientsByBarcode(barcode)
     )
   );
   public nameSearchResult$ = this.nameSearchAction.pipe(
+    tap(() => (this.loading = true)),
     switchMap((name) =>
       this.ingredientDiscoveryService.queryIngredientsByName(name)
     )
@@ -31,7 +39,10 @@ export class IngredientSearchComponent implements OnInit {
   public ingredientSearchResult$ = merge(
     this.barcodeSearchResult$,
     this.nameSearchResult$
-  ).pipe(map(ingredients => ingredients.filter(ingredient => ingredient.name)));
+  ).pipe(
+    map((ingredients) => ingredients.filter((ingredient) => ingredient.name)),
+    tap(() => (this.loading = false))
+  );
 
   private selectedIngredients: Ingredient[] = [];
 
@@ -89,6 +100,11 @@ export class IngredientSearchComponent implements OnInit {
     }
   }
 
+  onIngredientModalClose() {
+    this.ingredientSelectedAction.next(undefined);
+  }
+
   onClick(ingredient: Ingredient) {
+    this.ingredientSelectedAction.next(ingredient);
   }
 }

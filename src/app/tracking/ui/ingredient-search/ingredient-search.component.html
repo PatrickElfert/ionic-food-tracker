@@ -16,6 +16,7 @@
       [debounce]="1000"
       (ionChange)="onSearchChanged($event)"
     ></ion-searchbar>
+    <ion-progress-bar *ngIf="loading" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
@@ -29,7 +30,13 @@
     </app-ingredient-search-item>
   </ion-list>
 </ion-content>
-
-<ion-modal [initialBreakpoint]="0.25" [isOpen]="true">
-  <app-add-ingredient></app-add-ingredient>
+<ion-modal
+  [initialBreakpoint]="0.40"
+  [breakpoints]="[0, 0.40]"
+  [isOpen]="(selectedIngredient$ | async) !== undefined"
+  (didDismiss)="onIngredientModalClose()"
+>
+  <ng-template>
+    <app-add-ingredient [ingredient]="selectedIngredient$ | async"></app-add-ingredient>
+  </ng-template>
 </ion-modal>

@@ -1,1 +1,46 @@
-<div>works</div>
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Edit </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen="true">
+  <ion-grid>
+    <ion-row class="ion-justify-content-between">
+      <ion-col>
+        <ion-label>
+          <h2>{{ ingredient.name }}</h2>
+          <p>{{ ingredient.brand }}</p>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-justify-content-center ion-align-items-center">
+      <ion-col size="3">
+        <div [style.height]="'5rem'">
+          <canvas id="MyChart">{{ chart }}</canvas>
+        </div>
+      </ion-col>
+      <ion-col class="ion-text-center">
+        <ion-label>
+          <h2>{{ ingredient.macros.protein }}g</h2>
+          <p [style.color]="proteinColor">Protein</p>
+        </ion-label>
+      </ion-col>
+      <ion-col class="ion-text-center">
+        <ion-label>
+          <h2>{{ ingredient.macros.fat }}g</h2>
+          <p [style.color]="fatColor" >Fat</p>
+        </ion-label>
+      </ion-col>
+      <ion-col class="ion-text-center">
+        <ion-label>
+          <h2>{{ ingredient.macros.carbs }}g</h2>
+          <p [style.color]="carbsColor">Carbs</p>
+        </ion-label>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-item lines="full">
+    <ion-label position="stacked">Amount</ion-label>
+    <ion-input type="number" [value]="ingredient.amount"></ion-input>
+  </ion-item>
+</ion-content>
