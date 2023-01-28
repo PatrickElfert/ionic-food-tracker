@@ -6,6 +6,7 @@ export class Ingredient {
   constructor(
     public id: string,
     public name: string,
+    public brand: string,
     public macros: Macros,
     private defaultAmount: number
   ) {
@@ -36,6 +37,7 @@ export class Ingredient {
 export interface IngredientPayload {
   id: string;
   name: string;
+  brand: string;
   macros: Macros;
   currentAmount: number;
 }

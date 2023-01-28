@@ -1,12 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {MealOverviewComponent} from '../meal-overview/meal-overview.component';
+import { DiaryComponent } from '../diary/diary.component';
+import { IngredientSearchComponent } from "../../ui/ingredient-search/ingredient-search.component";
 
 const routes: Routes = [
   {
     path: '',
-    component: MealOverviewComponent,
+    component: DiaryComponent,
   },
+  {path: 'search', component: IngredientSearchComponent }
 ];
 
 @NgModule({

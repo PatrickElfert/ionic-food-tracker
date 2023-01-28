@@ -18,6 +18,7 @@ import { Ingredient, IngredientPayload } from './interfaces/ingredient';
 import { MealService } from './meal.service';
 import { updateDoc } from 'firebase/firestore';
 import { Injectable } from '@angular/core';
+import { pickBy } from "lodash";
 
 @Injectable()
 export class FirebaseMealService extends MealService {
@@ -112,7 +113,7 @@ export class FirebaseMealService extends MealService {
   private toMeal(mealPayload: MealPayload): Meal {
     return new Meal(
       mealPayload.ingredients?.map(
-        (i) => new Ingredient(i.id, i.name, i.macros, i.currentAmount)
+        (i) => new Ingredient(i.id, i.name, i.brand, i.macros, i.currentAmount)
       ),
       mealPayload.name,
       mealPayload.id,
@@ -124,17 +125,18 @@ export class FirebaseMealService extends MealService {
     return {
       id: ingredient.id,
       name: ingredient.name,
+      brand: ingredient.brand,
       currentAmount: ingredient.currentAmount,
       macros: ingredient.macros,
     };
   }
 
   private toUpdateMeal(meal: Partial<Meal>): Partial<MealPayload> {
-    return {
+    return pickBy({
       name: meal.name,
       date: meal.date?.getTime(),
       ingredients: meal.ingredients?.map((i) => this.toIngredientPayload(i)),
-    };
+    }, (value) => value !== undefined);
   }
 
   private toCreateMeal(meal: Meal): MealPayload {

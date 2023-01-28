@@ -21,9 +21,9 @@ import { enterAnimation } from './animations';
 import { FirebaseMealService } from './firebase-meal.service';
 import { MealService } from './meal.service';
 import { IngredientDiscoveryService } from './ingredient-discovery.service';
-import { DefaultIngredientDiscoveryService } from './external-ingredient.service';
-import { DiaryService } from './diary.service';
-import { DefaultDiaryService } from './default-diary.service';
+import { DefaultIngredientDiscoveryService } from './default-ingredient-discovery.service';
+import { DiaryService } from './tracking/data-access/diary.service';
+import { DefaultDiaryService } from './tracking/data-access/default-diary.service';
 
 const whichAuth = () => {
   let auth;
@@ -41,7 +41,6 @@ const whichAuth = () => {
     BrowserModule,
     IonicModule.forRoot({
       mode: 'ios',
-      navAnimation: enterAnimation,
     }),
     AppRoutingModule,
     HttpClientModule,
@@ -54,7 +53,7 @@ const whichAuth = () => {
     { provide: MealService, useClass: FirebaseMealService },
     {
       provide: IngredientDiscoveryService,
-      useValue: DefaultIngredientDiscoveryService,
+      useClass: DefaultIngredientDiscoveryService,
     },
     {
       provide: DiaryService,

@@ -93,6 +93,7 @@ export class FirebaseIngredientService extends IngredientService {
     return new Ingredient(
       ingredientPayload.id,
       ingredientPayload.name,
+      ingredientPayload.brand,
       ingredientPayload.macros,
       ingredientPayload.currentAmount
     );
@@ -102,6 +103,7 @@ export class FirebaseIngredientService extends IngredientService {
     return {
       id: ingredient.id,
       name: ingredient.name,
+      brand: ingredient.brand,
       macros: ingredient.macros,
       currentAmount: ingredient.currentAmount,
     };

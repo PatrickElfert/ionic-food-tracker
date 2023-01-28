@@ -1,31 +1,40 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { map, tap } from 'rxjs/operators';
-import { DiaryService } from '../diary.service';
-import { MealService } from '../meal.service';
-import { Ingredient } from '../interfaces/ingredient';
-import { Meal } from '../interfaces/meal';
+import { map } from 'rxjs/operators';
+import { ActionSheetController } from '@ionic/angular';
+import { Ingredient } from '../../../interfaces/ingredient';
+import { DiaryService } from '../../data-access/diary.service';
+import { Meal } from '../../../interfaces/meal';
+import { MealService } from '../../../meal.service';
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
-  selector: 'app-meal-overview',
-  templateUrl: './meal-overview.component.html',
-  styleUrls: ['./meal-overview.component.sass'],
+  selector: 'app-diary',
+  templateUrl: './diary.component.html',
+  styleUrls: ['./diary.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MealOverviewComponent implements OnInit {
+export class DiaryComponent implements OnInit {
   $vm = this.diaryService.diaryDay$.pipe(
     map((diaryDay) => ({ ...diaryDay })),
   );
 
   constructor(
     public diaryService: DiaryService,
-    public mealService: MealService
+    public mealService: MealService,
+    public router: Router,
+    public activatedRoute: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {}
 
   // Todo maybe move these to meal service since the overview component should not need to be edited if an ingredient on a meal needs to be updated
   onUpdateIngredients(ingredients: Ingredient[]): void {
-    console.log(ingredients);
+    this.mealService.set(new Meal(
+      ingredients,
+      'New Meal',
+      'new',
+      new Date()
+    ));
   }
 
   onDeleteIngredient(meal: Meal, ingredient: Ingredient) {
@@ -42,5 +51,9 @@ export class MealOverviewComponent implements OnInit {
         i.id === ingredient.id ? ingredient : i
       ),
     });
+  }
+
+  routeToSearch() {
+    this.router.navigate(['search'], { relativeTo: this.activatedRoute });
   }
 }
