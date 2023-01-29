@@ -27,29 +27,10 @@ export class DiaryComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  // Todo maybe move these to meal service since the overview component should not need to be edited if an ingredient on a meal needs to be updated
-  onUpdateIngredients(ingredients: Ingredient[]): void {
-    this.mealService.set(new Meal(
-      ingredients,
-      'New Meal',
-      'new',
-      new Date()
-    ));
-  }
-
   onDeleteIngredient(meal: Meal, ingredient: Ingredient) {
     this.mealService.update({
       id: meal.id,
       ingredients: meal.ingredients.filter((i) => i.id !== ingredient.id),
-    });
-  }
-
-  onUpdateIngredient(meal: Meal, ingredient: Ingredient) {
-    this.mealService.update({
-      id: meal.id,
-      ingredients: meal.ingredients.map((i) =>
-        i.id === ingredient.id ? ingredient : i
-      ),
     });
   }
 
