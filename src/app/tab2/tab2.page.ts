@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Auth } from "@angular/fire/auth";
+import { AuthService } from "../auth/features/data-access/auth.service";
 
 @Component({
   selector: 'app-tab2',
@@ -7,6 +9,9 @@ import { Component } from '@angular/core';
 })
 export class Tab2Page {
 
-  constructor() {}
+  constructor(private authService: AuthService) {}
 
+  async logOut() {
+    await this.authService.signOut();
+  }
 }

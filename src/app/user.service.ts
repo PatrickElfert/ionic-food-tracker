@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Auth, signInWithCredential } from '@angular/fire/auth';
+import { Auth, user as userChanges, signInWithCredential } from '@angular/fire/auth';
 import { FirebaseAuthentication } from '@robingenz/capacitor-firebase-authentication';
-import { GoogleAuthProvider } from 'firebase/auth';
+import { GoogleAuthProvider, UserCredential } from 'firebase/auth';
 import {
   collection,
   doc,
   getDoc,
   CollectionReference,
   setDoc,
-  Firestore,
-  docData,
-} from '@angular/fire/firestore';
+  Firestore, docData
+} from "@angular/fire/firestore";
 import { User, UserSettings } from './interfaces/user';
 import { DocumentReference } from 'rxfire/firestore/interfaces';
 import { User as FirebaseUser } from '@angular/fire/auth';
@@ -19,54 +18,26 @@ import {
   combineLatest,
   from,
   Observable,
-  of,
-  ReplaySubject,
-  Subject,
-} from 'rxjs';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { isNotUndefinedOrNull } from '../utils';
+  of, Subject
+} from "rxjs";
+import { filter, map, switchMap, take, tap } from "rxjs/operators";
+import { isNotUndefinedOrNull } from "../utils";
+import { AuthService } from "./auth/features/data-access/auth.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  public signInFlowAction = new ReplaySubject<FirebaseUser | null>();
-  public signInFlowGoogle$ = this.signInFlowAction.asObservable().pipe(
-    switchMap((user) => {
-      if (!user && !this.auth.currentUser) {
-        return from(FirebaseAuthentication.signInWithGoogle()).pipe(
-          map((signInResult) =>
-            GoogleAuthProvider.credential(signInResult.credential?.idToken)
-          ),
-          switchMap((credential) =>
-            from(signInWithCredential(this.auth, credential))
-          ),
-          map((credentials) => credentials.user)
-        );
-      } else {
-        return of(user);
-      }
-    })
-  );
-
-  public signInFlowCompleted$ = this.signInFlowGoogle$.pipe(
-    switchMap((user) => {
-      if (user) {
-        return this.userDocumentFlow(of(user));
-      } else {
-        return of(undefined);
-      }
-    })
-  );
 
   public setUserSettingsAction = new Subject<UserSettings>();
 
-  public userDocumentReference$ = this.signInFlowCompleted$.pipe(
-    filter(isNotUndefinedOrNull)
+  public userDocumentReference$ = this.authService.authStateChanged$.pipe(
+    filter(isNotUndefinedOrNull),
+    map((user) => this.buildUserDocumentReference(user.userId)),
   );
 
   public userSettingsReference$ = this.userDocumentReference$.pipe(
-    tap(ref => console.log('userSettingsReference', ref.id)),
+    tap((ref) => console.log('userSettingsReference', ref.id)),
     map((ref) => this.buildUserSettingsDocumentReference(ref.id))
   );
 
@@ -77,7 +48,7 @@ export class UserService {
     switchMap(([userSettingsDoc, settings]) =>
       from(setDoc(userSettingsDoc, { ...settings, userId: userSettingsDoc.id }))
     ),
-    tap(u => console.log('user settings updated', u))
+    tap((u) => console.log('user settings updated', u))
   );
 
   public userSettings$ = this.userSettingsReference$.pipe(
@@ -87,8 +58,9 @@ export class UserService {
 
   constructor(
     private router: Router,
-    private auth: Auth,
-    private firestore: Firestore
+    private firestore: Firestore,
+
+    private authService: AuthService,
   ) {}
 
   public setUserSettings(userSettings: UserSettings): void {
@@ -98,10 +70,10 @@ export class UserService {
   }
 
   public buildUserDocumentReference(userId: string): DocumentReference<User> {
-    return doc<User>(
-      collection(this.firestore, 'user') as CollectionReference<User>,
-      userId
-    );
+      return doc<User>(
+        collection(this.firestore, 'user') as CollectionReference<User>,
+        userId
+      );
   }
 
   public buildUserSettingsDocumentReference(
@@ -113,33 +85,6 @@ export class UserService {
         'userSettings'
       ) as CollectionReference<UserSettings>,
       userId
-    );
-  }
-
-  private userDocumentFlow(
-    source: Observable<FirebaseUser>
-  ): Observable<DocumentReference<User>> {
-    return source.pipe(
-      map((user) => ({
-        user,
-        userDocumentReference: this.buildUserDocumentReference(user.uid),
-      })),
-      switchMap(({ user, userDocumentReference }) =>
-        from(getDoc<User>(userDocumentReference)).pipe(
-          switchMap((userDoc) => {
-            if (userDoc.exists()) {
-              return of(userDoc.ref);
-            } else {
-              return from(
-                setDoc<User>(userDocumentReference, {
-                  userId: user.uid,
-                  email: user.email,
-                })
-              ).pipe(map(() => userDocumentReference));
-            }
-          })
-        )
-      )
     );
   }
 }

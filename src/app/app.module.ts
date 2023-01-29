@@ -21,6 +21,9 @@ import { IngredientDiscoveryService } from './ingredient-discovery.service';
 import { DefaultIngredientDiscoveryService } from './default-ingredient-discovery.service';
 import { DiaryService } from './tracking/data-access/diary.service';
 import { DefaultDiaryService } from './tracking/data-access/default-diary.service';
+import { AuthGuardModule } from "@angular/fire/auth-guard";
+import { AuthService } from "./auth/features/data-access/auth.service";
+import { FirebaseAuthService } from "./auth/features/data-access/firebase-auth.service";
 
 const whichAuth = () => {
   let auth;
@@ -41,6 +44,7 @@ const whichAuth = () => {
     }),
     AppRoutingModule,
     HttpClientModule,
+    AuthGuardModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => whichAuth()),
     provideFirestore(() => getFirestore()),
@@ -55,6 +59,10 @@ const whichAuth = () => {
     {
       provide: DiaryService,
       useClass: DefaultDiaryService,
+    },
+    {
+      provide: AuthService,
+      useClass: FirebaseAuthService,
     },
   ],
   bootstrap: [AppComponent],
