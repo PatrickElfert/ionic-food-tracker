@@ -1,18 +1,21 @@
 import {
-  AfterViewInit,
+  AfterViewInit, ChangeDetectionStrategy,
   Component,
   Input,
-  OnInit,
-} from '@angular/core';
+  OnInit
+} from "@angular/core";
 import { Ingredient } from '../../../interfaces/ingredient';
 import { Chart, DoughnutController, ArcElement } from 'chart.js';
+import { MealService } from "../../../meal.service";
+import { Meal } from "../../../interfaces/meal";
 
 @Component({
   selector: 'app-add-ingredient[ingredient]',
   templateUrl: './add-ingredient.component.html',
   styleUrls: ['./add-ingredient.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddIngredientComponent implements OnInit, AfterViewInit {
+export class AddIngredientComponent implements OnInit {
   @Input() ingredient!: Ingredient;
 
   chart: any;
@@ -20,7 +23,7 @@ export class AddIngredientComponent implements OnInit, AfterViewInit {
   fatColor = 'rgb(223, 41, 53)';
   carbsColor = 'rgb(255, 193, 7)';
 
-  constructor() {}
+  constructor(private mealService: MealService) {}
 
   ngOnInit() {
     Chart.register(DoughnutController, ArcElement);
@@ -46,6 +49,6 @@ export class AddIngredientComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
+  onAddIngredient() {
   }
 }

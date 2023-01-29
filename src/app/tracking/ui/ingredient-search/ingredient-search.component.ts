@@ -1,10 +1,25 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { filter, finalize, map, switchMap, tap } from 'rxjs/operators';
-import { BehaviorSubject, merge, Subject } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+} from '@angular/core';
+import {
+  filter,
+  finalize,
+  map,
+  scan,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
+import { BehaviorSubject, from, merge, of, Subject } from 'rxjs';
 import { BarcodeScannerService } from '../../../barcode-scanner.service';
 import { Ingredient } from '../../../interfaces/ingredient';
 import { CalorieBarService } from '../../data-access/calorie-bar.service';
 import { IngredientDiscoveryService } from '../../../ingredient-discovery.service';
+import { Platform } from '@ionic/angular';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 
@@ -12,6 +27,7 @@ import { IngredientDiscoveryService } from '../../../ingredient-discovery.servic
   selector: 'app-ingredient-search-modal',
   templateUrl: './ingredient-search.component.html',
   styleUrls: ['./ingredient-search.component.sass'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientSearchComponent implements OnInit {
   private nameSearchAction = new Subject<string>();
@@ -19,9 +35,13 @@ export class IngredientSearchComponent implements OnInit {
   private ingredientSelectedAction = new BehaviorSubject<
     Ingredient | undefined
   >(undefined);
+
   public selectedIngredient$ = this.ingredientSelectedAction.asObservable();
 
   public loading = false;
+  public modalHeight$ = of(this.platform.height()).pipe(
+    map((height) => 450 / height)
+  );
 
   public barcodeSearchResult$ = this.barcodeSearchAction.pipe(
     tap(() => (this.loading = true)),
@@ -45,11 +65,11 @@ export class IngredientSearchComponent implements OnInit {
   );
 
   private selectedIngredients: Ingredient[] = [];
-
   constructor(
     private barcodeScannerService: BarcodeScannerService,
     private ingredientDiscoveryService: IngredientDiscoveryService,
-    private calorieBarService: CalorieBarService
+    private calorieBarService: CalorieBarService,
+    private platform: Platform
   ) {}
 
   public async onSearchChanged($event: any): Promise<void> {
@@ -58,34 +78,11 @@ export class IngredientSearchComponent implements OnInit {
 
   ngOnInit() {}
 
-  selectionChanged(selected: boolean, ingredient: Ingredient) {
-    if (selected) {
-      this.selectedIngredients.push(ingredient);
-      this.calorieBarService.changeCaloriesManualAction.next(
-        this.selectedIngredients
-      );
-    } else {
-      this.selectedIngredients.splice(
-        this.selectedIngredients.findIndex((s) => s.name === ingredient.name),
-        1
-      );
-      this.calorieBarService.changeCaloriesManualAction.next(
-        this.selectedIngredients
-      );
-    }
-  }
-
   public async scanBarcode(): Promise<void> {
     const scannerResult = await this.barcodeScannerService.openBarcodeScanner();
     if (scannerResult) {
       this.barcodeSearchAction.next(scannerResult);
     }
-  }
-
-  public recalculateCalories(): void {
-    this.calorieBarService.changeCaloriesManualAction.next(
-      this.selectedIngredients
-    );
   }
 
   public updateIngredient(ingredient: Ingredient): void {

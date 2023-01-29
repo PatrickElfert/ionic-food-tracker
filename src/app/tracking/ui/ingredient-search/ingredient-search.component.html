@@ -30,9 +30,9 @@
     </app-ingredient-search-item>
   </ion-list>
 </ion-content>
-<ion-modal
-  [initialBreakpoint]="0.40"
-  [breakpoints]="[0, 0.40]"
+<ion-modal *ngIf="modalHeight$ | async as modalHeight"
+  [initialBreakpoint]="modalHeight"
+  [breakpoints]="[0, modalHeight]"
   [isOpen]="(selectedIngredient$ | async) !== undefined"
   (didDismiss)="onIngredientModalClose()"
 >

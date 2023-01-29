@@ -1,9 +1,9 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title> Edit </ion-title>
+    <ion-title> Details </ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content fullscreen="true">
+<ion-content>
   <ion-grid>
     <ion-row class="ion-justify-content-between">
       <ion-col>
@@ -39,8 +39,15 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-  <ion-item lines="full">
+  <ion-item class="ion-padding-horizontal" lines="full">
     <ion-label position="stacked">Amount</ion-label>
-    <ion-input type="number" [value]="ingredient.amount"></ion-input>
+    <ion-input type="number" [(ngModel)]="ingredient.amount"></ion-input>
+    <ion-note slot="helper">How much did you eat?</ion-note>
   </ion-item>
+  <ion-item class="ion-padding-horizontal" lines="full">
+    <ion-select placeholder='Select Meal' interface="action-sheet">
+      <ion-select-option [value]="'Breakfast'">Breakfast</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-button (click)="onAddIngredient()" class="ion-margin" shape="round" expand="block">Add to diary</ion-button>
 </ion-content>
