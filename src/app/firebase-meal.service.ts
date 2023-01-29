@@ -8,21 +8,26 @@ import {
   where,
   collectionData,
   DocumentReference,
+  Firestore,
+  getFirestore,
+  runTransaction,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
 import { from, Observable } from 'rxjs';
 import { startOfDay, endOfDay } from 'date-fns';
-import { first, map, switchMap } from 'rxjs/operators';
+import { first, map, switchMap, take } from 'rxjs/operators';
 import { Meal, MealPayload } from './interfaces/meal';
 import { Ingredient, IngredientPayload } from './interfaces/ingredient';
 import { MealService } from './meal.service';
 import { updateDoc } from 'firebase/firestore';
 import { Injectable } from '@angular/core';
-import { pickBy } from "lodash";
+import { pickBy } from 'lodash';
+import { FirebaseApp } from '@angular/fire/app';
+import { v4 } from "uuid";
 
 @Injectable()
 export class FirebaseMealService extends MealService {
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, private firestore: Firestore) {
     super();
   }
 
@@ -132,11 +137,14 @@ export class FirebaseMealService extends MealService {
   }
 
   private toUpdateMeal(meal: Partial<Meal>): Partial<MealPayload> {
-    return pickBy({
-      name: meal.name,
-      date: meal.date?.getTime(),
-      ingredients: meal.ingredients?.map((i) => this.toIngredientPayload(i)),
-    }, (value) => value !== undefined);
+    return pickBy(
+      {
+        name: meal.name,
+        date: meal.date?.getTime(),
+        ingredients: meal.ingredients?.map((i) => this.toIngredientPayload(i)),
+      },
+      (value) => value !== undefined
+    );
   }
 
   private toCreateMeal(meal: Meal): MealPayload {
@@ -146,5 +154,33 @@ export class FirebaseMealService extends MealService {
       date: meal.date.getTime(),
       ingredients: meal.ingredients.map((i) => this.toIngredientPayload(i)),
     };
+  }
+
+  addIngredientToMeal(mealName: string, ingredient: Ingredient): void {
+    this.userService.userDocumentReference$
+      .pipe(
+        switchMap((userDocRef) =>
+          runTransaction(userDocRef.firestore, async (transaction) => {
+            const mealDocRef = doc<MealPayload>(
+              this.getMealCollectionReference(userDocRef),
+              query(where('name', '==', mealName))
+            );
+            const mealDoc = await transaction.get(mealDocRef);
+            if (!mealDoc.exists) {
+              transaction.set(
+                mealDocRef,
+                this.toCreateMeal(
+                  new Meal([ingredient], mealName, v4(), new Date())
+                )
+              );
+            }
+            const meal = this.toMeal(mealDoc.data() as MealPayload);
+            meal.ingredients.push(ingredient);
+            transaction.update(mealDocRef, this.toUpdateMeal(meal));
+          })
+        ),
+        take(1)
+      )
+      .subscribe();
   }
 }
