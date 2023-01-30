@@ -1,36 +1,35 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
 } from '@angular/core';
-import { Ingredient } from '../../../interfaces/ingredient';
 import { Chart, DoughnutController, ArcElement } from 'chart.js';
-import { MealService } from '../../../meal.service';
-import { DiaryService } from '../../data-access/diary.service';
-import { first, switchMap } from "rxjs/operators";
-import { lastValueFrom } from "rxjs";
+import { ExternalIngredient } from '../../../interfaces/external-ingredient';
 
 @Component({
-  selector: 'app-add-ingredient[ingredient]',
+  selector: 'app-add-ingredient[ingredient][mealCategories]',
   templateUrl: './add-ingredient.component.html',
   styleUrls: ['./add-ingredient.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddIngredientComponent implements OnInit {
-  @Input() ingredient!: Ingredient;
-  public selectedMeal = 'Breakfast';
+  @Input() ingredient!: ExternalIngredient;
+  @Input() mealCategories!: string[];
+  @Output() addIngredient = new EventEmitter<{
+    externalIngredient: ExternalIngredient;
+    selectedMealCategory: string;
+  }>();
+  public selectedMealCategory: string | undefined;
 
   chart: any;
   proteinColor = 'rgb(70, 85, 195)';
   fatColor = 'rgb(223, 41, 53)';
   carbsColor = 'rgb(255, 193, 7)';
 
-  constructor(
-    private diaryService: DiaryService,
-    private mealService: MealService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     Chart.register(DoughnutController, ArcElement);
@@ -55,15 +54,9 @@ export class AddIngredientComponent implements OnInit {
   }
 
   onAddIngredient() {
-    void lastValueFrom(this.diaryService.diaryDay$.pipe(
-      switchMap((diaryDay) =>
-        this.mealService.addIngredientToMeal(
-          diaryDay.date,
-          this.selectedMeal,
-          this.ingredient
-        )
-      ),
-      first()
-    ));
+    this.addIngredient.emit({
+      externalIngredient: this.ingredient,
+      selectedMealCategory: this.selectedMealCategory!,
+    });
   }
 }

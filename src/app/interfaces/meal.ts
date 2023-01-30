@@ -5,8 +5,6 @@ export class Meal {
   constructor(
     public ingredients: Ingredient[],
     public name: string,
-    public id: string,
-    public date: Date
   ) {}
 
   get calories() {
@@ -27,8 +25,3 @@ export class Meal {
     );
   }
 }
-
-export type MealPayload = Pick<Meal, 'name' | 'id' > & {
-  date: number;
-  ingredients: IngredientPayload[];
-};

@@ -12,15 +12,28 @@ import {
   scan,
   shareReplay,
   switchMap,
+  take,
   tap,
 } from 'rxjs/operators';
-import { BehaviorSubject, from, merge, of, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  from,
+  lastValueFrom,
+  merge,
+  Observable,
+  of,
+  Subject,
+} from 'rxjs';
 import { BarcodeScannerService } from '../../../barcode-scanner.service';
 import { Ingredient } from '../../../interfaces/ingredient';
 import { CalorieBarService } from '../../data-access/calorie-bar.service';
 import { IngredientDiscoveryService } from '../../../ingredient-discovery.service';
-import { Platform } from '@ionic/angular';
-import { DiaryService } from "../../data-access/diary.service";
+import { Platform, ToastController } from '@ionic/angular';
+import { DiaryService } from '../../data-access/diary.service';
+import { ExternalIngredient } from '../../../interfaces/external-ingredient';
+import { IngredientService } from '../../../ingredient.service';
+import { v4 } from 'uuid';
+import { UserSettingsService } from '../../../user-settings.service';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 
@@ -34,7 +47,7 @@ export class IngredientSearchComponent implements OnInit {
   private nameSearchAction = new Subject<string>();
   private barcodeSearchAction = new Subject<string>();
   private ingredientSelectedAction = new BehaviorSubject<
-    Ingredient | undefined
+    ExternalIngredient | undefined
   >(undefined);
 
   public selectedIngredient$ = this.ingredientSelectedAction.asObservable();
@@ -57,21 +70,29 @@ export class IngredientSearchComponent implements OnInit {
     )
   );
 
-  public ingredientSearchResult$ = merge(
+  public ingredientSearchResult$: Observable<ExternalIngredient[]> = merge(
     this.barcodeSearchResult$,
     this.nameSearchResult$
   ).pipe(
-    map((ingredients) => ingredients.filter((ingredient) => ingredient.name)),
-    tap(() => (this.loading = false))
+    tap(() => (this.loading = false)),
+    map((ingredients) => ingredients.filter((ingredient) => ingredient.name))
+  );
+  mealCategories$ = this.userSettingsService.queryUserSettings().pipe(
+    map((userSettings) => userSettings.mealCategories)
   );
 
-  private selectedIngredients: Ingredient[] = [];
   constructor(
     private barcodeScannerService: BarcodeScannerService,
     private ingredientDiscoveryService: IngredientDiscoveryService,
     private calorieBarService: CalorieBarService,
     private platform: Platform,
 
+    private ingredientService: IngredientService,
+    private diaryService: DiaryService,
+
+    private userSettingsService: UserSettingsService,
+
+    private toastController: ToastController
   ) {}
 
   public async onSearchChanged($event: any): Promise<void> {
@@ -87,23 +108,45 @@ export class IngredientSearchComponent implements OnInit {
     }
   }
 
-  public updateIngredient(ingredient: Ingredient): void {
-    const index = this.selectedIngredients.findIndex(
-      (s) => s.name === ingredient.name
-    );
-    if (index !== -1) {
-      this.selectedIngredients.splice(index, 1, ingredient);
-      this.calorieBarService.changeCaloriesManualAction.next(
-        this.selectedIngredients
-      );
-    }
-  }
-
   onIngredientModalClose() {
     this.ingredientSelectedAction.next(undefined);
   }
 
-  onClick(ingredient: Ingredient) {
+  onIngredientSelected(ingredient: ExternalIngredient) {
     this.ingredientSelectedAction.next(ingredient);
+  }
+
+  onAddIngredient(
+    { name, brand, macros, amount }: ExternalIngredient,
+    selectedMealCategory: string
+  ) {
+    void lastValueFrom(
+      this.diaryService.diaryDay$.pipe(
+        take(1),
+        switchMap((diaryDay) =>
+          this.ingredientService.create(
+            new Ingredient(
+              v4(),
+              name,
+              brand,
+              macros,
+              amount,
+              selectedMealCategory,
+              diaryDay.date
+            )
+          )
+        ),
+        switchMap(() =>
+          from(
+            this.toastController.create({
+              message: 'Added to diary',
+              duration: 1000,
+              color: 'success',
+              icon: 'checkmark-circle-outline',
+            })
+          ).pipe(tap((toast) => toast.present()))
+        )
+      )
+    );
   }
 }

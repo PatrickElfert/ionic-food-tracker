@@ -8,7 +8,10 @@ export class Ingredient {
     public name: string,
     public brand: string,
     public macros: Macros,
-    private defaultAmount: number
+    private defaultAmount: number,
+    public mealCategory: string,
+
+    public createdDate: Date,
   ) {
     this.currentAmount = defaultAmount;
   }
@@ -40,4 +43,6 @@ export interface IngredientPayload {
   brand: string;
   macros: Macros;
   currentAmount: number;
+  mealCategory: string;
+  createdDate: number;
 }

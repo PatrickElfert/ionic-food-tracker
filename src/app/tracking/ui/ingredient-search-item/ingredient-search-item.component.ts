@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Ingredient } from "../../../interfaces/ingredient";
+import { ExternalIngredient } from "../../../interfaces/external-ingredient";
 
 @Component({
   selector: 'app-ingredient-search-item[ingredient]',
@@ -8,8 +9,8 @@ import { Ingredient } from "../../../interfaces/ingredient";
 })
 export class IngredientSearchItemComponent implements OnInit {
 
-  @Output() click = new EventEmitter<Ingredient>();
-  @Input() ingredient!: Ingredient;
+  @Output() click = new EventEmitter<ExternalIngredient>();
+  @Input() ingredient!: ExternalIngredient;
   constructor() { }
 
   ngOnInit() {}

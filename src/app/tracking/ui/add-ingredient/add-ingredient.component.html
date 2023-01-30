@@ -45,8 +45,8 @@
     <ion-note slot="helper">How much did you eat?</ion-note>
   </ion-item>
   <ion-item class="ion-padding-horizontal" lines="full">
-    <ion-select [(ngModel)]="selectedMeal" placeholder='Select Meal' interface="action-sheet">
-      <ion-select-option [value]="'Breakfast'">Breakfast</ion-select-option>
+    <ion-select [(ngModel)]="selectedMealCategory" placeholder='Select Meal' interface="action-sheet">
+      <ion-select-option *ngFor="let category of mealCategories" [value]="category">{{category}}</ion-select-option>
     </ion-select>
   </ion-item>
   <ion-button (click)="onAddIngredient()" class="ion-margin" shape="round" expand="block">Add to diary</ion-button>

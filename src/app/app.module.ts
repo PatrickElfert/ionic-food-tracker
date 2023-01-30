@@ -15,8 +15,6 @@ import {
 } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { Capacitor } from '@capacitor/core';
-import { FirebaseMealService } from './firebase-meal.service';
-import { MealService } from './meal.service';
 import { IngredientDiscoveryService } from './ingredient-discovery.service';
 import { DefaultIngredientDiscoveryService } from './default-ingredient-discovery.service';
 import { DiaryService } from './tracking/data-access/diary.service';
@@ -24,6 +22,10 @@ import { DefaultDiaryService } from './tracking/data-access/default-diary.servic
 import { AuthGuardModule } from "@angular/fire/auth-guard";
 import { AuthService } from "./auth/features/data-access/auth.service";
 import { FirebaseAuthService } from "./auth/features/data-access/firebase-auth.service";
+import { IngredientService } from "./ingredient.service";
+import { FirebaseIngredientService } from "./firebase-ingredient.service";
+import { UserSettingsService } from "./user-settings.service";
+import { DefaultUserSettingsService } from "./default-user-settings.service";
 
 const whichAuth = () => {
   let auth;
@@ -51,7 +53,7 @@ const whichAuth = () => {
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: MealService, useClass: FirebaseMealService },
+    { provide: IngredientService, useClass: FirebaseIngredientService},
     {
       provide: IngredientDiscoveryService,
       useClass: DefaultIngredientDiscoveryService,
@@ -64,6 +66,10 @@ const whichAuth = () => {
       provide: AuthService,
       useClass: FirebaseAuthService,
     },
+    {
+      provide: UserSettingsService,
+      useClass: DefaultUserSettingsService,
+    }
   ],
   bootstrap: [AppComponent],
   exports: [],

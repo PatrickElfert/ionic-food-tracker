@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button default-href="" ></ion-back-button>
+      <ion-back-button default-href=""></ion-back-button>
     </ion-buttons>
     <ion-title>Ingredients</ion-title>
     <ion-buttons slot="end">
@@ -24,19 +24,28 @@
   <ion-list>
     <app-ingredient-search-item
       [ingredient]="ingredient"
-      (click)="onClick(ingredient)"
+      (click)="onIngredientSelected(ingredient)"
       *ngFor="let ingredient of ingredientSearchResult$ | async"
     >
     </app-ingredient-search-item>
   </ion-list>
 </ion-content>
-<ion-modal *ngIf="modalHeight$ | async as modalHeight"
+<ion-modal
+  #modal
+  *ngIf="modalHeight$ | async as modalHeight"
   [initialBreakpoint]="modalHeight"
   [breakpoints]="[0, modalHeight]"
   [isOpen]="(selectedIngredient$ | async) !== undefined"
   (didDismiss)="onIngredientModalClose()"
 >
   <ng-template>
-    <app-add-ingredient [ingredient]="selectedIngredient$ | async"></app-add-ingredient>
+    <app-add-ingredient
+      (addIngredient)="
+        modal.dismiss();
+        onAddIngredient($event.externalIngredient, $event.selectedMealCategory)
+      "
+      [ingredient]="selectedIngredient$ | async"
+      [mealCategories]="mealCategories$ | async"
+    ></app-add-ingredient>
   </ng-template>
 </ion-modal>
