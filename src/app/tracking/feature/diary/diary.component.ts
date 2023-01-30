@@ -6,6 +6,7 @@ import { DiaryService } from '../../data-access/diary.service';
 import { Meal } from '../../../interfaces/meal';
 import { MealService } from '../../../meal.service';
 import { ActivatedRoute, Router } from "@angular/router";
+import { lastValueFrom } from "rxjs";
 
 @Component({
   selector: 'app-diary',
@@ -28,10 +29,7 @@ export class DiaryComponent implements OnInit {
   ngOnInit(): void {}
 
   onDeleteIngredient(meal: Meal, ingredient: Ingredient) {
-    this.mealService.update({
-      id: meal.id,
-      ingredients: meal.ingredients.filter((i) => i.id !== ingredient.id),
-    });
+    void lastValueFrom(this.mealService.removeIngredientFromMeal(meal, ingredient));
   }
 
   routeToSearch() {

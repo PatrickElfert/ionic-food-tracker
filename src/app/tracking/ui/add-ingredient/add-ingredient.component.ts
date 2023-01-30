@@ -1,13 +1,16 @@
 import {
-  AfterViewInit, ChangeDetectionStrategy,
+  AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   Input,
-  OnInit
-} from "@angular/core";
+  OnInit,
+} from '@angular/core';
 import { Ingredient } from '../../../interfaces/ingredient';
 import { Chart, DoughnutController, ArcElement } from 'chart.js';
-import { MealService } from "../../../meal.service";
-import { Meal } from "../../../interfaces/meal";
+import { MealService } from '../../../meal.service';
+import { DiaryService } from '../../data-access/diary.service';
+import { first, switchMap } from "rxjs/operators";
+import { lastValueFrom } from "rxjs";
 
 @Component({
   selector: 'app-add-ingredient[ingredient]',
@@ -17,13 +20,17 @@ import { Meal } from "../../../interfaces/meal";
 })
 export class AddIngredientComponent implements OnInit {
   @Input() ingredient!: Ingredient;
+  public selectedMeal = 'Breakfast';
 
   chart: any;
   proteinColor = 'rgb(70, 85, 195)';
   fatColor = 'rgb(223, 41, 53)';
   carbsColor = 'rgb(255, 193, 7)';
 
-  constructor(private mealService: MealService) {}
+  constructor(
+    private diaryService: DiaryService,
+    private mealService: MealService
+  ) {}
 
   ngOnInit() {
     Chart.register(DoughnutController, ArcElement);
@@ -31,24 +38,32 @@ export class AddIngredientComponent implements OnInit {
     this.chart = new Chart('MyChart', {
       type: 'doughnut',
       data: {
-        labels: [
-          'Red',
-          'Blue',
-          'Yellow'
+        labels: ['Red', 'Blue', 'Yellow'],
+        datasets: [
+          {
+            data: [protein, fat, carbs],
+            backgroundColor: [
+              this.proteinColor,
+              this.fatColor,
+              this.carbsColor,
+            ],
+            hoverOffset: 4,
+          },
         ],
-        datasets: [{
-          data: [protein, fat, carbs],
-          backgroundColor: [
-            this.proteinColor,
-            this.fatColor,
-            this.carbsColor
-          ],
-          hoverOffset: 4
-        }]
       },
     });
   }
 
   onAddIngredient() {
+    void lastValueFrom(this.diaryService.diaryDay$.pipe(
+      switchMap((diaryDay) =>
+        this.mealService.addIngredientToMeal(
+          diaryDay.date,
+          this.selectedMeal,
+          this.ingredient
+        )
+      ),
+      first()
+    ));
   }
 }
