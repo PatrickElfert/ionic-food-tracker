@@ -1,28 +1,30 @@
 import { HttpClient } from '@angular/common/http';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Ingredient } from './interfaces/ingredient';
 import { flatMap } from 'lodash';
 import { IngredientDiscoveryService } from './ingredient-discovery.service';
-import { v4 } from 'uuid';
 import { Injectable } from '@angular/core';
+import { ExternalIngredient } from './interfaces/external-ingredient';
 
 @Injectable()
 export class DefaultIngredientDiscoveryService extends IngredientDiscoveryService {
-
-  public queryIngredientsByBarcode(barcode: string): Observable<Ingredient[]> {
+  public queryIngredientsByBarcode(
+    barcode: string
+  ): Observable<ExternalIngredient[]> {
     return from(
       this.httpClient.get<FoodSearchResult>(
         `https://world.openfoodfacts.org/api/v2/search?code=${barcode}&fields=product_name,nutriments,brands`
       )
     ).pipe(
       map((searchResult) =>
-        flatMap(searchResult.products, (p) => this.toIngredient(p))
+        flatMap(searchResult.products, (p) => this.toExternalIngredient(p))
       )
     );
   }
 
-  public queryIngredientsByName(name: string): Observable<Ingredient[]> {
+  public queryIngredientsByName(
+    name: string
+  ): Observable<ExternalIngredient[]> {
     return from(
       this.httpClient.get<FoodSearchResult>(
         // eslint-disable-next-line max-len
@@ -30,7 +32,7 @@ export class DefaultIngredientDiscoveryService extends IngredientDiscoveryServic
       )
     ).pipe(
       map((searchResult) =>
-        flatMap(searchResult.products, (p) => this.toIngredient(p))
+        flatMap(searchResult.products, (p) => this.toExternalIngredient(p))
       )
     );
   }
@@ -39,15 +41,14 @@ export class DefaultIngredientDiscoveryService extends IngredientDiscoveryServic
     super();
   }
 
-  private toIngredient(product: Product): Ingredient {
-    return new Ingredient(
-      v4(),
+  private toExternalIngredient(product: Product): ExternalIngredient {
+    return new ExternalIngredient(
       product.product_name,
       product.brands,
       {
         carbs: this.formatNutrient(product.nutriments.carbohydrates),
-        fat: this.formatNutrient(product.nutriments.fat),
         protein: this.formatNutrient(product.nutriments.proteins),
+        fat: this.formatNutrient(product.nutriments.fat),
       },
       100
     );

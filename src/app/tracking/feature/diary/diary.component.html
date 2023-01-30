@@ -21,7 +21,7 @@
           <ion-label>{{ meal.name }}</ion-label>
         </ion-item-divider>
         <ng-container *ngFor="let ingredient of meal.ingredients">
-         <app-ingredient-item (delete)="onDeleteIngredient(meal, ingredient)" [ingredient]="ingredient"></app-ingredient-item>
+         <app-ingredient-item (delete)="onDeleteIngredient(ingredient)" [ingredient]="ingredient"></app-ingredient-item>
         </ng-container>
       </ion-list>
     </ng-container>

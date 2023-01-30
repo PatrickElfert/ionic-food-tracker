@@ -9,4 +9,5 @@ export interface UserSettings {
   userId: string;
   caloricIntakeVariables?: CaloricIntakeVariables;
   fixedCalories?: number;
+  mealCategories: string[];
 }

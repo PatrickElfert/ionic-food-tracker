@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { map, tap } from 'rxjs/operators';
-import { MealService } from '../../meal.service';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { Ingredient } from '../../interfaces/ingredient';
 import { CaloricIntakeVariables } from '../../onboarding/onboarding.service';
 import { UserService } from '../../user.service';
 import { DiaryService } from './diary.service';
+import { UserSettingsService } from "../../user-settings.service";
 
 const W_FACTOR = 161;
 const M_FACTOR = 5;
@@ -37,7 +37,7 @@ export class CalorieBarService {
     )
   );
 
-  calorieLimit$ = this.userService.userSettings$.pipe(
+  calorieLimit$ = this.userSettingsService.queryUserSettings().pipe(
     map((settings) => {
       if (settings.fixedCalories) {
         return settings.fixedCalories;
@@ -63,8 +63,7 @@ export class CalorieBarService {
   );
 
   constructor(
-    public mealService: MealService,
-    public userService: UserService,
+    public userSettingsService: UserSettingsService,
     public diaryService: DiaryService
   ) {}
 

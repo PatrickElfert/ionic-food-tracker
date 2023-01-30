@@ -5,6 +5,7 @@ import {
 } from '../onboarding.service';
 import { UserService } from '../../user.service';
 import {Router} from '@angular/router';
+import { UserSettingsService } from "../../user-settings.service";
 
 @Component({
   selector: 'app-intake',
@@ -25,7 +26,7 @@ export class IntakeComponent implements OnInit {
 
   constructor(
     public onboardingService: OnboardingService,
-    public userService: UserService,
+    public userSettingsService: UserSettingsService,
     public router: Router
   ) {}
 
@@ -33,17 +34,19 @@ export class IntakeComponent implements OnInit {
 
   public updateIntakeOnUserSettings() {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    this.userService.setUserSettings({
+/*
+    this.userSettingsService.setUserSettings({
       userId: '',
       caloricIntakeVariables: this.caloricIntakeVariables,
     }),
     this.router.navigate(['tabs/tab1']);
+*/
   }
 
   public saveUserSetCalories() {
-    this.userService.setUserSettings({
+    /*this.userSettingsService.setUserSettings({
       userId: '',
       fixedCalories: this.fixedCalories
-    });
+    });*/
   }
 }

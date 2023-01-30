@@ -14,42 +14,61 @@ import { Observable, from } from 'rxjs';
 import { IngredientService } from './ingredient.service';
 import { Ingredient, IngredientPayload } from './interfaces/ingredient';
 import { UserService } from './user.service';
-import { switchMap, map, first } from 'rxjs/operators';
+import { switchMap, map, first, take } from "rxjs/operators";
+import { endOfDay, startOfDay } from 'date-fns';
+import { Injectable } from "@angular/core";
 
+@Injectable()
 export class FirebaseIngredientService extends IngredientService {
   constructor(private userService: UserService) {
     super();
   }
 
-  protected queryByIds(ids: string[]): Observable<Ingredient[]> {
+  public queryIngredientsAtDate(date: Date): Observable<Ingredient[]> {
     return this.userService.userDocumentReference$.pipe(
       switchMap((userDocRef) =>
         collectionData<IngredientPayload>(
           query(
             this.getIngredientCollectionReference(userDocRef),
-            where('id', 'in', ids)
-          )
+            where('createdDate', '>', startOfDay(date).getTime()),
+            where('createdDate', '<', endOfDay(date).getTime())
+          ),
         )
       ),
-      map((ingredientPayloads) => ingredientPayloads.map(this.toIngredient))
+      map((ingredients) => ingredients.map(this.toIngredient))
     );
   }
 
-  protected onDelete(id: string): Observable<void> {
+  public delete(id: string): Observable<void> {
     return this.userService.userDocumentReference$.pipe(
+      take(1),
       switchMap((userDocRef) =>
         from(
           deleteDoc(doc(this.getIngredientCollectionReference(userDocRef), id))
         )
       ),
-      first()
     );
   }
 
-  protected onUpdate(
+  public create(ingredient: Ingredient) {
+    return this.userService.userDocumentReference$.pipe(
+      take(1),
+      switchMap((userDocRef) =>
+        from(
+          setDoc(
+            doc(this.getIngredientCollectionReference(userDocRef), ingredient.id),
+            this.toIngredientPayload(ingredient)
+          )
+        )
+      ),
+    );
+  }
+
+  public update(
     ingredient: Partial<Ingredient> & { id: string }
   ): Observable<void> {
     return this.userService.userDocumentReference$.pipe(
+      take(1),
       switchMap((userDocRef) =>
         from(
           updateDoc(
@@ -61,24 +80,6 @@ export class FirebaseIngredientService extends IngredientService {
           )
         )
       ),
-      first()
-    );
-  }
-
-  protected onSetMeal(ingredient: Ingredient): Observable<void> {
-    return this.userService.userDocumentReference$.pipe(
-      switchMap((userDocRef) =>
-        from(
-          setDoc(
-            doc<IngredientPayload>(
-              this.getIngredientCollectionReference(userDocRef),
-              ingredient.id
-            ),
-            this.toIngredientPayload(ingredient)
-          )
-        )
-      ),
-      first()
     );
   }
 
@@ -95,7 +96,9 @@ export class FirebaseIngredientService extends IngredientService {
       ingredientPayload.name,
       ingredientPayload.brand,
       ingredientPayload.macros,
-      ingredientPayload.currentAmount
+      ingredientPayload.currentAmount,
+      ingredientPayload.mealCategory,
+      new Date(ingredientPayload.createdDate)
     );
   }
 
@@ -106,6 +109,8 @@ export class FirebaseIngredientService extends IngredientService {
       brand: ingredient.brand,
       macros: ingredient.macros,
       currentAmount: ingredient.currentAmount,
+      mealCategory: ingredient.mealCategory,
+      createdDate: ingredient.createdDate.getTime(),
     };
   }
 
@@ -116,6 +121,7 @@ export class FirebaseIngredientService extends IngredientService {
       name: ingredient.name,
       macros: ingredient.macros,
       currentAmount: ingredient.currentAmount,
+      mealCategory: ingredient.mealCategory,
     };
   }
 }

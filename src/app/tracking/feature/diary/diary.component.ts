@@ -4,9 +4,9 @@ import { ActionSheetController } from '@ionic/angular';
 import { Ingredient } from '../../../interfaces/ingredient';
 import { DiaryService } from '../../data-access/diary.service';
 import { Meal } from '../../../interfaces/meal';
-import { MealService } from '../../../meal.service';
 import { ActivatedRoute, Router } from "@angular/router";
 import { lastValueFrom } from "rxjs";
+import { IngredientService } from "../../../ingredient.service";
 
 @Component({
   selector: 'app-diary',
@@ -21,15 +21,15 @@ export class DiaryComponent implements OnInit {
 
   constructor(
     public diaryService: DiaryService,
-    public mealService: MealService,
     public router: Router,
     public activatedRoute: ActivatedRoute,
+    public ingredientService: IngredientService,
   ) {}
 
   ngOnInit(): void {}
 
-  onDeleteIngredient(meal: Meal, ingredient: Ingredient) {
-    void lastValueFrom(this.mealService.removeIngredientFromMeal(meal, ingredient));
+  onDeleteIngredient(ingredient: Ingredient) {
+    void lastValueFrom(this.ingredientService.delete(ingredient.id));
   }
 
   routeToSearch() {
