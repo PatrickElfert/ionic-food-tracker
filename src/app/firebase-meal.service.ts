@@ -11,41 +11,26 @@ import {
   Firestore,
   getFirestore,
   runTransaction,
+  docData,
 } from '@angular/fire/firestore';
 import { UserService } from './user.service';
-import { from, Observable } from 'rxjs';
+import { from, lastValueFrom, Observable } from 'rxjs';
 import { startOfDay, endOfDay } from 'date-fns';
 import { first, map, switchMap, take } from 'rxjs/operators';
 import { Meal, MealPayload } from './interfaces/meal';
 import { Ingredient, IngredientPayload } from './interfaces/ingredient';
 import { MealService } from './meal.service';
-import { updateDoc } from 'firebase/firestore';
 import { Injectable } from '@angular/core';
 import { pickBy } from 'lodash';
-import { FirebaseApp } from '@angular/fire/app';
-import { v4 } from "uuid";
+import { v4 } from 'uuid';
 
 @Injectable()
 export class FirebaseMealService extends MealService {
-  constructor(private userService: UserService, private firestore: Firestore) {
+  constructor(private userService: UserService) {
     super();
   }
 
-  protected queryByIds(ids: string[]): Observable<Meal[]> {
-    return this.userService.userDocumentReference$.pipe(
-      switchMap((userDocRef) =>
-        collectionData<MealPayload>(
-          query(
-            this.getMealCollectionReference(userDocRef),
-            where('id', 'in', ids)
-          )
-        )
-      ),
-      map((mealPayloads) => mealPayloads.map(this.toMeal))
-    );
-  }
-
-  protected onDelete(id: string): Observable<void> {
+  public deleteMeal(id: string): Observable<void> {
     return this.userService.userDocumentReference$.pipe(
       switchMap((userDocRef) =>
         from(
@@ -54,40 +39,6 @@ export class FirebaseMealService extends MealService {
           )
         )
       )
-    );
-  }
-
-  protected onUpdate(meal: Partial<Meal> & { id: string }): Observable<void> {
-    return this.userService.userDocumentReference$.pipe(
-      switchMap((userDocRef) =>
-        from(
-          updateDoc(
-            doc<MealPayload>(
-              this.getMealCollectionReference(userDocRef),
-              meal.id
-            ),
-            this.toUpdateMeal(meal)
-          )
-        )
-      ),
-      first()
-    );
-  }
-
-  protected onSetMeal(meal: Meal): Observable<void> {
-    return this.userService.userDocumentReference$.pipe(
-      switchMap((userDocRef) =>
-        from(
-          setDoc(
-            doc<MealPayload>(
-              this.getMealCollectionReference(userDocRef),
-              meal.id
-            ),
-            this.toCreateMeal(meal)
-          )
-        )
-      ),
-      first()
     );
   }
 
@@ -103,6 +54,61 @@ export class FirebaseMealService extends MealService {
         )
       ),
       map((mealPayloads) => mealPayloads.map((m) => this.toMeal(m)))
+    );
+  }
+
+  public removeIngredientFromMeal(
+    meal: Meal,
+    ingredient: Ingredient
+  ): Observable<void> {
+    console.log(meal);
+    return this.userService.userDocumentReference$.pipe(
+      switchMap((userDocRef) =>
+        runTransaction(userDocRef.firestore, async (transaction) => {
+          const mealDocRef = doc<MealPayload>(
+            this.getMealCollectionReference(userDocRef),
+            meal.id
+          );
+          const mealDoc = await transaction.get(mealDocRef);
+          const mealDocData = mealDoc.data() as MealPayload;
+          mealDocData.ingredients = mealDocData.ingredients.filter(
+            (i) => i.id !== ingredient.id
+          );
+          transaction.update(mealDocRef, mealDocData);
+        })
+      )
+    );
+  }
+
+  public addIngredientToMeal(
+    date: Date,
+    mealName: string,
+    ingredient: Ingredient
+  ): Observable<void> {
+    return this.userService.userDocumentReference$.pipe(
+      switchMap((userDocRef) =>
+        runTransaction(userDocRef.firestore, async (transaction) => {
+          const mealDocuments = await lastValueFrom(this.queryMealsAtDate(date).pipe(first()));
+          const mealDoc = mealDocuments.find((m) => m.name === mealName);
+          if (mealDoc) {
+            mealDoc.ingredients.push(ingredient);
+            transaction.update(
+              doc<MealPayload>(
+                this.getMealCollectionReference(userDocRef),
+                mealDoc.id
+              ),
+              this.toUpdateMeal(mealDoc)
+            );
+            return;
+          }
+          transaction.set(
+            doc<MealPayload>(this.getMealCollectionReference(userDocRef), v4()),
+            this.toCreateMeal(
+              new Meal([ingredient], mealName, v4(), new Date())
+            )
+          );
+        })
+      ),
     );
   }
 
@@ -154,33 +160,5 @@ export class FirebaseMealService extends MealService {
       date: meal.date.getTime(),
       ingredients: meal.ingredients.map((i) => this.toIngredientPayload(i)),
     };
-  }
-
-  addIngredientToMeal(mealName: string, ingredient: Ingredient): void {
-    this.userService.userDocumentReference$
-      .pipe(
-        switchMap((userDocRef) =>
-          runTransaction(userDocRef.firestore, async (transaction) => {
-            const mealDocRef = doc<MealPayload>(
-              this.getMealCollectionReference(userDocRef),
-              query(where('name', '==', mealName))
-            );
-            const mealDoc = await transaction.get(mealDocRef);
-            if (!mealDoc.exists) {
-              transaction.set(
-                mealDocRef,
-                this.toCreateMeal(
-                  new Meal([ingredient], mealName, v4(), new Date())
-                )
-              );
-            }
-            const meal = this.toMeal(mealDoc.data() as MealPayload);
-            meal.ingredients.push(ingredient);
-            transaction.update(mealDocRef, this.toUpdateMeal(meal));
-          })
-        ),
-        take(1)
-      )
-      .subscribe();
   }
 }

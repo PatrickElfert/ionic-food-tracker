@@ -20,6 +20,7 @@ import { Ingredient } from '../../../interfaces/ingredient';
 import { CalorieBarService } from '../../data-access/calorie-bar.service';
 import { IngredientDiscoveryService } from '../../../ingredient-discovery.service';
 import { Platform } from '@ionic/angular';
+import { DiaryService } from "../../data-access/diary.service";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 
@@ -69,7 +70,8 @@ export class IngredientSearchComponent implements OnInit {
     private barcodeScannerService: BarcodeScannerService,
     private ingredientDiscoveryService: IngredientDiscoveryService,
     private calorieBarService: CalorieBarService,
-    private platform: Platform
+    private platform: Platform,
+
   ) {}
 
   public async onSearchChanged($event: any): Promise<void> {
