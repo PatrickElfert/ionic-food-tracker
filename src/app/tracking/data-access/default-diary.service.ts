@@ -1,4 +1,4 @@
-import { switchMap } from 'rxjs/operators';
+import { switchMap, tap } from "rxjs/operators";
 import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { DiaryService } from './diary.service';
