@@ -1,16 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   OnInit,
-  Output,
 } from '@angular/core';
 import {
-  filter,
-  finalize,
   map,
-  scan,
-  shareReplay,
   switchMap,
   take,
   tap,
