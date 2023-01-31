@@ -86,12 +86,9 @@ export class IngredientSearchComponent implements OnInit {
     private ingredientDiscoveryService: IngredientDiscoveryService,
     private calorieBarService: CalorieBarService,
     private platform: Platform,
-
     private ingredientService: IngredientService,
     private diaryService: DiaryService,
-
     private userSettingsService: UserSettingsService,
-
     private toastController: ToastController
   ) {}
 
@@ -121,9 +118,9 @@ export class IngredientSearchComponent implements OnInit {
     selectedMealCategory: string
   ) {
     void lastValueFrom(
-      this.diaryService.diaryDay$.pipe(
+      this.diaryService.selectedDate$.pipe(
         take(1),
-        switchMap((diaryDay) =>
+        switchMap((date) =>
           this.ingredientService.create(
             new Ingredient(
               v4(),
@@ -132,7 +129,7 @@ export class IngredientSearchComponent implements OnInit {
               macros,
               amount,
               selectedMealCategory,
-              diaryDay.date
+              date
             )
           )
         ),
