@@ -3,9 +3,9 @@ import {
   CaloricIntakeVariables,
   OnboardingService,
 } from '../onboarding.service';
-import { UserService } from '../../user.service';
+import { UserService } from '../../shared/data-access/user.service';
 import {Router} from '@angular/router';
-import { UserSettingsService } from "../../user-settings.service";
+import { UserSettingsService } from "../../shared/data-access/user-settings.service";
 
 @Component({
   selector: 'app-intake',

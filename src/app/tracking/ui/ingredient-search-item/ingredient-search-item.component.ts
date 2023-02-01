@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { Ingredient } from "../../../interfaces/ingredient";
-import { ExternalIngredient } from "../../../interfaces/external-ingredient";
+import { Ingredient } from "../../interfaces/ingredient";
+import { ExternalIngredient } from "../../interfaces/external-ingredient";
 
 @Component({
   selector: 'app-ingredient-search-item[ingredient]',

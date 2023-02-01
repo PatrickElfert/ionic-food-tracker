@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from "../../../auth/features/data-access/auth.service";
-import { UserSettingsService } from "../../../user-settings.service";
+import { UserSettingsService } from "../../../shared/data-access/user-settings.service";
 import { lastValueFrom } from "rxjs";
 
 @Component({

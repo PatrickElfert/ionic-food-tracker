@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserService } from '../user.service';
+import { UserService } from '../shared/data-access/user.service';
 import { map } from 'rxjs/operators';
 
 export interface CaloricIntakeVariables {

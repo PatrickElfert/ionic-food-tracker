@@ -6,7 +6,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { ExternalIngredient } from '../../../interfaces/external-ingredient';
+import { ExternalIngredient } from '../../interfaces/external-ingredient';
 import {
   combineLatest,
   Observable,
@@ -33,7 +33,6 @@ export class AddIngredientComponent implements OnInit {
   }>();
 
   $ingredientChangedAction = new ReplaySubject<ExternalIngredient>();
-
   amount = new FormControl(100);
 
   $ingredient: Observable<ExternalIngredient> = combineLatest([

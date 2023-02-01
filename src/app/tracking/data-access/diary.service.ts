@@ -1,7 +1,7 @@
 import { addDays } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { scan, shareReplay, tap } from "rxjs/operators";
-import { Meal } from '../../interfaces/meal';
+import { Meal } from '../interfaces/meal';
 
 export abstract class DiaryService {
   public selectedDateChangedAction = new BehaviorSubject<number>(0);
