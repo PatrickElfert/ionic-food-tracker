@@ -5,24 +5,16 @@ import {
   Input,
   OnInit,
   Output,
-  ViewChild,
 } from '@angular/core';
-import { Chart, DoughnutController, ArcElement } from 'chart.js';
 import { ExternalIngredient } from '../../../interfaces/external-ingredient';
-import { InputChangeEventDetail, IonInput } from "@ionic/angular";
 import {
-  BehaviorSubject,
   combineLatest,
-  merge,
   Observable,
-  of,
   ReplaySubject,
-  Subject,
 } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
-import { Ingredient } from '../../../interfaces/ingredient';
-import { Macros } from '../../../macros';
-import { cloneDeep } from "lodash";
+import { map, startWith } from 'rxjs/operators';
+import { cloneDeep } from 'lodash';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-add-ingredient[ingredient][mealCategories]',
@@ -41,34 +33,33 @@ export class AddIngredientComponent implements OnInit {
   }>();
 
   $ingredientChangedAction = new ReplaySubject<ExternalIngredient>();
-  $amountChangedAction = new BehaviorSubject<number>(100);
+
+  amount = new FormControl(100);
 
   $ingredient: Observable<ExternalIngredient> = combineLatest([
     this.$ingredientChangedAction,
-    this.$amountChangedAction,
+    this.amount.valueChanges.pipe(startWith(100)),
   ]).pipe(
     map(([ingredient, amount]) => {
-      ingredient.amount = Number(amount);
+      if (amount) {
+        ingredient.amount = amount;
+      }
       return ingredient;
     })
   );
 
-  public selectedMealCategory: string | undefined;
+  selectedMealCategory: string | undefined;
 
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.selectedMealCategory = this.mealCategories[0];
+  }
 
   onAddIngredient(ingredient: ExternalIngredient) {
     this.addIngredient.emit({
       externalIngredient: ingredient,
       selectedMealCategory: this.selectedMealCategory!,
     });
-  }
-
-  onAmountChanged($event: InputChangeEventDetail) {
-    if($event.value) {
-      this.$amountChangedAction.next(Number($event.value));
-    }
   }
 }

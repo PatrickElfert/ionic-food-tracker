@@ -12,9 +12,9 @@
   </ion-toolbar>
   <ion-toolbar>
     <ion-searchbar
+      [formControl]="textSearch"
       placeholder="Search for ingredients"
       [debounce]="1000"
-      (ionChange)="onSearchChanged($event)"
     ></ion-searchbar>
     <ion-progress-bar *ngIf="loading" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
@@ -32,20 +32,19 @@
 </ion-content>
 <ion-modal
   #modal
-  *ngIf="modalHeight$ | async as modalHeight"
-  [initialBreakpoint]="modalHeight"
-  [breakpoints]="[0, modalHeight]"
+  *ngIf="modalInput$ | async as modalInput"
+  [initialBreakpoint]="modalInput.modalHeight"
+  [breakpoints]="[0, modalInput.modalHeight]"
   [isOpen]="(selectedIngredient$ | async) !== undefined"
-  (didDismiss)="onIngredientModalClose()"
 >
-  <ng-template>
+  <ng-template >
     <app-add-ingredient
       (addIngredient)="
         modal.dismiss();
         onAddIngredient($event.externalIngredient, $event.selectedMealCategory)
       "
-      [ingredient]="selectedIngredient$ | async"
-      [mealCategories]="mealCategories$ | async"
+      [ingredient]="modalInput.selectedIngredient"
+      [mealCategories]="modalInput.mealCategories"
     ></app-add-ingredient>
   </ng-template>
 </ion-modal>

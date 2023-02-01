@@ -19,9 +19,9 @@
     <ion-item class="ion-padding-horizontal" lines="full">
       <ion-label position="stacked">Amount</ion-label>
       <ion-input
+        [formControl]="amount"
         type="number"
         [value]="ingredient.amount"
-        (ionChange)="onAmountChanged($event.detail)"
       ></ion-input>
       <ion-note slot="helper">How much did you eat?</ion-note>
     </ion-item>

@@ -1,16 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-} from '@angular/core';
-import {
-  map,
-  switchMap,
-  take,
-  tap,
-} from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { filter, map, switchMap, take, tap } from "rxjs/operators";
 import {
   BehaviorSubject,
+  combineLatest,
   from,
   lastValueFrom,
   merge,
@@ -28,6 +20,8 @@ import { ExternalIngredient } from '../../../interfaces/external-ingredient';
 import { IngredientService } from '../../../ingredient.service';
 import { v4 } from 'uuid';
 import { UserSettingsService } from '../../../user-settings.service';
+import { FormControl } from "@angular/forms";
+import { isNotUndefinedOrNull } from "../../../../utils";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 
@@ -38,18 +32,34 @@ import { UserSettingsService } from '../../../user-settings.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientSearchComponent implements OnInit {
-  private nameSearchAction = new Subject<string>();
+
+  public textSearch = new FormControl<string | undefined>(undefined);
   private barcodeSearchAction = new Subject<string>();
-  private ingredientSelectedAction = new BehaviorSubject<
-    ExternalIngredient | undefined
-  >(undefined);
+  private ingredientSelectedAction = new Subject<ExternalIngredient>();
+  private selectedIngredient$ = this.ingredientSelectedAction.asObservable();
 
-  public selectedIngredient$ = this.ingredientSelectedAction.asObservable();
+  private mealCategories$ = this.userSettingsService
+    .queryUserSettings()
+    .pipe(map((userSettings) => userSettings.mealCategories));
 
-  public loading = false;
-  public modalHeight$ = of(this.platform.height()).pipe(
+
+  private modalHeight$ = of(this.platform.height()).pipe(
     map((height) => 450 / height)
   );
+
+  modalInput$: Observable<{
+    selectedIngredient: ExternalIngredient;
+    mealCategories: string[];
+    modalHeight: number;
+  }> = combineLatest([this.selectedIngredient$, this.mealCategories$, this.modalHeight$]).pipe(
+    map(([selectedIngredient, mealCategories, modalHeight]) => ({
+      selectedIngredient,
+      mealCategories,
+      modalHeight
+    }))
+  );
+
+  public loading = false;
 
   public barcodeSearchResult$ = this.barcodeSearchAction.pipe(
     tap(() => (this.loading = true)),
@@ -57,7 +67,8 @@ export class IngredientSearchComponent implements OnInit {
       this.ingredientDiscoveryService.queryIngredientsByBarcode(barcode)
     )
   );
-  public nameSearchResult$ = this.nameSearchAction.pipe(
+  public nameSearchResult$ = this.textSearch.valueChanges.pipe(
+    filter(isNotUndefinedOrNull),
     tap(() => (this.loading = true)),
     switchMap((name) =>
       this.ingredientDiscoveryService.queryIngredientsByName(name)
@@ -71,9 +82,6 @@ export class IngredientSearchComponent implements OnInit {
     tap(() => (this.loading = false)),
     map((ingredients) => ingredients.filter((ingredient) => ingredient.name))
   );
-  mealCategories$ = this.userSettingsService.queryUserSettings().pipe(
-    map((userSettings) => userSettings.mealCategories)
-  );
 
   constructor(
     private barcodeScannerService: BarcodeScannerService,
@@ -86,10 +94,6 @@ export class IngredientSearchComponent implements OnInit {
     private toastController: ToastController
   ) {}
 
-  public async onSearchChanged($event: any): Promise<void> {
-    this.nameSearchAction.next($event.target.value);
-  }
-
   ngOnInit() {}
 
   public async scanBarcode(): Promise<void> {
@@ -97,10 +101,6 @@ export class IngredientSearchComponent implements OnInit {
     if (scannerResult) {
       this.barcodeSearchAction.next(scannerResult);
     }
-  }
-
-  onIngredientModalClose() {
-    this.ingredientSelectedAction.next(undefined);
   }
 
   onIngredientSelected(ingredient: ExternalIngredient) {
