@@ -1,4 +1,5 @@
 import { Macros } from '../macros';
+import { calculateCalories, calculateMacros } from "./ingredient-utils";
 
 export class ExternalIngredient{
 
@@ -7,20 +8,13 @@ export class ExternalIngredient{
   }
 
   set amount(amount: number) {
-    const { protein, fat, carbs } = this.macros;
-    this.macros = {
-      protein: (protein / this.defaultAmount) * amount,
-      fat: (fat / this.defaultAmount) * amount,
-      carbs: (carbs / this.defaultAmount) * amount,
-    };
+    this.macros = calculateMacros(this.macros, this.defaultAmount, amount);
     this.defaultAmount = amount;
   }
   get amount(): number {
     return this.defaultAmount;
   }
   get calories(): number {
-    return (
-      this.macros.carbs * 4 + this.macros.fat * 9 + this.macros.protein * 4
-    );
+    return calculateCalories(this.macros);
   }
 }

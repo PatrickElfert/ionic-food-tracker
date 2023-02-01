@@ -1,4 +1,5 @@
 import { Macros } from '../macros';
+import { calculateCalories, calculateMacros } from './ingredient-utils';
 
 export class Ingredient {
   public currentAmount: number;
@@ -16,24 +17,15 @@ export class Ingredient {
     this.currentAmount = defaultAmount;
   }
 
-  get amount(): number {
-    return this.currentAmount ?? 100;
-  }
-
   set amount(amount: number) {
-    const { protein, fat, carbs } = this.macros;
-    this.macros = {
-      protein: (protein / this.currentAmount) * amount,
-      fat: (fat / this.currentAmount) * amount,
-      carbs: (carbs / this.currentAmount) * amount,
-    };
-    this.currentAmount = amount;
+    this.macros = calculateMacros(this.macros, this.defaultAmount, amount);
+    this.defaultAmount = amount;
   }
-
+  get amount(): number {
+    return this.defaultAmount;
+  }
   get calories(): number {
-    return (
-      this.macros.carbs * 4 + this.macros.fat * 9 + this.macros.protein * 4
-    );
+    return calculateCalories(this.macros);
   }
 }
 
