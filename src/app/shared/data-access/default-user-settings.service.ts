@@ -10,7 +10,7 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import { switchMap, take } from 'rxjs/operators';
+import { switchMap, take, tap } from "rxjs/operators";
 import { from, Observable } from 'rxjs';
 import { UserSettingsService } from './user-settings.service';
 import { UserService } from './user.service';
@@ -48,6 +48,7 @@ export class DefaultUserSettingsService extends UserSettingsService {
     caloricIntakeVariables?: CaloricIntakeVariables,
   ): Observable<void> {
     return this.userService.userDocumentReference$.pipe(
+      tap(() => 'initializeUserSettings'),
       take(1),
       switchMap((user) =>
         from(
