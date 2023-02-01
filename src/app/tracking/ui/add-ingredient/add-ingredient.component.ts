@@ -32,10 +32,10 @@ export class AddIngredientComponent implements OnInit {
     selectedMealCategory: string;
   }>();
 
-  $ingredientChangedAction = new ReplaySubject<ExternalIngredient>();
-  amount = new FormControl(100);
+  private $ingredientChangedAction = new ReplaySubject<ExternalIngredient>();
 
-  $ingredient: Observable<ExternalIngredient> = combineLatest([
+  public amount = new FormControl(100);
+  public $ingredient: Observable<ExternalIngredient> = combineLatest([
     this.$ingredientChangedAction,
     this.amount.valueChanges.pipe(startWith(100)),
   ]).pipe(
@@ -47,7 +47,7 @@ export class AddIngredientComponent implements OnInit {
     })
   );
 
-  selectedMealCategory: string | undefined;
+  public selectedMealCategory: string | undefined;
 
   constructor() {}
 
@@ -55,7 +55,7 @@ export class AddIngredientComponent implements OnInit {
     this.selectedMealCategory = this.mealCategories[0];
   }
 
-  onAddIngredient(ingredient: ExternalIngredient) {
+  public onAddIngredient(ingredient: ExternalIngredient): void {
     this.addIngredient.emit({
       externalIngredient: ingredient,
       selectedMealCategory: this.selectedMealCategory!,

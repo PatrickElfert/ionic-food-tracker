@@ -12,7 +12,6 @@ export class IngredientSearchItemComponent implements OnInit {
   @Output() click = new EventEmitter<ExternalIngredient>();
   @Input() ingredient!: ExternalIngredient;
   constructor() { }
-
   ngOnInit() {}
 
   public onClick() {

@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { filter, map, switchMap, take, tap } from "rxjs/operators";
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import {
-  BehaviorSubject,
   combineLatest,
   from,
   lastValueFrom,
@@ -20,10 +19,8 @@ import { ExternalIngredient } from '../../interfaces/external-ingredient';
 import { IngredientService } from '../../data-access/ingredient.service';
 import { v4 } from 'uuid';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
-import { FormControl } from "@angular/forms";
-import { isNotUndefinedOrNull } from "../../../shared/utils/utils";
-
-// eslint-disable-next-line @typescript-eslint/ban-types
+import { FormControl } from '@angular/forms';
+import { isNotUndefinedOrNull } from '../../../shared/utils/utils';
 
 @Component({
   selector: 'app-ingredient-search-modal',
@@ -47,7 +44,21 @@ export class IngredientSearchComponent implements OnInit {
     map((height) => 450 / height)
   );
 
-  modalInput$: Observable<{
+  private barcodeSearchResult$ = this.barcodeSearchAction.pipe(
+    tap(() => (this.loading = true)),
+    switchMap((barcode) =>
+      this.ingredientDiscoveryService.queryIngredientsByBarcode(barcode)
+    )
+  );
+  private textSearchResult$ = this.textSearch.valueChanges.pipe(
+    filter(isNotUndefinedOrNull),
+    tap(() => (this.loading = true)),
+    switchMap((name) =>
+      this.ingredientDiscoveryService.queryIngredientsByName(name)
+    )
+  );
+
+  public modalInput$: Observable<{
     selectedIngredient: ExternalIngredient;
     mealCategories: string[];
     modalHeight: number;
@@ -61,23 +72,9 @@ export class IngredientSearchComponent implements OnInit {
 
   public loading = false;
 
-  public barcodeSearchResult$ = this.barcodeSearchAction.pipe(
-    tap(() => (this.loading = true)),
-    switchMap((barcode) =>
-      this.ingredientDiscoveryService.queryIngredientsByBarcode(barcode)
-    )
-  );
-  public nameSearchResult$ = this.textSearch.valueChanges.pipe(
-    filter(isNotUndefinedOrNull),
-    tap(() => (this.loading = true)),
-    switchMap((name) =>
-      this.ingredientDiscoveryService.queryIngredientsByName(name)
-    )
-  );
-
   public ingredientSearchResult$: Observable<ExternalIngredient[]> = merge(
     this.barcodeSearchResult$,
-    this.nameSearchResult$
+    this.textSearchResult$
   ).pipe(
     tap(() => (this.loading = false)),
     map((ingredients) => ingredients.filter((ingredient) => ingredient.name))
@@ -96,18 +93,18 @@ export class IngredientSearchComponent implements OnInit {
 
   ngOnInit() {}
 
-  public async scanBarcode(): Promise<void> {
+  public async onScanBarcode(): Promise<void> {
     const scannerResult = await this.barcodeScannerService.openBarcodeScanner();
     if (scannerResult) {
       this.barcodeSearchAction.next(scannerResult);
     }
   }
 
-  onIngredientSelected(ingredient: ExternalIngredient) {
+  public onIngredientSelected(ingredient: ExternalIngredient) {
     this.ingredientSelectedAction.next(ingredient);
   }
 
-  onAddIngredient(
+  public onAddIngredient(
     { name, brand, macros, amount }: ExternalIngredient,
     selectedMealCategory: string
   ) {

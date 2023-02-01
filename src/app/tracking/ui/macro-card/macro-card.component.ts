@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ArcElement, Chart, DoughnutController } from 'chart.js';
-import { Ingredient } from '../../interfaces/ingredient';
 import { ExternalIngredient } from '../../interfaces/external-ingredient';
 
 @Component({

@@ -14,9 +14,9 @@ import { Observable, from } from 'rxjs';
 import { IngredientService } from './ingredient.service';
 import { Ingredient, IngredientPayload } from '../interfaces/ingredient';
 import { UserService } from '../../shared/data-access/user.service';
-import { switchMap, map, first, take } from "rxjs/operators";
+import { switchMap, map, take } from 'rxjs/operators';
 import { endOfDay, startOfDay } from 'date-fns';
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export class FirebaseIngredientService extends IngredientService {
