@@ -1,13 +1,18 @@
 import { Ingredient } from './ingredient';
+import { v4 } from "uuid";
 
 describe('MealOverviewComponent', () => {
   let ingredient: Ingredient;
 
   beforeEach(() => {
     ingredient = new Ingredient(
+      v4(),
       'Nutella',
+      'Ferrero',
       { protein: 2, carbs: 23, fat: 11 },
-      37
+      37,
+      'Breakfast',
+      new Date()
     );
   });
 
