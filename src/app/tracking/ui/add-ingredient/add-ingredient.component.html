@@ -1,4 +1,4 @@
-<ng-container *ngIf="$vm | async as vm">
+<ng-container *ngIf="$ingredient | async as ingredient">
   <ion-header>
     <ion-toolbar>
       <ion-title> Details </ion-title>
@@ -9,51 +9,41 @@
       <ion-row class="ion-justify-content-between">
         <ion-col>
           <ion-label>
-            <h2>{{ vm.ingredient.name }}</h2>
-            <p>{{ vm.ingredient.brand }}</p>
-          </ion-label>
-        </ion-col>
-      </ion-row>
-      <ion-row class="ion-justify-content-center ion-align-items-center">
-        <ion-col size="3">
-          <ion-row [style.height]="'5rem'" class="ion-justify-content-center" [style.position]="'relative'">
-            <canvas id="MyChart"></canvas>
-            <div class="kcal">
-              <p [style.font-size]="'0.9rem'">{{ vm.ingredient.calories | number: "1.0-0" }}</p>
-              <p [style.font-size]="'0.8rem'">kcal</p>
-            </div>
-          </ion-row>
-        </ion-col>
-        <ion-col class="ion-text-center">
-          <ion-label>
-            <h2>{{ vm.ingredient.macros.protein }}g</h2>
-            <p [style.color]="proteinColor">Protein</p>
-          </ion-label>
-        </ion-col>
-        <ion-col class="ion-text-center">
-          <ion-label>
-            <h2>{{ vm.ingredient.macros.fat }}g</h2>
-            <p [style.color]="fatColor" >Fat</p>
-          </ion-label>
-        </ion-col>
-        <ion-col class="ion-text-center">
-          <ion-label>
-            <h2>{{ vm.ingredient.macros.carbs }}g</h2>
-            <p [style.color]="carbsColor">Carbs</p>
+            <h2>{{ ingredient.name }}</h2>
+            <p>{{ ingredient.brand }}</p>
           </ion-label>
         </ion-col>
       </ion-row>
     </ion-grid>
+    <app-macro-card [ingredient]="ingredient"></app-macro-card>
     <ion-item class="ion-padding-horizontal" lines="full">
       <ion-label position="stacked">Amount</ion-label>
-      <ion-input  type="number" [value]="vm.ingredient.amount" (ionChange)="$amountChangedAction.next($event.detail.value)"></ion-input>
+      <ion-input
+        type="number"
+        [value]="ingredient.amount"
+        (ionChange)="onAmountChanged($event.detail)"
+      ></ion-input>
       <ion-note slot="helper">How much did you eat?</ion-note>
     </ion-item>
     <ion-item class="ion-padding-horizontal" lines="full">
-      <ion-select [(ngModel)]="selectedMealCategory" placeholder='Select Meal' interface="action-sheet">
-        <ion-select-option *ngFor="let category of mealCategories" [value]="category">{{category}}</ion-select-option>
+      <ion-select
+        [(ngModel)]="selectedMealCategory"
+        placeholder="Select Meal"
+        interface="action-sheet"
+      >
+        <ion-select-option
+          *ngFor="let category of mealCategories"
+          [value]="category"
+          >{{ category }}</ion-select-option
+        >
       </ion-select>
     </ion-item>
-    <ion-button (click)="onAddIngredient(vm.ingredient)" class="ion-margin" shape="round" expand="block">Add to diary</ion-button>
+    <ion-button
+      (click)="onAddIngredient(ingredient)"
+      class="ion-margin"
+      shape="round"
+      expand="block"
+      >Add to diary</ion-button
+    >
   </ion-content>
 </ng-container>

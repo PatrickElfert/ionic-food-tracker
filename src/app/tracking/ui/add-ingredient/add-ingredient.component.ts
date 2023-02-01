@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { Chart, DoughnutController, ArcElement } from 'chart.js';
 import { ExternalIngredient } from '../../../interfaces/external-ingredient';
-import { IonInput } from '@ionic/angular';
+import { InputChangeEventDetail, IonInput } from "@ionic/angular";
 import {
   BehaviorSubject,
   combineLatest,
@@ -22,6 +22,7 @@ import {
 import { map, take, tap } from 'rxjs/operators';
 import { Ingredient } from '../../../interfaces/ingredient';
 import { Macros } from '../../../macros';
+import { cloneDeep } from "lodash";
 
 @Component({
   selector: 'app-add-ingredient[ingredient][mealCategories]',
@@ -31,7 +32,7 @@ import { Macros } from '../../../macros';
 })
 export class AddIngredientComponent implements OnInit {
   @Input() set ingredient(value: ExternalIngredient) {
-    this.$ingredientChangedAction.next(value);
+    this.$ingredientChangedAction.next(cloneDeep(value));
   }
   @Input() mealCategories!: string[];
   @Output() addIngredient = new EventEmitter<{
@@ -52,56 +53,22 @@ export class AddIngredientComponent implements OnInit {
     })
   );
 
-  $chart = this.$ingredient.pipe(
-    take(1),
-    tap(() => Chart.register(DoughnutController, ArcElement)),
-    map(({ macros }) => this.getChart(macros))
-  );
-
-  $vm: Observable<{ makeChart: () => Chart; ingredient: ExternalIngredient }> =
-    combineLatest([this.$ingredient, this.$chart]).pipe(
-      map(([ingredient, chart]) => ({ ingredient, makeChart: chart })),
-      tap(({ ingredient }) => console.log(ingredient))
-    );
-
   public selectedMealCategory: string | undefined;
-
-  proteinColor = 'rgb(70, 85, 195)';
-  fatColor = 'rgb(223, 41, 53)';
-  carbsColor = 'rgb(255, 193, 7)';
 
   constructor() {}
 
   ngOnInit() {}
-
-  private getChart(macros: Macros) {
-    return () =>
-      new Chart('MyChart', {
-        type: 'doughnut',
-        data: {
-          labels: ['Red', 'Blue', 'Yellow'],
-          datasets: [
-            {
-              data: [macros.protein, macros.fat, macros.carbs],
-              backgroundColor: [
-                this.proteinColor,
-                this.fatColor,
-                this.carbsColor,
-              ],
-              hoverOffset: 4,
-            },
-          ],
-        },
-        options: {
-          cutout: '70%',
-        },
-      });
-  }
 
   onAddIngredient(ingredient: ExternalIngredient) {
     this.addIngredient.emit({
       externalIngredient: ingredient,
       selectedMealCategory: this.selectedMealCategory!,
     });
+  }
+
+  onAmountChanged($event: InputChangeEventDetail) {
+    if($event.value) {
+      this.$amountChangedAction.next(Number($event.value));
+    }
   }
 }

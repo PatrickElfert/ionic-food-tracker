@@ -1,0 +1,32 @@
+<ion-grid>
+<ion-row class="ion-justify-content-center ion-align-items-center">
+  <ion-col size="3">
+    <ion-row [style.height]="'5rem'" class="ion-justify-content-center" [style.position]="'relative'">
+      <canvas id="MyChart"></canvas>
+      <div class="kcal">
+        <p [style.font-size]="'0.9rem'">{{ ingredient.calories | number: "1.0-0" }}</p>
+        <p [style.font-size]="'0.8rem'">kcal</p>
+      </div>
+    </ion-row>
+  </ion-col>
+  <ion-col class="ion-text-center">
+    <ion-label>
+      <h2>{{ ingredient.macros.protein | number: "1.0-0" }}g</h2>
+      <p [style.color]="proteinColor">Protein</p>
+    </ion-label>
+  </ion-col>
+  <ion-col class="ion-text-center">
+    <ion-label>
+      <h2>{{ ingredient.macros.fat | number: "1.0-0" }}g</h2>
+      <p [style.color]="fatColor" >Fat</p>
+    </ion-label>
+  </ion-col>
+  <ion-col class="ion-text-center">
+    <ion-label>
+      <h2>{{ ingredient.macros.carbs | number: "1.0-0" }}g</h2>
+      <p [style.color]="carbsColor">Carbs</p>
+    </ion-label>
+  </ion-col>
+</ion-row>
+</ion-grid>
+
