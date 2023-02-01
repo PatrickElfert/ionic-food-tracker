@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { map, tap } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { Ingredient } from '../../interfaces/ingredient';
+import { Ingredient } from '../interfaces/ingredient';
 import { CaloricIntakeVariables } from '../../onboarding/onboarding.service';
-import { UserService } from '../../user.service';
 import { DiaryService } from './diary.service';
-import { UserSettingsService } from "../../user-settings.service";
+import { UserSettingsService } from "../../shared/data-access/user-settings.service";
 
 const W_FACTOR = 161;
 const M_FACTOR = 5;

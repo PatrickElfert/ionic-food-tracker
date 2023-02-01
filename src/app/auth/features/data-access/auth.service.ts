@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from "@angular/core";
 import { Observable } from 'rxjs';
-import { User } from "../../../interfaces/user";
+import { User } from "../../../shared/interfaces/user";
 import { Router } from "@angular/router";
 
 @Injectable({

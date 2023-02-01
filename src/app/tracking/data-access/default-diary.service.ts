@@ -1,11 +1,11 @@
-import { switchMap, tap } from "rxjs/operators";
+import { switchMap } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { DiaryService } from './diary.service';
-import { IngredientService } from '../../ingredient.service';
+import { IngredientService } from './ingredient.service';
 import { chain } from 'lodash';
-import { Meal } from '../../interfaces/meal';
-import { Ingredient } from '../../interfaces/ingredient';
+import { Meal } from '../interfaces/meal';
+import { Ingredient } from '../interfaces/ingredient';
 
 @Injectable()
 export class DefaultDiaryService extends DiaryService {

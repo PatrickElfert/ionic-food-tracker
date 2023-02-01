@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { ActionSheetController } from '@ionic/angular';
-import { Ingredient } from '../../../interfaces/ingredient';
+import { Ingredient } from '../../interfaces/ingredient';
 import { DiaryService } from '../../data-access/diary.service';
-import { Meal } from '../../../interfaces/meal';
-import { ActivatedRoute, Router } from "@angular/router";
-import { lastValueFrom } from "rxjs";
-import { IngredientService } from "../../../ingredient.service";
+import { ActivatedRoute, Router } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
+import { IngredientService } from '../../data-access/ingredient.service';
 
 @Component({
   selector: 'app-diary',
@@ -33,6 +31,6 @@ export class DiaryComponent implements OnInit {
   }
 
   routeToSearch() {
-    this.router.navigate(['search'], { relativeTo: this.activatedRoute });
+    void this.router.navigate(['search'], { relativeTo: this.activatedRoute });
   }
 }
