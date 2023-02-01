@@ -12,20 +12,26 @@ import {
   getAuth,
   initializeAuth,
   browserLocalPersistence,
+  connectAuthEmulator,
 } from '@angular/fire/auth';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import {
+  provideFirestore,
+  connectFirestoreEmulator,
+  initializeFirestore,
+  getFirestore,
+} from '@angular/fire/firestore';
 import { Capacitor } from '@capacitor/core';
 import { IngredientDiscoveryService } from '../../../tracking/data-access/ingredient-discovery.service';
 import { DefaultIngredientDiscoveryService } from '../../../tracking/data-access/default-ingredient-discovery.service';
 import { DiaryService } from '../../../tracking/data-access/diary.service';
 import { DefaultDiaryService } from '../../../tracking/data-access/default-diary.service';
-import { AuthGuardModule } from "@angular/fire/auth-guard";
-import { AuthService } from "../../../auth/features/data-access/auth.service";
-import { FirebaseAuthService } from "../../../auth/features/data-access/firebase-auth.service";
-import { IngredientService } from "../../../tracking/data-access/ingredient.service";
-import { FirebaseIngredientService } from "../../../tracking/data-access/firebase-ingredient.service";
-import { UserSettingsService } from "../../../shared/data-access/user-settings.service";
-import { DefaultUserSettingsService } from "../../../shared/data-access/default-user-settings.service";
+import { AuthGuardModule } from '@angular/fire/auth-guard';
+import { AuthService } from '../../../auth/features/data-access/auth.service';
+import { FirebaseAuthService } from '../../../auth/features/data-access/firebase-auth.service';
+import { IngredientService } from '../../../tracking/data-access/ingredient.service';
+import { FirebaseIngredientService } from '../../../tracking/data-access/firebase-ingredient.service';
+import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
+import { DefaultUserSettingsService } from '../../../shared/data-access/default-user-settings.service';
 
 const whichAuth = () => {
   let auth;
@@ -48,12 +54,27 @@ const whichAuth = () => {
     HttpClientModule,
     AuthGuardModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => whichAuth()),
-    provideFirestore(() => getFirestore()),
+    provideAuth(() => {
+      const auth = whichAuth();
+      if (environment.useEmulators) {
+        connectAuthEmulator(auth, 'http://localhost:9099');
+      }
+      return auth;
+    }),
+    provideFirestore(() => {
+      // @ts-ignore
+      const firestore = window.Cypress
+        ? initializeFirestore(getApp(), { experimentalForceLongPolling: true })
+        : getFirestore();
+      if (environment.useEmulators) {
+        connectFirestoreEmulator(firestore, 'localhost', 9090);
+      }
+      return firestore;
+    }),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: IngredientService, useClass: FirebaseIngredientService},
+    { provide: IngredientService, useClass: FirebaseIngredientService },
     {
       provide: IngredientDiscoveryService,
       useClass: DefaultIngredientDiscoveryService,
@@ -69,7 +90,7 @@ const whichAuth = () => {
     {
       provide: UserSettingsService,
       useClass: DefaultUserSettingsService,
-    }
+    },
   ],
   bootstrap: [AppComponent],
   exports: [],

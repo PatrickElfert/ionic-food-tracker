@@ -12,7 +12,17 @@ export const environment = {
     messagingSenderId: '575184755521',
     measurementId: 'G-CP3RLGS0VE',
   },
-  production: false
+  production: false,
+  useEmulators: true,
+  baseUrl: 'http://localhost:8100',
+  authEmulatorHost: 'localhost',
+  firestoreEmulatorHost: 'localhost',
+  authEmulatorPort: 9099,
+  firestoreEmulatorPort: 9090,
+  cypressUser: {
+    email: 'test@user.com',
+    password: 'testPassword',
+  }
 };
 
 /*
