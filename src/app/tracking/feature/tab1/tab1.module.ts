@@ -14,6 +14,7 @@ import { CalorieBarComponent } from '../../ui/calorie-bar/calorie-bar.component'
 import { IngredientItemComponent } from "../../ui/ingredient-item/ingredient-item.component";
 import { IngredientSearchItemComponent } from "../../ui/ingredient-search-item/ingredient-search-item.component";
 import { AddIngredientComponent } from "../../ui/add-ingredient/add-ingredient.component";
+import { MacroCardComponent } from "../../ui/macro-card/macro-card.component";
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import { AddIngredientComponent } from "../../ui/add-ingredient/add-ingredient.c
     DiaryComponent,
     CalorieBarComponent,
     MacroHeaderComponent,
+    MacroCardComponent,
   ],
 })
 export class Tab1PageModule {}
