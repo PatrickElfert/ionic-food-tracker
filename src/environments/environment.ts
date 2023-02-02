@@ -22,6 +22,7 @@ export const environment = {
   cypressUser: {
     email: 'test@user.com',
     password: 'testPassword',
+    uid: 'IbFVmko4S7BNSrA74tEZpqeu5Ta3'
   }
 };
 

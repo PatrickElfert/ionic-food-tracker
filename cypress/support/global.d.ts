@@ -3,6 +3,8 @@ declare namespace Cypress {
     signIn(
       redirectPath?: string,
       credentials?: { email: string; password: string }
-    ): void;
+    ): Chainable;
+
+    resetFirestore(): Chainable;
   }
 }
