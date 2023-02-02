@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserSettings } from '../interfaces/user';
-import { CaloricIntakeVariables } from '../../onboarding/onboarding.service';
+import { CaloricIntakeVariables } from "../../onboarding/interfaces/caloric-intake-variables";
 
 @Injectable()
 export abstract class UserSettingsService {
@@ -10,8 +10,9 @@ export abstract class UserSettingsService {
   abstract queryUserSettings(): Observable<UserSettings>;
   abstract updateUserSettings(userSettings: UserSettings): Observable<void>;
 
+  abstract existsUserSettings(): Observable<boolean>;
+
   abstract initializeUserSettings(
-    fixedCalories?: number,
-    caloricIntakeVariables?: CaloricIntakeVariables
+    calories: number | CaloricIntakeVariables,
   ): Observable<void>;
 }

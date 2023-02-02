@@ -11,9 +11,7 @@ import { AuthService } from '../../../auth/features/data-access/auth.service';
 export class AppComponent implements OnInit {
   constructor(public barcodeScannerService: BarcodeScannerService, private authService: AuthService, public router: Router) {}
 
-  async ngOnInit(): Promise<void> {
-   this.authService.registerRedirects();
-  }
+  async ngOnInit(): Promise<void> {}
 
   async closeScanner() {
     await this.barcodeScannerService.closeBarcodeScanner();

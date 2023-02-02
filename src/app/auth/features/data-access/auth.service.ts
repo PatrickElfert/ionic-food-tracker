@@ -13,16 +13,4 @@ export abstract class AuthService {
 
   abstract signIn(): void;
   abstract signOut(): void;
-
-  public registerRedirects(): void {
-    this.authStateChanged$.subscribe((user) => {
-      console.log('user', user);
-      if(user) {
-        this.router.navigate(['tabs', 'tab1']);
-      } else {
-        this.router.navigate(['auth']);
-      }
-    });
-  }
-
 }

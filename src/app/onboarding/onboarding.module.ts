@@ -2,9 +2,9 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {OnboardingRoutingModule} from './onboarding-routing.module';
-import {FormsModule} from '@angular/forms';
-import {IntakeComponent} from './intake/intake.component';
-import {WelcomeComponent} from './welcome/welcome.component';
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import {IntakeComponent} from './features/intake/intake.component';
+import {WelcomeComponent} from './features/welcome/welcome.component';
 
 @NgModule({
   imports: [
@@ -12,6 +12,7 @@ import {WelcomeComponent} from './welcome/welcome.component';
     CommonModule,
     FormsModule,
     OnboardingRoutingModule,
+    ReactiveFormsModule
   ],
   exports: [],
   declarations: [IntakeComponent, WelcomeComponent],
