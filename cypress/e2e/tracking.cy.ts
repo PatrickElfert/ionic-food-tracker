@@ -1,6 +1,5 @@
-describe('', () => {
-  it('passes', () => {
-    cy.signIn();
+describe('feature-tracking', () => {
+  it('add new ingredient', () => {
     cy.get('[data-cy="tab2"]').click();
     cy.get('[data-cy="settings"]').click();
     cy.visit('/');
@@ -19,5 +18,8 @@ describe('', () => {
     });
     cy.get('[data-cy="searchbar"]').type('apple');
     cy.get('ion-list ion-item:first').click();
+    cy.get('[data-cy="add-to-diary"]').click();
+    cy.get('[data-cy="back"]').click();
+    cy.get('ion-list ion-item:first').contains('apple');
   });
 });

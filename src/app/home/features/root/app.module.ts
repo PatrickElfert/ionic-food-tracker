@@ -57,7 +57,10 @@ const whichAuth = () => {
     provideAuth(() => {
       const auth = whichAuth();
       if (environment.useEmulators) {
-        connectAuthEmulator(auth, 'http://localhost:9099');
+        const { authEmulatorHost, authEmulatorPort } = environment;
+        connectAuthEmulator(auth, `http://${authEmulatorHost}:${authEmulatorPort}`, {
+          disableWarnings: true,
+        });
       }
       return auth;
     }),
@@ -67,7 +70,8 @@ const whichAuth = () => {
         ? initializeFirestore(getApp(), { experimentalForceLongPolling: true })
         : getFirestore();
       if (environment.useEmulators) {
-        connectFirestoreEmulator(firestore, 'localhost', 9090);
+        const { firestoreEmulatorHost, firestoreEmulatorPort } = environment;
+        connectFirestoreEmulator(firestore, firestoreEmulatorHost, firestoreEmulatorPort);
       }
       return firestore;
     }),

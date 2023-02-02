@@ -1,12 +1,18 @@
 /// <reference types="cypress" />
 
-import { initializeApp } from 'firebase/app';
+import { getApp, initializeApp } from 'firebase/app';
 import {
   connectAuthEmulator,
   signInWithEmailAndPassword,
   getAuth,
 } from 'firebase/auth';
 import { environment } from '../../src/environments/environment';
+import {
+  connectFirestoreEmulator,
+  deleteDoc,
+  doc,
+  initializeFirestore,
+} from 'firebase/firestore';
 
 // ***********************************************
 // This example commands.ts shows you how to
@@ -32,6 +38,14 @@ Cypress.Commands.add(
     cy.visit(redirectPath);
   }
 );
+
+Cypress.Commands.add('resetFirestore', () => {
+  const emulatorHost = Cypress.env('firestoreEmulatorHost');
+  const emulatorPort = Cypress.env('firestoreEmulatorPort');
+  return cy.request('DELETE',
+    `http://${emulatorHost}:${emulatorPort}/emulator/v1/projects/strongtrack-e271f/databases/(default)/documents`
+  );
+});
 
 const getAuthEmulatorHost = () => {
   const host = Cypress.env('authEmulatorHost') as string;
