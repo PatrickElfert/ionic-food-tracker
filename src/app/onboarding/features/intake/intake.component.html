@@ -1,0 +1,79 @@
+<ng-container *ngIf="preferences$ | async as preference">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title> Intake </ion-title>
+    </ion-toolbar>
+    <ion-toolbar *ngIf="preference.knowsIntake">
+      <ion-title size="small">
+        Please enter your <br />
+        target intake
+      </ion-title>
+    </ion-toolbar>
+    <ion-toolbar *ngIf="!preference.knowsIntake">
+      <ion-title size="small">Please enter your details</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <form [formGroup]="caloricIntakeForm">
+      <div class="container" *ngIf="!preference.knowsIntake">
+        <ion-item lines="full">
+          <ion-label position="stacked">Age</ion-label>
+          <ion-input formControlName="ageInYears" type="number" class="input">
+          </ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Gender</ion-label>
+          <ion-select formControlName="gender">
+            <ion-select-option value="FEMALE">Female</ion-select-option>
+            <ion-select-option value="MALE">Male</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Height</ion-label>
+          <ion-input formControlName="heightInCm" type="number" class="input">
+          </ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Bodyweight</ion-label>
+          <ion-input formControlName="weightInKg" type="number" class="input">
+          </ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Goal</ion-label>
+          <ion-select formControlName="goal">
+            <ion-select-option value="KEEP">Keep</ion-select-option>
+            <ion-select-option value="GAIN">Gain</ion-select-option>
+            <ion-select-option value="LOSS">Loss</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Activity</ion-label>
+          <ion-select formControlName="activityLevel">
+            <ion-select-option value="SEDENDTARY">Sedentary</ion-select-option>
+            <ion-select-option value="LIGHTLY ACTIVE"
+              >Lightly Active</ion-select-option
+            >
+            <ion-select-option value="ACTIVE">Active</ion-select-option>
+            <ion-select-option value="VERY ACTIVE"
+              >Very Active</ion-select-option
+            >
+          </ion-select>
+        </ion-item>
+        <ion-button expand="block" class="ion-margin" (click)="onConfirm()">
+          Calculate my Intake
+        </ion-button>
+      </div>
+    </form>
+
+    <div class="container" *ngIf="preference.knowsIntake">
+      <label>Calories</label>
+      <ion-item lines="full" class="ion-item-input">
+        <ion-input [formControl]="fixedIntake" type="number" class="input">
+        </ion-input>
+      </ion-item>
+      <button (click)="onConfirm()" class="ion-margin-top stylized--button">
+        Save my Intake
+      </button>
+    </div>
+  </ion-content>
+</ng-container>

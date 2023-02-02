@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { OnboardingService } from '../onboarding.service';
+import { OnboardingService } from '../../data-access/onboarding.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,7 +16,7 @@ export class WelcomeComponent implements OnInit {
   ngOnInit() {}
 
   public async navigateToIntakePage(knowsIntake: boolean): Promise<void> {
-    this.onboardingService.knowsIntake = knowsIntake;
+    this.onboardingService.onSelectCaloricPreference(knowsIntake);
     await this.router.navigate(['onboarding/intake']);
   }
 }

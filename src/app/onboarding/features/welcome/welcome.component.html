@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-title class="primary">Welcome</ion-title>
+    </ion-toolbar>
+    <ion-toolbar>
+      <ion-title size="small" class="secondary">Let`s setup your <br> daily intake </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button class="ion-margin" expand="block" (click)="navigateToIntakePage(true)">
+          I already know my daily <br> intake
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-button class="ion-margin" expand="block" (click)="navigateToIntakePage(false)">
+          I want to find my daily <br> intake
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

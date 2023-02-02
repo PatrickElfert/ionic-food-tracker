@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { map, tap } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { Ingredient } from '../interfaces/ingredient';
-import { CaloricIntakeVariables } from '../../onboarding/onboarding.service';
 import { DiaryService } from './diary.service';
-import { UserSettingsService } from "../../shared/data-access/user-settings.service";
+import { UserSettingsService } from '../../shared/data-access/user-settings.service';
+import { CaloricIntakeVariables } from '../../onboarding/interfaces/caloric-intake-variables';
 
 const W_FACTOR = 161;
 const M_FACTOR = 5;

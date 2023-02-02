@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import {OnboardingService} from "../onboarding.service";
+import {OnboardingService} from "../../data-access/onboarding.service";
 
 
 describe('OnboardingService', () => {

@@ -5,17 +5,17 @@ import {
   collection,
   CollectionReference,
   doc,
-  docData,
+  docData, docSnapshots,
   Firestore,
   setDoc,
-  updateDoc,
-} from '@angular/fire/firestore';
-import { switchMap, take, tap } from "rxjs/operators";
+  updateDoc
+} from "@angular/fire/firestore";
+import { map, switchMap, take, tap } from "rxjs/operators";
 import { from, Observable } from 'rxjs';
 import { UserSettingsService } from './user-settings.service';
 import { UserService } from './user.service';
 import { pickBy } from 'lodash';
-import { CaloricIntakeVariables } from '../../onboarding/onboarding.service';
+import { CaloricIntakeVariables } from '../../onboarding/interfaces/caloric-intake-variables';
 
 @Injectable()
 export class DefaultUserSettingsService extends UserSettingsService {
@@ -44,9 +44,9 @@ export class DefaultUserSettingsService extends UserSettingsService {
     );
   }
   initializeUserSettings(
-    fixedCalories?: number,
-    caloricIntakeVariables?: CaloricIntakeVariables,
+    calories: number | CaloricIntakeVariables
   ): Observable<void> {
+    const caloriesPayload = typeof calories === 'number' ? { fixedCalories: calories } : {caloricIntakeVariables: calories};
     return this.userService.userDocumentReference$.pipe(
       tap(() => 'initializeUserSettings'),
       take(1),
@@ -54,7 +54,7 @@ export class DefaultUserSettingsService extends UserSettingsService {
         from(
           setDoc(this.buildUserSettingsDocumentReference(user.id), {
             userId: user.id,
-            fixedCalories,
+            ...caloriesPayload,
             mealCategories: ['breakfast', 'lunch', 'dinner', 'snacks'],
           })
         )
@@ -71,6 +71,13 @@ export class DefaultUserSettingsService extends UserSettingsService {
         'userSettings'
       ) as CollectionReference<UserSettings>,
       userId
+    );
+  }
+
+  public existsUserSettings(): Observable<boolean> {
+    return this.userService.userDocumentReference$.pipe(
+      switchMap(user => docSnapshots(this.buildUserSettingsDocumentReference(user.id))),
+      map(snapshot => snapshot.exists())
     );
   }
 }

@@ -78,3 +78,6 @@ export const signInProgrammatically = ({
   );
   return cy.wrap(signIn);
 };
+
+export const dataCy = (element: string) => `[data-cy=${element}]`;
+
