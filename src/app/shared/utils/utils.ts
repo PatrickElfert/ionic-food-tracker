@@ -3,6 +3,7 @@ import {
   CaloricIntakeVariables,
   Goal,
 } from '../interfaces/caloric-intake-variables';
+import { differenceInYears } from "date-fns";
 
 // Type guards
 export const isNotUndefinedOrNull = <T>(
@@ -43,12 +44,12 @@ const M_FACTOR = 5;
 const calculateBmr = ({
   weightInKg,
   heightInCm,
-  ageInYears,
+  birthdate,
   gender,
 }: CaloricIntakeVariables) => (
     10 * weightInKg +
     6.25 * heightInCm -
-    5 * ageInYears +
+    5 * differenceInYears(new Date(), birthdate) +
     (gender === 'MALE' ? M_FACTOR : W_FACTOR)
   );
 

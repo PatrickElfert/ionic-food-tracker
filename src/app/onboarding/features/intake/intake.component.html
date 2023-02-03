@@ -15,12 +15,20 @@
   </ion-header>
   <ion-content>
     <form [formGroup]="caloricIntakeForm">
-      <div class="container" *ngIf="!vm.knowsIntake">
+      <ion-list *ngIf="!vm.knowsIntake">
         <ion-item lines="full">
-          <ion-label position="stacked">Age</ion-label>
-          <ion-input formControlName="ageInYears" type="number" class="input">
-          </ion-input>
+          <ion-label>Birthdate</ion-label>
+          <ion-datetime-button datetime="datetime"></ion-datetime-button>
         </ion-item>
+        <ion-popover [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime
+              formControlName="birthdate"
+              presentation="date"
+              id="datetime"
+            ></ion-datetime>
+          </ng-template>
+        </ion-popover>
         <ion-item lines="full">
           <ion-label position="stacked">Gender</ion-label>
           <ion-select formControlName="gender">
@@ -35,11 +43,13 @@
           <ion-label position="stacked">Height</ion-label>
           <ion-input formControlName="heightInCm" type="number" class="input">
           </ion-input>
+          <ion-badge  slot="end">CM</ion-badge>
         </ion-item>
         <ion-item lines="full">
           <ion-label position="stacked">Bodyweight</ion-label>
           <ion-input formControlName="weightInKg" type="number" class="input">
           </ion-input>
+          <ion-badge  slot="end">KG</ion-badge>
         </ion-item>
         <ion-item lines="full">
           <ion-label position="stacked">Goal</ion-label>
@@ -61,15 +71,15 @@
             >
           </ion-select>
         </ion-item>
-        <ion-button
-          expand="block"
-          class="ion-margin"
-          [disabled]="!vm.calorieSettings"
-          (click)="onConfirm(vm.calorieSettings)"
-        >
-          Calculate my Intake
-        </ion-button>
-      </div>
+      </ion-list>
+      <ion-button
+        expand="block"
+        class="ion-margin"
+        [disabled]="!vm.calorieSettings"
+        (click)="onConfirm(vm.calorieSettings)"
+      >
+        Calculate my Intake
+      </ion-button>
     </form>
 
     <div class="container" *ngIf="vm.knowsIntake">
@@ -78,7 +88,11 @@
         <ion-input [formControl]="fixedIntake" type="number" class="input">
         </ion-input>
       </ion-item>
-      <ion-button [disabled]="!vm.calorieSettings" (click)="onConfirm(vm.calorieSettings)" class="ion-margin">
+      <ion-button
+        [disabled]="!vm.calorieSettings"
+        (click)="onConfirm(vm.calorieSettings)"
+        class="ion-margin"
+      >
         Save my Intake
       </ion-button>
     </div>

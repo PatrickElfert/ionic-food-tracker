@@ -1,5 +1,14 @@
 export interface CaloricIntakeVariables {
-  ageInYears: number;
+  birthdate: Date;
+  weightInKg: number;
+  heightInCm: number;
+  gender: Gender;
+  activityLevel: ActivityLevel;
+  goal: Goal;
+}
+
+export interface CaloricIntakeVariablesPayload {
+  birthdate: number;
   weightInKg: number;
   heightInCm: number;
   gender: Gender;
