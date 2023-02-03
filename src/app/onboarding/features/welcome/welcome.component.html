@@ -10,14 +10,14 @@
   <ion-grid>
     <ion-row>
       <ion-col>
-        <ion-button class="ion-margin" expand="block" (click)="navigateToIntakePage(true)">
+        <ion-button data-cy="fixed-calories-button" class="ion-margin" expand="block" (click)="navigateToIntakePage(true)">
           I already know my daily <br> intake
         </ion-button>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <ion-button class="ion-margin" expand="block" (click)="navigateToIntakePage(false)">
+        <ion-button data-cy="calculate-calories-button" class="ion-margin" expand="block" (click)="navigateToIntakePage(false)">
           I want to find my daily <br> intake
         </ion-button>
       </ion-col>

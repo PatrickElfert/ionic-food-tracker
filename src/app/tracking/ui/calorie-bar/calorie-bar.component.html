@@ -11,7 +11,7 @@
     }"
     class="row percentage"
   ></div>
-  <div [ngClass]="displayAction ? 'action-label' : 'standalone-label'">
+  <div data-cy="calorie-display" [ngClass]="displayAction ? 'action-label' : 'standalone-label'">
     {{ vm.currentCalories | number: "1.0-0" }} /
     {{ vm.calorieLimit | number: "1.0-0" }} kcal
   </div>

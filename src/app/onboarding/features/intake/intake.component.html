@@ -18,7 +18,7 @@
       <ion-list *ngIf="!vm.knowsIntake">
         <ion-item lines="full">
           <ion-label>Birthdate</ion-label>
-          <ion-datetime-button datetime="datetime"></ion-datetime-button>
+          <ion-datetime-button data-cy="datetime-button" datetime="datetime"></ion-datetime-button>
         </ion-item>
         <ion-popover [keepContentsMounted]="true">
           <ng-template>
@@ -31,7 +31,7 @@
         </ion-popover>
         <ion-item lines="full">
           <ion-label position="stacked">Gender</ion-label>
-          <ion-select formControlName="gender">
+          <ion-select data-cy="gender-select" formControlName="gender">
             <ion-select-option
               *ngFor="let enum of gender | keyvalue"
               [value]="enum.value"
@@ -41,19 +41,19 @@
         </ion-item>
         <ion-item lines="full">
           <ion-label position="stacked">Height</ion-label>
-          <ion-input formControlName="heightInCm" type="number" class="input">
+          <ion-input data-cy="height-input" formControlName="heightInCm" type="number">
           </ion-input>
           <ion-badge  slot="end">CM</ion-badge>
         </ion-item>
         <ion-item lines="full">
           <ion-label position="stacked">Bodyweight</ion-label>
-          <ion-input formControlName="weightInKg" type="number" class="input">
+          <ion-input data-cy="weight-input" formControlName="weightInKg" type="number">
           </ion-input>
           <ion-badge  slot="end">KG</ion-badge>
         </ion-item>
         <ion-item lines="full">
           <ion-label position="stacked">Goal</ion-label>
-          <ion-select formControlName="goal">
+          <ion-select data-cy="goal-select" formControlName="goal">
             <ion-select-option
               *ngFor="let enum of goal | keyvalue"
               [value]="enum.value"
@@ -63,7 +63,7 @@
         </ion-item>
         <ion-item lines="full">
           <ion-label position="stacked">Activity</ion-label>
-          <ion-select formControlName="activityLevel">
+          <ion-select data-cy="activity-select" formControlName="activityLevel">
             <ion-select-option
               *ngFor="let enum of activityLevel | keyvalue"
               [value]="enum.value"
@@ -73,6 +73,7 @@
         </ion-item>
       </ion-list>
       <ion-button
+        data-cy="confirm-button"
         expand="block"
         class="ion-margin"
         [disabled]="!vm.calorieSettings"
