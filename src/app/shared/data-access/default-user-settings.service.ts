@@ -15,7 +15,7 @@ import { from, Observable } from 'rxjs';
 import { UserSettingsService } from './user-settings.service';
 import { UserService } from './user.service';
 import { pickBy } from 'lodash';
-import { CaloricIntakeVariables } from '../../onboarding/interfaces/caloric-intake-variables';
+import { CaloricIntakeVariables } from '../interfaces/caloric-intake-variables';
 
 @Injectable()
 export class DefaultUserSettingsService extends UserSettingsService {
