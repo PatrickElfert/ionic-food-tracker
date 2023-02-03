@@ -5,7 +5,7 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "npx ionic serve & firebase emulators:start",
+    "start": "npx ionic serve & firebase emulators:start --export-on-exit ./emulator-data --import=./emulator-data",
     "build": "ng build",
     "test": "ng test --watch",
     "lint": "ng lint",
