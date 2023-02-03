@@ -1,4 +1,4 @@
-import { CaloricIntakeVariables } from "../../onboarding/interfaces/caloric-intake-variables";
+import { CaloricIntakeVariables } from "./caloric-intake-variables";
 
 export interface User {
   email: string | null;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserSettings } from '../interfaces/user';
-import { CaloricIntakeVariables } from "../../onboarding/interfaces/caloric-intake-variables";
+import { CaloricIntakeVariables } from "../interfaces/caloric-intake-variables";
 
 @Injectable()
 export abstract class UserSettingsService {
