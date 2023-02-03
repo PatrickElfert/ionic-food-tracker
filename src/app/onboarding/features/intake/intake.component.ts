@@ -91,8 +91,7 @@ export class IntakeComponent implements OnInit {
             birthdate: new Date(values.birthdate!),
           } as CaloricIntakeVariables)
         : of(undefined)
-    ),
-    tap((value) => console.log(value))
+    )
   );
 
   private calorieSettings$: Observable<

@@ -66,7 +66,7 @@ const whichAuth = () => {
     provideFirestore(() => {
       // @ts-ignore
       const firestore = window.Cypress
-        ? initializeFirestore(getApp(), { experimentalForceLongPolling: true })
+        ? initializeFirestore(getApp(), { experimentalForceLongPolling: true, ignoreUndefinedProperties: true })
         : initializeFirestore(getApp(), {ignoreUndefinedProperties: true});
       if (environment.useEmulators) {
         const { firestoreEmulatorHost, firestoreEmulatorPort } = environment;
