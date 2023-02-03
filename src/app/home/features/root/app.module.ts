@@ -18,7 +18,6 @@ import {
   provideFirestore,
   connectFirestoreEmulator,
   initializeFirestore,
-  getFirestore,
 } from '@angular/fire/firestore';
 import { Capacitor } from '@capacitor/core';
 import { IngredientDiscoveryService } from '../../../tracking/data-access/ingredient-discovery.service';
@@ -68,7 +67,7 @@ const whichAuth = () => {
       // @ts-ignore
       const firestore = window.Cypress
         ? initializeFirestore(getApp(), { experimentalForceLongPolling: true })
-        : getFirestore();
+        : initializeFirestore(getApp(), {ignoreUndefinedProperties: true});
       if (environment.useEmulators) {
         const { firestoreEmulatorHost, firestoreEmulatorPort } = environment;
         connectFirestoreEmulator(firestore, firestoreEmulatorHost, firestoreEmulatorPort);
