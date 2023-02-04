@@ -1,9 +1,6 @@
 describe('feature-tracking', () => {
-  it('add new ingredient', () => {
+  it('ingredient flow', () => {
     cy.initializeUserSettings();
-    cy.visit('/');
-    cy.get('[data-cy="tab2"]').click();
-    cy.get('[data-cy="settings"]').click();
     cy.visit('/');
     cy.get('[data-cy="add-ingredient"]').click();
     cy.intercept('GET', 'https://world.openfoodfacts.org/cgi/*', (req) => {

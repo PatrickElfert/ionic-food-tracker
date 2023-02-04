@@ -1,0 +1,56 @@
+<ng-container *ngIf="vm$ | async as vm">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="primary">
+        <ion-button data-cy="save-button"
+          [disabled]="
+            (calculateIntakeForm.invalid &&
+              vm.intakeSource === intakeSource.calculated) ||
+            (fixedCalories.invalid && vm.intakeSource === intakeSource.fixed)
+          "
+          (click)="onSave(vm.intakeSource)"
+        >
+          <ion-icon slot="icon-only" name="save"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title> Calories </ion-title>
+      <ion-buttons slot="secondary">
+        <ion-back-button default-href="/"></ion-back-button>
+      </ion-buttons>
+    </ion-toolbar>
+    <ion-toolbar>
+      <ion-segment
+        [value]="vm.intakeSource"
+        (ionChange)="intakeSourceChanged($event)"
+      >
+        <ion-segment-button
+          [attr.data-cy]="source.value + '-segment'"
+          [value]="source.value"
+          *ngFor="let source of intakeSource | keyvalue"
+        >
+          <ion-label>{{ source.value }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true">
+    <app-calculate-intake-form
+      *ngIf="vm.intakeSource === intakeSource.calculated"
+      [formControl]="calculateIntakeForm"
+    ></app-calculate-intake-form>
+    <ng-container *ngIf="vm.intakeSource === intakeSource.fixed">
+      <ion-item lines="full">
+        <ion-label position="stacked">Calories</ion-label>
+        <ion-input
+          placeholder="Enter your calories"
+          [formControl]="fixedCalories"
+          data-cy="fixed-intake-input"
+          type="number"
+        >
+        </ion-input>
+        <ion-badge slot="end">KCAL</ion-badge>
+      </ion-item>
+    </ng-container>
+  </ion-content>
+</ng-container>

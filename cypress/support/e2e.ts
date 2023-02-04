@@ -18,6 +18,7 @@ import './commands';
 
 before(() => {
   cy.signIn();
+  cy.initializeFireStore();
 });
 
 beforeEach(() => {

@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { DocumentReference } from 'rxfire/firestore/interfaces';
-import { UserSettings, UserSettingsPayload } from '../interfaces/user';
+import {
+  IntakeSource,
+  UserSettings,
+  UserSettingsPayload,
+} from '../interfaces/user';
 import {
   collection,
   CollectionReference,
@@ -17,6 +21,7 @@ import { UserSettingsService } from './user-settings.service';
 import { UserService } from './user.service';
 import { pickBy } from 'lodash';
 import { CaloricIntakeVariables } from '../interfaces/caloric-intake-variables';
+import { CaloricIntakeSettings } from '../../onboarding/features/intake/intake.component';
 
 @Injectable()
 export class DefaultUserSettingsService extends UserSettingsService {
@@ -40,19 +45,18 @@ export class DefaultUserSettingsService extends UserSettingsService {
         from(
           updateDoc(
             this.buildUserSettingsDocumentReference(user.id),
-            pickBy(userSettings, (value) => value !== undefined)
+            pickBy(
+              this.toUserSettingsUpdatePayload(userSettings),
+              (value) => value !== undefined
+            )
           )
         )
       )
     );
   }
   initializeUserSettings(
-    calories: number | CaloricIntakeVariables
+    caloricIntakeSettings: CaloricIntakeSettings
   ): Observable<void> {
-    const calorieSettings =
-      typeof calories === 'number'
-        ? { fixedCalories: calories, caloricIntakeVariables: undefined }
-        : { caloricIntakeVariables: calories, fixedCalories: undefined };
     return this.userService.userDocumentReference$.pipe(
       tap(() => 'initializeUserSettings'),
       take(1),
@@ -61,8 +65,7 @@ export class DefaultUserSettingsService extends UserSettingsService {
           setDoc(
             this.buildUserSettingsDocumentReference(user.id),
             this.toUserSettingsPayload({
-              userId: user.id,
-              ...calorieSettings,
+              ...caloricIntakeSettings,
               mealCategories: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
             })
           )
@@ -108,6 +111,21 @@ export class DefaultUserSettingsService extends UserSettingsService {
     caloricIntakeVariables,
     ...rest
   }: UserSettings): UserSettingsPayload {
+    return {
+      ...rest,
+      caloricIntakeVariables: caloricIntakeVariables
+        ? {
+            ...caloricIntakeVariables,
+            birthdate: caloricIntakeVariables.birthdate.getTime(),
+          }
+        : undefined,
+    };
+  }
+
+  public toUserSettingsUpdatePayload({
+    caloricIntakeVariables,
+    ...rest
+  }: Partial<UserSettings>): Partial<UserSettingsPayload> {
     return {
       ...rest,
       caloricIntakeVariables: caloricIntakeVariables

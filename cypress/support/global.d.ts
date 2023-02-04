@@ -8,5 +8,7 @@ declare namespace Cypress {
     resetFirestore(): Chainable;
 
     initializeUserSettings(): Chainable;
+
+    initializeFireStore(): Chainable;
   }
 }
