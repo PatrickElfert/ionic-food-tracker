@@ -10,19 +10,16 @@ const routes: Routes = [
       {
         path: 'tab1',
         loadChildren: () =>
-          import('../tab1/tab1.module').then(
-            (m) => m.Tab1PageModule
+          import('../../../tracking/tracking.module').then(
+            (m) => m.TrackingModule
           ),
       },
       {
         path: 'tab2',
         loadChildren: () =>
-          import('../tab2/tab2.module').then((m) => m.Tab2PageModule),
-      },
-      {
-        path: '',
-        redirectTo: '/tabs/tab1',
-        pathMatch: 'full',
+          import('../../../user-settings/user-settings.module').then(
+            (m) => m.UserSettingsModule
+          ),
       },
     ],
   },
@@ -37,6 +34,5 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
 })
 export class TabsPageRoutingModule {
-  constructor() {
-  }
+  constructor() {}
 }

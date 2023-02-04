@@ -6,6 +6,7 @@ import {
   initializeFirestore,
   doc,
   setDoc,
+  getFirestore
 } from 'firebase/firestore';
 import {
   connectAuthEmulator,
@@ -48,7 +49,7 @@ Cypress.Commands.add('resetFirestore', () =>
   )
 );
 
-Cypress.Commands.add('initializeUserSettings', () => {
+Cypress.Commands.add('initializeFireStore', () => {
   const firestore = initializeFirestore(getApp(), {
     experimentalForceLongPolling: true,
     ignoreUndefinedProperties: true,
@@ -59,12 +60,15 @@ Cypress.Commands.add('initializeUserSettings', () => {
     Cypress.env('firestoreEmulatorHost'),
     Cypress.env('firestoreEmulatorPort')
   );
+});
 
+Cypress.Commands.add('initializeUserSettings', () => {
   return cy.wrap(
-    setDoc(doc(firestore, 'userSettings', Cypress.env('cypressUser').uid), {
+    setDoc(doc(getFirestore(), 'userSettings', Cypress.env('cypressUser').uid), {
       fixedCalories: 2000,
       userId: 'test',
       mealCategories: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
+      intakeSource: 'fixed'
     })
   );
 });
