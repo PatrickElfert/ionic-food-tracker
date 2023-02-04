@@ -1,18 +1,18 @@
 /// <reference types="cypress" />
 
-import { getApp, initializeApp } from 'firebase/app';
+import { initializeApp, getApp } from 'firebase/app';
+import {
+  connectFirestoreEmulator,
+  initializeFirestore,
+  doc,
+  setDoc,
+} from 'firebase/firestore';
 import {
   connectAuthEmulator,
   signInWithEmailAndPassword,
   getAuth,
 } from 'firebase/auth';
 import { environment } from '../../src/environments/environment';
-import {
-  connectFirestoreEmulator,
-  deleteDoc,
-  doc,
-  initializeFirestore,
-} from 'firebase/firestore';
 
 // ***********************************************
 // This example commands.ts shows you how to
@@ -39,11 +39,33 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('resetFirestore', () => {
-  const emulatorHost = Cypress.env('firestoreEmulatorHost');
-  const emulatorPort = Cypress.env('firestoreEmulatorPort');
-  return cy.request('DELETE',
-    `http://${emulatorHost}:${emulatorPort}/emulator/v1/projects/strongtrack-e271f/databases/(default)/documents`
+Cypress.Commands.add('resetFirestore', () =>
+  cy.request(
+    'DELETE',
+    `http://${Cypress.env('firestoreEmulatorHost')}:${Cypress.env(
+      'firestoreEmulatorPort'
+    )}/emulator/v1/projects/strongtrack-e271f/databases/(default)/documents`
+  )
+);
+
+Cypress.Commands.add('initializeUserSettings', () => {
+  const firestore = initializeFirestore(getApp(), {
+    experimentalForceLongPolling: true,
+    ignoreUndefinedProperties: true,
+  });
+
+  connectFirestoreEmulator(
+    firestore,
+    Cypress.env('firestoreEmulatorHost'),
+    Cypress.env('firestoreEmulatorPort')
+  );
+
+  return cy.wrap(
+    setDoc(doc(firestore, 'userSettings', Cypress.env('cypressUser').uid), {
+      fixedCalories: 2000,
+      userId: 'test',
+      mealCategories: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
+    })
   );
 });
 
@@ -80,4 +102,3 @@ export const signInProgrammatically = ({
 };
 
 export const dataCy = (element: string) => `[data-cy=${element}]`;
-

@@ -1,5 +1,7 @@
 describe('feature-tracking', () => {
   it('add new ingredient', () => {
+    cy.initializeUserSettings();
+    cy.visit('/');
     cy.get('[data-cy="tab2"]').click();
     cy.get('[data-cy="settings"]').click();
     cy.visit('/');

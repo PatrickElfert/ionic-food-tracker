@@ -1,12 +1,12 @@
 import { dataCy } from '../support/commands';
 
 describe('onboarding-feature', () => {
-  /*it('complete onboarding with fixed calories', () => {
+  it('complete onboarding with fixed calories', () => {
     cy.get(dataCy('fixed-calories-button')).click();
-    cy.get(dataCy('fixed-calories-input')).type('3000');
+    cy.get(dataCy('fixed-intake-input')).type('{selectall}3000');
     cy.get(dataCy('confirm-button')).click();
-    cy.get(dataCy('calories')).contains('3000');
-  });*/
+    cy.get(dataCy('calorie-display')).contains('0 / 3,000 kcal');
+  });
 
   it('complete onboarding with calculated calories', () => {
     cy.get(dataCy('calculate-calories-button')).click();
