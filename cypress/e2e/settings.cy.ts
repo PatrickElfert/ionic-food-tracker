@@ -9,6 +9,6 @@ describe('settings feature', () => {
     cy.get(dataCy('calculated-segment'), {includeShadowDom: true}).click();
     cy.get(dataCy('save-button')).click();
     cy.get(dataCy('tab1')).click();
-    cy.get(dataCy('calorie-display')).contains('0 / 3,111 kcal');
+    cy.get(dataCy('calorie-display')).contains('0 / 3,397 kcal');
   });
 });

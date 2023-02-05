@@ -74,7 +74,7 @@ Cypress.Commands.add('initializeUserSettings', () => {
       doc(getFirestore(), 'userSettings', Cypress.env('cypressUser').uid),
       {
         caloricIntakeVariables: {
-          birthdate: new Date('1998-01-01'),
+          birthdate: new Date('1998-01-01').getTime(),
           heightInCm: 180,
           weightInKg: 80,
           gender: Gender.male,
@@ -86,7 +86,7 @@ Cypress.Commands.add('initializeUserSettings', () => {
         userId: 'test',
         mealCategories: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
         intakeSource: 'fixed',
-      } as UserSettings
+      }
     )
   );
 });

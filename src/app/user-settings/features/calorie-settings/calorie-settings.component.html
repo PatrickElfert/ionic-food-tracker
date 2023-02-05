@@ -3,8 +3,8 @@
     <ion-toolbar>
       <ion-buttons slot="primary">
         <ion-button data-cy="save-button"
-          [disabled]="vm.invalid"
-          (click)="onSave(vm.intakeSource)"
+          [disabled]="vm.saveButtonDisabled"
+          (click)="onSave(vm)"
         >
           <ion-icon slot="icon-only" name="save"></ion-icon>
         </ion-button>

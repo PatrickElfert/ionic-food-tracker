@@ -3,11 +3,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
 import { FormControl, FormControlStatus } from '@angular/forms';
 import { combineLatest, from, lastValueFrom, Observable } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { ToastController } from '@ionic/angular';
 import { CaloricIntakeForm } from '../../../shared/ui/calculate-intake-form/calculate-intake-form.component';
 import { IntakeSource } from '../../../shared/interfaces/user';
 import { intakeFormDefault } from '../../utils/form-defaults';
+
+export interface IntakeVM {
+  status: FormControlStatus;
+  form: CaloricIntakeForm | undefined;
+  fixedCalories: number | undefined;
+  knowsIntake: boolean;
+}
 
 @Component({
   selector: 'app-intake',
@@ -15,34 +22,27 @@ import { intakeFormDefault } from '../../utils/form-defaults';
   styleUrls: ['./intake.component.sass'],
 })
 export class IntakeComponent implements OnInit {
-  public knowsIntake$ = this.activatedRoute.params.pipe(
-    map((p) => JSON.parse(p.knowsIntake) as boolean)
-  );
-  public fixedCalories = new FormControl<number>(2000, { nonNullable: true });
-  public caloricIntakeForm: FormControl<CaloricIntakeForm> = new FormControl(
-    intakeFormDefault,
-    { nonNullable: true }
-  );
+  public knowsIntake$ = this.activatedRoute.params
+    .pipe(map((p) => JSON.parse(p.knowsIntake) as boolean))
+    .pipe(tap(() => this.initializeFormValues()));
+  public fixedCalories: FormControl<number | undefined> = new FormControl();
+  public caloricIntakeForm: FormControl<CaloricIntakeForm | undefined> =
+    new FormControl();
+  public fixedCalories$ = this.fixedCalories.valueChanges;
+  public caloricIntakeForm$ = combineLatest([
+    this.caloricIntakeForm.valueChanges,
+    this.caloricIntakeForm.statusChanges,
+  ]).pipe(map(([form, status]) => ({ form, status })));
 
-  private vm$: Observable<{
-    status: FormControlStatus;
-    formValues: CaloricIntakeForm;
-    fixedCalories: number;
-    knowsIntake: boolean;
-  }> = combineLatest([
-    this.caloricIntakeForm.valueChanges.pipe(
-      startWith(this.caloricIntakeForm.value)
-    ),
-    this.fixedCalories.valueChanges.pipe(startWith(this.fixedCalories.value)),
+  private vm$: Observable<IntakeVM> = combineLatest([
+    this.caloricIntakeForm$,
+    this.fixedCalories$,
     this.knowsIntake$,
-    this.caloricIntakeForm.statusChanges.pipe(
-      startWith(this.caloricIntakeForm.status)
-    ),
   ]).pipe(
-    map(([formValues, fixedCalories, knowsIntake, status]) => ({
+    map(([{ status, form }, fixedCalories, knowsIntake]) => ({
       knowsIntake,
       status,
-      formValues,
+      form,
       fixedCalories,
     }))
   );
@@ -86,5 +86,10 @@ export class IntakeComponent implements OnInit {
       color: 'success',
       icon: 'thumbs-up-outline',
     });
+  }
+
+  private initializeFormValues() {
+    this.caloricIntakeForm.patchValue(intakeFormDefault);
+    this.fixedCalories.patchValue(2000);
   }
 }
