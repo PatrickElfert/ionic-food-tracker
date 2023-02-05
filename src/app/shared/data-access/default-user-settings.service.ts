@@ -1,13 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DocumentReference } from 'rxfire/firestore/interfaces';
-import {
-  IntakeSource,
-  UserSettings,
-  UserSettingsPayload,
-} from '../interfaces/user';
+import { UserSettings } from '../interfaces/user';
 import {
   collection,
-  CollectionReference,
   doc,
   docData,
   docSnapshots,
@@ -19,56 +14,53 @@ import { map, switchMap, take, tap } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 import { UserSettingsService } from './user-settings.service';
 import { UserService } from './user.service';
-import { pickBy } from 'lodash';
-import { CaloricIntakeVariables } from '../interfaces/caloric-intake-variables';
-import { CaloricIntakeSettings } from '../../onboarding/features/intake/intake.component';
+import { userSettingsConverter } from '../utils/converters';
 
 @Injectable()
 export class DefaultUserSettingsService extends UserSettingsService {
   constructor(private firestore: Firestore, private userService: UserService) {
     super();
   }
-  queryUserSettings(): Observable<UserSettings> {
+  public queryUserSettings(): Observable<UserSettings> {
     return this.userService.userDocumentReference$.pipe(
       switchMap((user) =>
-        docData<UserSettingsPayload>(
-          this.buildUserSettingsDocumentReference(user.id)
-        )
-      ),
-      map((payload) => this.toUserSettings(payload))
+        docData(this.buildUserSettingsDocumentReference(user.id))
+      )
     );
   }
-  updateUserSettings(userSettings: Partial<UserSettings>): Observable<void> {
+  public updateUserSettings(
+    userSettings: Partial<UserSettings>
+  ): Observable<void> {
     return this.userService.userDocumentReference$.pipe(
       take(1),
       switchMap((user) =>
         from(
-          updateDoc(
+          setDoc(
             this.buildUserSettingsDocumentReference(user.id),
-            pickBy(
-              this.toUserSettingsUpdatePayload(userSettings),
-              (value) => value !== undefined
-            )
+            userSettings,
+            { merge: true }
           )
         )
       )
     );
   }
-  initializeUserSettings(
-    caloricIntakeSettings: CaloricIntakeSettings
+
+  public initializeUserSettings(
+    caloricIntakeSettings: Pick<
+      UserSettings,
+      'caloricIntakeVariables' | 'fixedCalories' | 'intakeSource'
+    >
   ): Observable<void> {
     return this.userService.userDocumentReference$.pipe(
       tap(() => 'initializeUserSettings'),
       take(1),
       switchMap((user) =>
         from(
-          setDoc(
-            this.buildUserSettingsDocumentReference(user.id),
-            this.toUserSettingsPayload({
-              ...caloricIntakeSettings,
-              mealCategories: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
-            })
-          )
+          setDoc(this.buildUserSettingsDocumentReference(user.id), {
+            calories: undefined,
+            ...caloricIntakeSettings,
+            mealCategories: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
+          })
         )
       )
     );
@@ -76,12 +68,11 @@ export class DefaultUserSettingsService extends UserSettingsService {
 
   public buildUserSettingsDocumentReference(
     userId: string
-  ): DocumentReference<UserSettingsPayload> {
-    return doc<UserSettingsPayload>(
-      collection(
-        this.firestore,
-        'userSettings'
-      ) as CollectionReference<UserSettingsPayload>,
+  ): DocumentReference<UserSettings> {
+    return doc(
+      collection(this.firestore, 'userSettings').withConverter(
+        userSettingsConverter
+      ),
       userId
     );
   }
@@ -93,47 +84,5 @@ export class DefaultUserSettingsService extends UserSettingsService {
       ),
       map((snapshot) => snapshot.exists())
     );
-  }
-
-  public toUserSettings(payload: UserSettingsPayload): UserSettings {
-    return {
-      ...payload,
-      caloricIntakeVariables: payload.caloricIntakeVariables
-        ? {
-            ...payload.caloricIntakeVariables,
-            birthdate: new Date(payload.caloricIntakeVariables.birthdate),
-          }
-        : undefined,
-    };
-  }
-
-  public toUserSettingsPayload({
-    caloricIntakeVariables,
-    ...rest
-  }: UserSettings): UserSettingsPayload {
-    return {
-      ...rest,
-      caloricIntakeVariables: caloricIntakeVariables
-        ? {
-            ...caloricIntakeVariables,
-            birthdate: caloricIntakeVariables.birthdate.getTime(),
-          }
-        : undefined,
-    };
-  }
-
-  public toUserSettingsUpdatePayload({
-    caloricIntakeVariables,
-    ...rest
-  }: Partial<UserSettings>): Partial<UserSettingsPayload> {
-    return {
-      ...rest,
-      caloricIntakeVariables: caloricIntakeVariables
-        ? {
-            ...caloricIntakeVariables,
-            birthdate: caloricIntakeVariables.birthdate.getTime(),
-          }
-        : undefined,
-    };
   }
 }

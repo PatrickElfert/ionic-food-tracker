@@ -14,11 +14,19 @@
     </ion-toolbar>
   </ion-header>
   <ion-content>
-    <app-calculate-intake-form *ngIf="!vm.knowsIntake" [formControl]="caloricIntakeForm"></app-calculate-intake-form>
+    <app-calculate-intake-form
+      *ngIf="!vm.knowsIntake"
+      [formControl]="caloricIntakeForm"
+    ></app-calculate-intake-form>
     <ng-container *ngIf="vm.knowsIntake">
       <ion-item lines="full">
         <ion-label position="stacked">Calories</ion-label>
-        <ion-input data-cy="fixed-intake-input" [formControl]="fixedCalories" type="number"> </ion-input>
+        <ion-input
+          data-cy="fixed-intake-input"
+          [formControl]="fixedCalories"
+          type="number"
+        >
+        </ion-input>
         <ion-badge slot="end">KCAL</ion-badge>
       </ion-item>
     </ng-container>
@@ -27,7 +35,7 @@
       expand="block"
       class="ion-margin"
       [disabled]="vm.status === 'INVALID'"
-      (click)="onConfirm(vm.calorieSettings)"
+      (click)="onConfirm(vm.formValues, vm.fixedCalories, vm.knowsIntake)"
     >
       {{ vm.knowsIntake ? "Save my Intake" : "Calculate my Intake" }}
     </ion-button>

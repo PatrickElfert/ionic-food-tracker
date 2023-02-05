@@ -1,14 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { IntakeSource } from '../../../shared/interfaces/user';
-import {
-  map,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs/operators';
+import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { FormControl, Validators } from '@angular/forms';
 import { lastValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
@@ -26,7 +18,7 @@ export class CalorieSettingsComponent {
   public intakeSource = IntakeSource;
   public intakeSourceChanged$ = new ReplaySubject<IntakeSource>(1);
 
-  public vm$: Observable<{ intakeSource: IntakeSource }> =
+  public vm$: Observable<{ intakeSource: IntakeSource; invalid: boolean }> =
     this.intakeSourceChanged$.pipe(
       startWith(undefined),
       switchMap((intakeSource) =>
@@ -39,6 +31,11 @@ export class CalorieSettingsComponent {
           }),
           map((userSettings) => ({
             intakeSource: intakeSource ?? userSettings.intakeSource,
+            invalid:
+              (this.calculateIntakeForm.invalid &&
+                intakeSource === IntakeSource.calculated) ||
+              (this.fixedCalories.invalid &&
+                intakeSource === IntakeSource.fixed),
           }))
         )
       )
@@ -52,11 +49,13 @@ export class CalorieSettingsComponent {
   });
 
   public onSave(intakeSource: IntakeSource) {
-    void lastValueFrom(this.userSettingsService.updateUserSettings({
-      intakeSource,
-      caloricIntakeVariables: this.calculateIntakeForm.value,
-      fixedCalories: this.fixedCalories.value,
-    }));
+    void lastValueFrom(
+      this.userSettingsService.updateUserSettings({
+        intakeSource,
+        caloricIntakeVariables: this.calculateIntakeForm.value,
+        fixedCalories: this.fixedCalories.value,
+      })
+    );
   }
 
   public intakeSourceChanged($event: any) {

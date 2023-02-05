@@ -1,8 +1,10 @@
 import { addDays } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { scan, shareReplay, tap } from "rxjs/operators";
+import { scan, shareReplay } from 'rxjs/operators';
 import { Meal } from '../interfaces/meal';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export abstract class DiaryService {
   public selectedDateChangedAction = new BehaviorSubject<number>(0);
   public selectedDate$ = this.selectedDateChangedAction.pipe(
