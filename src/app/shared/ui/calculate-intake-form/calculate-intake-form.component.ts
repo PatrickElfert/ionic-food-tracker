@@ -1,4 +1,9 @@
-import { Component, forwardRef, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  forwardRef,
+  OnInit,
+} from '@angular/core';
 import {
   ActivityLevel,
   CaloricIntakeVariables,
@@ -16,7 +21,6 @@ import {
   Validator,
   Validators,
 } from '@angular/forms';
-import { startWith } from 'rxjs/operators';
 
 export interface CaloricIntakeForm {
   birthdate: Date;
@@ -43,6 +47,7 @@ export interface CaloricIntakeForm {
       multi: true,
     },
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CalculateIntakeFormComponent
   implements OnInit, ControlValueAccessor, Validator
@@ -64,21 +69,26 @@ export class CalculateIntakeFormComponent
 
   public caloricIntakeForm = new FormGroup({
     birthdate: new FormControl(this.formDefault.birthdate.toJSON(), {
+      nonNullable: true,
       validators: [Validators.required],
     }),
     heightInCm: new FormControl(this.formDefault.heightInCm, {
+      nonNullable: true,
       validators: [Validators.required],
     }),
     weightInKg: new FormControl(this.formDefault.weightInKg, {
+      nonNullable: true,
       validators: [Validators.required],
     }),
     gender: new FormControl<Gender>(this.formDefault.gender, {
+      nonNullable: true,
       validators: [Validators.required],
     }),
     goal: new FormControl<Goal>(this.formDefault.goal, { nonNullable: true }),
     activityLevel: new FormControl<ActivityLevel>(
       this.formDefault.activityLevel,
       {
+        nonNullable: true,
         validators: [Validators.required],
       }
     ),
@@ -87,14 +97,13 @@ export class CalculateIntakeFormComponent
   ngOnInit() {}
 
   registerOnChange(fn: any): void {
-    this.caloricIntakeForm.valueChanges
-      .pipe(startWith(this.formDefault))
-      .subscribe((value) =>
-        fn({
-          ...value,
-          birthdate: value.birthdate ? new Date(value.birthdate) : undefined,
-        })
-      );
+    fn(this.formDefault);
+    this.caloricIntakeForm.valueChanges.subscribe((value) => {
+      fn({
+        ...value,
+        birthdate: value.birthdate ? new Date(value.birthdate) : undefined,
+      });
+    });
   }
 
   registerOnTouched(fn: any): void {}

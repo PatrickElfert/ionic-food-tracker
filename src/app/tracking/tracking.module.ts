@@ -10,6 +10,13 @@ import { IngredientSearchItemComponent } from './ui/ingredient-search-item/ingre
 import { MacroCardComponent } from './ui/macro-card/macro-card.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { IngredientService } from './data-access/ingredient.service';
+import { FirebaseIngredientService } from './data-access/firebase-ingredient.service';
+import { IngredientDiscoveryService } from './data-access/ingredient-discovery.service';
+import { DefaultIngredientDiscoveryService } from './data-access/default-ingredient-discovery.service';
+import { DiaryService } from './data-access/diary.service';
+import { DefaultDiaryService } from './data-access/default-diary.service';
+import { CalorieBarService } from './data-access/calorie-bar.service';
 
 @NgModule({
   declarations: [
@@ -27,6 +34,15 @@ import { IonicModule } from '@ionic/angular';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
+  ],
+  providers: [
+    {provide: CalorieBarService},
+    { provide: IngredientService, useClass: FirebaseIngredientService },
+    { provide: DiaryService, useClass: DefaultDiaryService },
+    {
+      provide: IngredientDiscoveryService,
+      useClass: DefaultIngredientDiscoveryService,
+    },
   ],
 })
 export class TrackingModule {}

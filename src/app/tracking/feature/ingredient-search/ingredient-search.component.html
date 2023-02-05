@@ -13,7 +13,7 @@
   <ion-toolbar>
     <ion-searchbar
       data-cy="searchbar"
-      [formControl]="textSearch"
+      [formControl]="searchbar"
       placeholder="Search for ingredients"
       [debounce]="1000"
     ></ion-searchbar>
@@ -37,6 +37,7 @@
   [initialBreakpoint]="modalInput.modalHeight"
   [breakpoints]="[0, modalInput.modalHeight]"
   [isOpen]="(selectedIngredient$ | async) !== undefined"
+  (ionModalDidDismiss)="onModalDismiss()"
 >
   <ng-template >
     <app-add-ingredient

@@ -1,19 +1,25 @@
 /// <reference types="cypress" />
 
-import { initializeApp, getApp } from 'firebase/app';
+import { getApp, initializeApp } from 'firebase/app';
 import {
   connectFirestoreEmulator,
-  initializeFirestore,
   doc,
+  getFirestore,
+  initializeFirestore,
   setDoc,
-  getFirestore
 } from 'firebase/firestore';
 import {
   connectAuthEmulator,
-  signInWithEmailAndPassword,
   getAuth,
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { environment } from '../../src/environments/environment';
+import { UserSettings } from '../../src/app/shared/interfaces/user';
+import {
+  ActivityLevel,
+  Gender,
+  Goal,
+} from '../../src/app/shared/interfaces/caloric-intake-variables';
 
 // ***********************************************
 // This example commands.ts shows you how to
@@ -64,12 +70,24 @@ Cypress.Commands.add('initializeFireStore', () => {
 
 Cypress.Commands.add('initializeUserSettings', () => {
   return cy.wrap(
-    setDoc(doc(getFirestore(), 'userSettings', Cypress.env('cypressUser').uid), {
-      fixedCalories: 2000,
-      userId: 'test',
-      mealCategories: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
-      intakeSource: 'fixed'
-    })
+    setDoc(
+      doc(getFirestore(), 'userSettings', Cypress.env('cypressUser').uid),
+      {
+        caloricIntakeVariables: {
+          birthdate: new Date('1998-01-01'),
+          heightInCm: 180,
+          weightInKg: 80,
+          gender: Gender.male,
+          goal: Goal.keep,
+          activityLevel: ActivityLevel.active,
+        },
+        calories: undefined,
+        fixedCalories: 2000,
+        userId: 'test',
+        mealCategories: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
+        intakeSource: 'fixed',
+      } as UserSettings
+    )
   );
 });
 

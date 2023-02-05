@@ -9,7 +9,7 @@ const routes: Routes = [
     component: WelcomeComponent,
   },
   {
-    path: 'intake',
+    path: 'intake/:knowsIntake',
     component: IntakeComponent,
   },
 ];

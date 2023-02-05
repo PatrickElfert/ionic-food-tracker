@@ -29,20 +29,13 @@ import { isNotUndefinedOrNull } from '../../../shared/utils/utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientSearchComponent implements OnInit {
-
-  public textSearch = new FormControl<string | undefined>(undefined);
+  public searchbar = new FormControl<string | undefined>(undefined);
   private barcodeSearchAction = new Subject<string>();
-  private ingredientSelectedAction = new Subject<ExternalIngredient>();
+  private ingredientSelectedAction = new Subject<
+    ExternalIngredient | undefined
+  >();
+
   private selectedIngredient$ = this.ingredientSelectedAction.asObservable();
-
-  private mealCategories$ = this.userSettingsService
-    .queryUserSettings()
-    .pipe(map((userSettings) => userSettings.mealCategories));
-
-
-  private modalHeight$ = of(this.platform.height()).pipe(
-    map((height) => 450 / height)
-  );
 
   private barcodeSearchResult$ = this.barcodeSearchAction.pipe(
     tap(() => (this.loading = true)),
@@ -50,27 +43,13 @@ export class IngredientSearchComponent implements OnInit {
       this.ingredientDiscoveryService.queryIngredientsByBarcode(barcode)
     )
   );
-  private textSearchResult$ = this.textSearch.valueChanges.pipe(
+  private textSearchResult$ = this.searchbar.valueChanges.pipe(
     filter(isNotUndefinedOrNull),
     tap(() => (this.loading = true)),
     switchMap((name) =>
       this.ingredientDiscoveryService.queryIngredientsByName(name)
     )
   );
-
-  public modalInput$: Observable<{
-    selectedIngredient: ExternalIngredient;
-    mealCategories: string[];
-    modalHeight: number;
-  }> = combineLatest([this.selectedIngredient$, this.mealCategories$, this.modalHeight$]).pipe(
-    map(([selectedIngredient, mealCategories, modalHeight]) => ({
-      selectedIngredient,
-      mealCategories,
-      modalHeight
-    }))
-  );
-
-  public loading = false;
 
   public ingredientSearchResult$: Observable<ExternalIngredient[]> = merge(
     this.barcodeSearchResult$,
@@ -80,6 +59,33 @@ export class IngredientSearchComponent implements OnInit {
     map((ingredients) => ingredients.filter((ingredient) => ingredient.name))
   );
 
+  public loading = false;
+
+  private mealCategories$ = this.userSettingsService
+    .queryUserSettings()
+    .pipe(map((userSettings) => userSettings.mealCategories));
+
+  private modalHeight$ = of(this.platform.height()).pipe(
+    map((height) => 450 / height)
+  );
+
+  public modalInput$: Observable<{
+    selectedIngredient: ExternalIngredient;
+    mealCategories: string[];
+    modalHeight: number;
+  }> = combineLatest([
+    this.ingredientSelectedAction
+      .asObservable()
+      .pipe(filter(isNotUndefinedOrNull)),
+    this.mealCategories$,
+    this.modalHeight$,
+  ]).pipe(
+    map(([selectedIngredient, mealCategories, modalHeight]) => ({
+      selectedIngredient,
+      mealCategories,
+      modalHeight,
+    }))
+  );
   constructor(
     private barcodeScannerService: BarcodeScannerService,
     private ingredientDiscoveryService: IngredientDiscoveryService,
@@ -125,16 +131,22 @@ export class IngredientSearchComponent implements OnInit {
           )
         ),
         switchMap(() =>
-          from(
-            this.toastController.create({
-              message: 'Added to diary',
-              duration: 1000,
-              color: 'success',
-              icon: 'checkmark-circle-outline',
-            })
-          ).pipe(tap((toast) => toast.present()))
+          from(this.createSuccesToast()).pipe(tap((toast) => toast.present()))
         )
       )
     );
+  }
+
+  public onModalDismiss() {
+    this.ingredientSelectedAction.next(undefined);
+  }
+
+  private createSuccesToast() {
+    return this.toastController.create({
+      message: 'Added to diary',
+      duration: 1000,
+      color: 'success',
+      icon: 'checkmark-circle-outline',
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { CaloricIntakeVariables, CaloricIntakeVariablesPayload } from './caloric-intake-variables';
+import { CaloricIntakeVariables } from './caloric-intake-variables';
 
 export interface User {
   email: string | null;
@@ -8,13 +8,7 @@ export interface User {
 export interface UserSettings {
   caloricIntakeVariables: CaloricIntakeVariables | undefined;
   fixedCalories: number | undefined;
-  intakeSource: IntakeSource;
-  mealCategories: string[];
-}
-
-export interface UserSettingsPayload {
-  caloricIntakeVariables: CaloricIntakeVariablesPayload | undefined;
-  fixedCalories: number | undefined;
+  calories: number | undefined;
   intakeSource: IntakeSource;
   mealCategories: string[];
 }

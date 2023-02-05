@@ -9,6 +9,10 @@ import { Ingredient } from '../interfaces/ingredient';
 
 @Injectable()
 export class DefaultDiaryService extends DiaryService {
+
+  constructor(private ingredientService: IngredientService) {
+    super();
+  }
   public diaryDay$ = this.selectedDate$.pipe(
     switchMap((date) =>
       this.ingredientService.queryIngredientsAtDate(date).pipe(
@@ -19,10 +23,6 @@ export class DefaultDiaryService extends DiaryService {
       )
     )
   );
-
-  constructor(private ingredientService: IngredientService) {
-    super();
-  }
 
   private consolidateToMeals(ingredients: Ingredient[]) {
     return chain(ingredients)
