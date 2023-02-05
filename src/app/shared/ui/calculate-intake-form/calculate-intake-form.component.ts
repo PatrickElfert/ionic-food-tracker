@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import {
   ActivityLevel,
-  CaloricIntakeVariables,
   Gender,
   Goal,
 } from '../../interfaces/caloric-intake-variables';
@@ -22,13 +21,21 @@ import {
   Validators,
 } from '@angular/forms';
 
-export interface CaloricIntakeForm {
+interface CaloricIntakeFormDefinition {
+  birthdate: FormControl<string>;
+  heightInCm: FormControl<number>;
+  weightInKg: FormControl<number>;
+  gender: FormControl<Gender>;
+  goal: FormControl<Goal>;
+  activityLevel: FormControl<ActivityLevel>;
+}
+
+type CaloricIntakeFormValues = {
+  [key in keyof CaloricIntakeFormDefinition]: CaloricIntakeFormDefinition[key]['value'];
+};
+
+export interface CaloricIntakeForm extends Omit<CaloricIntakeFormValues, 'birthdate'> {
   birthdate: Date;
-  heightInCm: number;
-  weightInKg: number;
-  gender: Gender;
-  goal: Goal;
-  activityLevel: ActivityLevel;
 }
 
 @Component({
@@ -58,8 +65,8 @@ export class CalculateIntakeFormComponent
   public goal = Goal;
   public gender = Gender;
 
-  public formDefault: CaloricIntakeForm = {
-    birthdate: new Date(),
+  public formDefault: CaloricIntakeFormValues = {
+    birthdate: new Date().toString(),
     heightInCm: 170,
     weightInKg: 70,
     gender: Gender.male,
@@ -67,8 +74,8 @@ export class CalculateIntakeFormComponent
     activityLevel: ActivityLevel.active,
   };
 
-  public caloricIntakeForm = new FormGroup({
-    birthdate: new FormControl(this.formDefault.birthdate.toJSON(), {
+  public caloricIntakeForm = new FormGroup<CaloricIntakeFormDefinition>({
+    birthdate: new FormControl(this.formDefault.birthdate, {
       nonNullable: true,
       validators: [Validators.required],
     }),
@@ -96,8 +103,7 @@ export class CalculateIntakeFormComponent
 
   ngOnInit() {}
 
-  registerOnChange(fn: any): void {
-    fn(this.formDefault);
+  registerOnChange(fn: (input: Partial<CaloricIntakeForm>) => void): void {
     this.caloricIntakeForm.valueChanges.subscribe((value) => {
       fn({
         ...value,

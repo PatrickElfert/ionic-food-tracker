@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { IntakeSource } from '../../../shared/interfaces/user';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { FormControl, Validators } from '@angular/forms';
-import { lastValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { from, lastValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
 import { CaloricIntakeForm } from '../../../shared/ui/calculate-intake-form/calculate-intake-form.component';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-calorie-settings',
@@ -13,7 +14,10 @@ import { CaloricIntakeForm } from '../../../shared/ui/calculate-intake-form/calc
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CalorieSettingsComponent {
-  constructor(private userSettingsService: UserSettingsService) {}
+  constructor(
+    private userSettingsService: UserSettingsService,
+    private toastController: ToastController
+  ) {}
 
   public intakeSource = IntakeSource;
   public intakeSourceChanged$ = new ReplaySubject<IntakeSource>(1);
@@ -50,12 +54,34 @@ export class CalorieSettingsComponent {
 
   public onSave(intakeSource: IntakeSource) {
     void lastValueFrom(
-      this.userSettingsService.updateUserSettings({
-        intakeSource,
-        caloricIntakeVariables: this.calculateIntakeForm.value,
-        fixedCalories: this.fixedCalories.value,
-      })
+      this.userSettingsService
+        .updateUserSettings({
+          intakeSource,
+          caloricIntakeVariables: this.calculateIntakeForm.value,
+          fixedCalories: this.fixedCalories.value,
+        })
+        .pipe(
+          switchMap(() => from(this.createSuccessToast())),
+          catchError((err) => from(this.createErrorToast(err))),
+          tap((toast) => toast.present())
+        )
     );
+  }
+
+  private createSuccessToast() {
+    return this.toastController.create({
+      message: 'Saved',
+      duration: 2000,
+      color: 'success',
+    });
+  }
+
+  private createErrorToast(err: Error) {
+    return this.toastController.create({
+      message: err.message,
+      duration: 2000,
+      color: 'danger',
+    });
   }
 
   public intakeSourceChanged($event: any) {
