@@ -7,6 +7,7 @@ import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { ToastController } from '@ionic/angular';
 import { CaloricIntakeForm } from '../../../shared/ui/calculate-intake-form/calculate-intake-form.component';
 import { IntakeSource } from '../../../shared/interfaces/user';
+import { intakeFormDefault } from '../../utils/form-defaults';
 
 @Component({
   selector: 'app-intake',
@@ -17,8 +18,11 @@ export class IntakeComponent implements OnInit {
   public knowsIntake$ = this.activatedRoute.params.pipe(
     map((p) => JSON.parse(p.knowsIntake) as boolean)
   );
-  public fixedCalories = new FormControl(2000, { nonNullable: true });
-  public caloricIntakeForm: FormControl<CaloricIntakeForm> = new FormControl();
+  public fixedCalories = new FormControl<number>(2000, { nonNullable: true });
+  public caloricIntakeForm: FormControl<CaloricIntakeForm> = new FormControl(
+    intakeFormDefault,
+    { nonNullable: true }
+  );
 
   private vm$: Observable<{
     status: FormControlStatus;
@@ -27,11 +31,9 @@ export class IntakeComponent implements OnInit {
     knowsIntake: boolean;
   }> = combineLatest([
     this.caloricIntakeForm.valueChanges.pipe(
-      startWith(this.caloricIntakeForm.getRawValue())
+      startWith(this.caloricIntakeForm.value)
     ),
-    this.fixedCalories.valueChanges.pipe(
-      startWith(this.fixedCalories.getRawValue())
-    ),
+    this.fixedCalories.valueChanges.pipe(startWith(this.fixedCalories.value)),
     this.knowsIntake$,
     this.caloricIntakeForm.statusChanges.pipe(
       startWith(this.caloricIntakeForm.status)
@@ -42,7 +44,7 @@ export class IntakeComponent implements OnInit {
       status,
       formValues,
       fixedCalories,
-    })),
+    }))
   );
   constructor(
     public userSettingsService: UserSettingsService,
