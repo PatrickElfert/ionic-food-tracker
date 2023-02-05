@@ -8,7 +8,6 @@ import {
   docSnapshots,
   Firestore,
   setDoc,
-  updateDoc,
 } from '@angular/fire/firestore';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
@@ -41,7 +40,7 @@ export class DefaultUserSettingsService extends UserSettingsService {
             { merge: true }
           )
         )
-      )
+      ),
     );
   }
 

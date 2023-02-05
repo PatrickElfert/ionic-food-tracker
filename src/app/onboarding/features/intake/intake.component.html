@@ -35,7 +35,7 @@
       expand="block"
       class="ion-margin"
       [disabled]="vm.status === 'INVALID'"
-      (click)="onConfirm(vm.formValues, vm.fixedCalories, vm.knowsIntake)"
+      (click)="onConfirm(vm.form, vm.fixedCalories, vm.knowsIntake)"
     >
       {{ vm.knowsIntake ? "Save my Intake" : "Calculate my Intake" }}
     </ion-button>

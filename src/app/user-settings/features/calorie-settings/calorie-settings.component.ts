@@ -1,11 +1,18 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { IntakeSource } from '../../../shared/interfaces/user';
+import { IntakeSource, UserSettings } from '../../../shared/interfaces/user';
 import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { FormControl, Validators } from '@angular/forms';
-import { from, lastValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { from, lastValueFrom, Observable, combineLatest, Subject } from 'rxjs';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
 import { CaloricIntakeForm } from '../../../shared/ui/calculate-intake-form/calculate-intake-form.component';
 import { ToastController } from '@ionic/angular';
+
+interface CalorieSettingsVM {
+  intakeSource: IntakeSource;
+  saveButtonDisabled: boolean;
+  intakeForm: CaloricIntakeForm | undefined;
+  fixedCalories: number | undefined;
+}
 
 @Component({
   selector: 'app-calorie-settings',
@@ -20,45 +27,56 @@ export class CalorieSettingsComponent {
   ) {}
 
   public intakeSource = IntakeSource;
-  public intakeSourceChanged$ = new ReplaySubject<IntakeSource>(1);
-
-  public vm$: Observable<{ intakeSource: IntakeSource; invalid: boolean }> =
-    this.intakeSourceChanged$.pipe(
-      startWith(undefined),
-      switchMap((intakeSource) =>
-        this.userSettingsService.queryUserSettings().pipe(
-          tap((userSettings) => {
-            this.calculateIntakeForm.patchValue(
-              userSettings.caloricIntakeVariables
-            );
-            this.fixedCalories.patchValue(userSettings.fixedCalories);
-          }),
-          map((userSettings) => ({
-            intakeSource: intakeSource ?? userSettings.intakeSource,
-            invalid:
-              (this.calculateIntakeForm.invalid &&
-                intakeSource === IntakeSource.calculated) ||
-              (this.fixedCalories.invalid &&
-                intakeSource === IntakeSource.fixed),
-          }))
-        )
-      )
-    );
-
-  calculateIntakeForm: FormControl<CaloricIntakeForm | undefined> =
+  public intakeSourceAction = new Subject<IntakeSource>();
+  public calculateIntakeForm: FormControl<CaloricIntakeForm | undefined> =
     new FormControl();
-  fixedCalories: FormControl<number | undefined> = new FormControl(undefined, {
-    nonNullable: true,
-    validators: [Validators.required],
-  });
+  public fixedCalories: FormControl<number | undefined> = new FormControl(
+    undefined,
+    {
+      nonNullable: true,
+      validators: [Validators.required],
+    }
+  );
+  public intakeSource$ = this.intakeSourceAction.pipe(startWith(undefined));
+  public intakeForm$ = combineLatest([
+    this.calculateIntakeForm.valueChanges,
+    this.calculateIntakeForm.statusChanges,
+  ]).pipe(map(([form, status]) => ({ form, status })));
+  public fixedCalories$ = this.fixedCalories.valueChanges.pipe(
+    startWith(undefined)
+  );
 
-  public onSave(intakeSource: IntakeSource) {
+  public userSettings$ = this.userSettingsService
+    .queryUserSettings()
+    .pipe(tap((userSettings) => this.initializeFormValues(userSettings)));
+
+  public vm$: Observable<CalorieSettingsVM> = combineLatest([
+    this.intakeSource$,
+    this.intakeForm$,
+    this.fixedCalories$,
+    this.userSettings$,
+  ]).pipe(
+    map(([intakeSource, { form, status }, fixedCalories, userSettings]) =>
+      this.calculateVM(userSettings, status, intakeSource, form, fixedCalories)
+    )
+  );
+
+  private initializeFormValues(userSettings: UserSettings) {
+    this.calculateIntakeForm.patchValue(userSettings.caloricIntakeVariables);
+    this.fixedCalories.patchValue(userSettings.fixedCalories);
+  }
+
+  public onSave({
+    fixedCalories,
+    intakeForm,
+    intakeSource,
+  }: CalorieSettingsVM) {
     void lastValueFrom(
       this.userSettingsService
         .updateUserSettings({
           intakeSource,
-          caloricIntakeVariables: this.calculateIntakeForm.value,
-          fixedCalories: this.fixedCalories.value,
+          fixedCalories,
+          caloricIntakeVariables: intakeForm,
         })
         .pipe(
           switchMap(() => from(this.createSuccessToast())),
@@ -85,6 +103,27 @@ export class CalorieSettingsComponent {
   }
 
   public intakeSourceChanged($event: any) {
-    this.intakeSourceChanged$.next($event.detail.value);
+    this.intakeSourceAction.next($event.detail.value);
+  }
+
+  private calculateVM(
+    userSettings: UserSettings,
+    formStatus: string,
+    intakeSource?: IntakeSource,
+    intakeForm?: CaloricIntakeForm,
+    fixedCalories?: number
+  ): CalorieSettingsVM {
+    const settings = {
+      intakeSource: intakeSource ?? userSettings.intakeSource,
+      intakeForm: intakeForm ?? userSettings.caloricIntakeVariables,
+      fixedCalories: fixedCalories ?? userSettings.fixedCalories,
+    };
+    return {
+      ...settings,
+      saveButtonDisabled:
+        (formStatus === 'INVALID' &&
+          settings.intakeSource === IntakeSource.calculated) ||
+        (!fixedCalories && settings.intakeSource === IntakeSource.fixed),
+    };
   }
 }
