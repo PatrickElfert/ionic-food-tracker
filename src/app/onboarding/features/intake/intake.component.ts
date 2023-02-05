@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
 import { FormControl, FormControlStatus } from '@angular/forms';
@@ -10,41 +10,39 @@ import { IntakeSource } from '../../../shared/interfaces/user';
 import { intakeFormDefault } from '../../utils/form-defaults';
 
 export interface IntakeVM {
-  status: FormControlStatus;
+  status: string;
   form: CaloricIntakeForm | undefined;
   fixedCalories: number | undefined;
   knowsIntake: boolean;
+  confirmDisabled: boolean;
 }
 
 @Component({
   selector: 'app-intake',
   templateUrl: './intake.component.html',
   styleUrls: ['./intake.component.sass'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IntakeComponent implements OnInit {
   public knowsIntake$ = this.activatedRoute.params
     .pipe(map((p) => JSON.parse(p.knowsIntake) as boolean))
     .pipe(tap(() => this.initializeFormValues()));
-  public fixedCalories: FormControl<number | undefined> = new FormControl();
-  public caloricIntakeForm: FormControl<CaloricIntakeForm | undefined> =
-    new FormControl();
+  public fixedCalories: FormControl<number> = new FormControl();
+  public caloricIntakeForm: FormControl<CaloricIntakeForm> = new FormControl();
   public fixedCalories$ = this.fixedCalories.valueChanges;
   public caloricIntakeForm$ = combineLatest([
     this.caloricIntakeForm.valueChanges,
     this.caloricIntakeForm.statusChanges,
   ]).pipe(map(([form, status]) => ({ form, status })));
 
-  private vm$: Observable<IntakeVM> = combineLatest([
+  public vm$: Observable<IntakeVM> = combineLatest([
     this.caloricIntakeForm$,
     this.fixedCalories$,
     this.knowsIntake$,
   ]).pipe(
-    map(([{ status, form }, fixedCalories, knowsIntake]) => ({
-      knowsIntake,
-      status,
-      form,
-      fixedCalories,
-    }))
+    map(([{ status, form }, fixedCalories, knowsIntake]) =>
+      this.createIntakeVM(knowsIntake, status, form, fixedCalories)
+    )
   );
   constructor(
     public userSettingsService: UserSettingsService,
@@ -77,6 +75,23 @@ export class IntakeComponent implements OnInit {
           })
         )
     );
+  }
+
+  private createIntakeVM(
+    knowsIntake: boolean,
+    status: string,
+    form: CaloricIntakeForm,
+    fixedCalories: number
+  ): IntakeVM {
+    return {
+      knowsIntake,
+      status,
+      form,
+      fixedCalories,
+      confirmDisabled:
+        (knowsIntake && !fixedCalories) ||
+        (!knowsIntake && status === 'INVALID'),
+    };
   }
 
   private createSuccessToast() {

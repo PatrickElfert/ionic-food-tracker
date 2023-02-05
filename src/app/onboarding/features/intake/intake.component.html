@@ -34,7 +34,7 @@
       data-cy="confirm-button"
       expand="block"
       class="ion-margin"
-      [disabled]="vm.status === 'INVALID'"
+      [disabled]="vm.confirmDisabled"
       (click)="onConfirm(vm.form, vm.fixedCalories, vm.knowsIntake)"
     >
       {{ vm.knowsIntake ? "Save my Intake" : "Calculate my Intake" }}
