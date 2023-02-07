@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
         !user
           ? of(this.router.parseUrl('/auth'))
           : this.userSettingsService
-              .existsUserSettings()
+              .userSettingsExist()
               .pipe(
                 map((exists) =>
                   exists ? true : this.router.parseUrl('/onboarding')

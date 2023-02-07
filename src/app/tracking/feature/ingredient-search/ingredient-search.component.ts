@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import {
   combineLatest,
+  EMPTY,
   from,
   lastValueFrom,
   merge,
@@ -35,8 +36,6 @@ export class IngredientSearchComponent implements OnInit {
     ExternalIngredient | undefined
   >();
 
-  private selectedIngredient$ = this.ingredientSelectedAction.asObservable();
-
   private barcodeSearchResult$ = this.barcodeSearchAction.pipe(
     tap(() => (this.loading = true)),
     switchMap((barcode) =>
@@ -51,16 +50,20 @@ export class IngredientSearchComponent implements OnInit {
     )
   );
 
-  public ingredientSearchResult$: Observable<ExternalIngredient[]> = merge(
-    this.barcodeSearchResult$,
-    this.textSearchResult$
-  ).pipe(
-    tap(() => (this.loading = false)),
-    map((ingredients) => ingredients.filter((ingredient) => ingredient.name))
-  );
+  public ingredientSearchResult$: Observable<ExternalIngredient[]> =
+    merge(this.barcodeSearchResult$, this.textSearchResult$).pipe(
+      map((ingredients) => ingredients.filter((ingredient) => ingredient.name)),
+      catchError(() =>
+        from(this.showErrorToast('Error searching for ingredient')).pipe(
+          map(() => [])
+        )
+      ),
+      tap(() => (this.loading = false)),
+    );
 
   public loading = false;
 
+  public selectedIngredient$ = this.ingredientSelectedAction.asObservable();
   private mealCategories$ = this.userSettingsService
     .queryUserSettings()
     .pipe(map((userSettings) => userSettings.mealCategories));
@@ -130,9 +133,7 @@ export class IngredientSearchComponent implements OnInit {
             )
           )
         ),
-        switchMap(() =>
-          from(this.createSuccesToast()).pipe(tap((toast) => toast.present()))
-        )
+        switchMap(() => from(this.createSuccessToast('Added to diary')))
       )
     );
   }
@@ -141,12 +142,22 @@ export class IngredientSearchComponent implements OnInit {
     this.ingredientSelectedAction.next(undefined);
   }
 
-  private createSuccesToast() {
-    return this.toastController.create({
-      message: 'Added to diary',
+  private async createSuccessToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
       duration: 1000,
       color: 'success',
       icon: 'checkmark-circle-outline',
     });
+    await toast.present();
+  }
+  private async showErrorToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      color: 'danger',
+      icon: 'close-circle-outline'
+    });
+    await toast.present();
   }
 }
