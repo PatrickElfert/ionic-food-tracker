@@ -11,7 +11,7 @@ export abstract class UserSettingsService {
     userSettings: Partial<UserSettings>
   ): Observable<void>;
 
-  abstract existsUserSettings(): Observable<boolean>;
+  abstract userSettingsExist(): Observable<boolean>;
 
   abstract initializeUserSettings(
     caloricIntakeSettings: Pick<

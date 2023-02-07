@@ -4,7 +4,7 @@ import { AuthService } from "../data-access/auth.service";
 @Component({
   selector: 'app-login',
   templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.scss'],
+  styleUrls: ['./sign-in.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInComponent implements OnInit {

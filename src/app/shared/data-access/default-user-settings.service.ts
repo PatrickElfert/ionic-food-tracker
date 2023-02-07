@@ -76,7 +76,7 @@ export class DefaultUserSettingsService extends UserSettingsService {
     );
   }
 
-  public existsUserSettings(): Observable<boolean> {
+  public userSettingsExist(): Observable<boolean> {
     return this.userService.userDocumentReference$.pipe(
       switchMap((user) =>
         docSnapshots(this.buildUserSettingsDocumentReference(user.id))

@@ -41,7 +41,7 @@ export interface CaloricIntakeForm extends Omit<CaloricIntakeFormValues, 'birthd
 @Component({
   selector: 'app-calculate-intake-form',
   templateUrl: './calculate-intake-form.component.html',
-  styleUrls: ['./calculate-intake-form.component.scss'],
+  styleUrls: ['./calculate-intake-form.component.sass'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
