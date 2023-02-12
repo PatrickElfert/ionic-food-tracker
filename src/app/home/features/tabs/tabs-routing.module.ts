@@ -10,9 +10,7 @@ const routes: Routes = [
       {
         path: 'tab1',
         loadChildren: () =>
-          import('../../../tracking/tracking.module').then(
-            (m) => m.TrackingModule
-          ),
+          import('../../../tracking/tracking.routing').then((m) => m.routes),
       },
       {
         path: 'tab2',

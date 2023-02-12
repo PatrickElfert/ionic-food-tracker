@@ -14,13 +14,26 @@ import {
 } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { cloneDeep } from 'lodash';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { MacroCardComponent } from '../macro-card/macro-card.component';
 
 @Component({
   selector: 'app-add-ingredient[ingredient][mealCategories]',
   templateUrl: './add-ingredient.component.html',
   styleUrls: ['./add-ingredient.component.scss'],
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    IonicModule,
+    AsyncPipe,
+    MacroCardComponent,
+    ReactiveFormsModule,
+    FormsModule,
+    NgIf,
+    NgForOf
+  ]
 })
 export class AddIngredientComponent implements OnInit {
   @Input() set ingredient(value: ExternalIngredient) {

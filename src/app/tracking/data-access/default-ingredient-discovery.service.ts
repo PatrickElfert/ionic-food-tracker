@@ -18,7 +18,7 @@ export class DefaultIngredientDiscoveryService extends IngredientDiscoveryServic
         `https://world.openfoodfacts.org/api/v2/search?code=${barcode}
             &fields=product_name,nutriments,brands`
       )
-      .pipe(this.extractExternalIngredients, retry(1));
+      .pipe(this.extractExternalIngredients.bind(this), retry(1));
   }
   public queryIngredientsByName(
     name: string
@@ -28,7 +28,7 @@ export class DefaultIngredientDiscoveryService extends IngredientDiscoveryServic
         `https://world.openfoodfacts.org/cgi/search.pl?action=process&search_terms=${name}
             &search_simple=1&json=1&fields=product_name,nutriments,brands`
       )
-      .pipe(this.extractExternalIngredients, retry(1));
+      .pipe(this.extractExternalIngredients.bind(this), retry(1));
   }
 
   private extractExternalIngredients(observable: Observable<FoodSearchResult>) {
