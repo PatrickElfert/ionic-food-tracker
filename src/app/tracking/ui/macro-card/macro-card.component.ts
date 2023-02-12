@@ -1,11 +1,19 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ArcElement, Chart, DoughnutController } from 'chart.js';
 import { ExternalIngredient } from '../../interfaces/external-ingredient';
+import { IonicModule } from '@ionic/angular';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-macro-card[ingredient]',
   templateUrl: './macro-card.component.html',
   styleUrls: ['./macro-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    IonicModule,
+    DecimalPipe
+  ]
 })
 export class MacroCardComponent implements OnInit {
 

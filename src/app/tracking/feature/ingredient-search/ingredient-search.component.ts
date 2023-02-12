@@ -14,20 +14,33 @@ import { BarcodeScannerService } from '../../../shared/data-access/barcode-scann
 import { Ingredient } from '../../interfaces/ingredient';
 import { CalorieBarService } from '../../data-access/calorie-bar.service';
 import { IngredientDiscoveryService } from '../../data-access/ingredient-discovery.service';
-import { Platform, ToastController } from '@ionic/angular';
+import { IonicModule, Platform, ToastController } from '@ionic/angular';
 import { DiaryService } from '../../data-access/diary.service';
 import { ExternalIngredient } from '../../interfaces/external-ingredient';
 import { IngredientService } from '../../data-access/ingredient.service';
 import { v4 } from 'uuid';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { isNotUndefinedOrNull } from '../../../shared/utils/utils';
+import { AsyncPipe, CommonModule, NgForOf, NgIf } from '@angular/common';
+import { IngredientSearchItemComponent } from '../../ui/ingredient-search-item/ingredient-search-item.component';
+import { AddIngredientComponent } from '../../ui/add-ingredient/add-ingredient.component';
 
 @Component({
   selector: 'app-ingredient-search-modal',
   templateUrl: './ingredient-search.component.html',
   styleUrls: ['./ingredient-search.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    IonicModule,
+    IngredientSearchItemComponent,
+    AsyncPipe,
+    AddIngredientComponent,
+    NgIf,
+    NgForOf
+  ]
 })
 export class IngredientSearchComponent implements OnInit {
   public searchbar = new FormControl<string | undefined>(undefined);
@@ -50,16 +63,16 @@ export class IngredientSearchComponent implements OnInit {
     )
   );
 
-  public ingredientSearchResult$: Observable<ExternalIngredient[]> =
-    merge(this.barcodeSearchResult$, this.textSearchResult$).pipe(
-      map((ingredients) => ingredients.filter((ingredient) => ingredient.name)),
-      catchError(() =>
-        from(this.showErrorToast('Error searching for ingredient')).pipe(
-          map(() => [])
-        )
-      ),
-      tap(() => (this.loading = false)),
-    );
+  public ingredientSearchResult$: Observable<ExternalIngredient[]> = merge(
+    this.barcodeSearchResult$,
+    this.textSearchResult$
+  ).pipe(
+    map((ingredients) => ingredients.filter((ingredient) => ingredient.name)),
+    catchError((error) =>
+      from(this.showErrorToast(error.message)).pipe(map(() => []))
+    ),
+    tap(() => (this.loading = false))
+  );
 
   public loading = false;
 
@@ -156,7 +169,7 @@ export class IngredientSearchComponent implements OnInit {
       message,
       duration: 2000,
       color: 'danger',
-      icon: 'close-circle-outline'
+      icon: 'close-circle-outline',
     });
     await toast.present();
   }
