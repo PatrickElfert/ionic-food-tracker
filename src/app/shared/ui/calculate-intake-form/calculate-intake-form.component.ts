@@ -15,11 +15,13 @@ import {
   FormControl,
   FormGroup,
   NG_VALIDATORS,
-  NG_VALUE_ACCESSOR,
+  NG_VALUE_ACCESSOR, ReactiveFormsModule,
   ValidationErrors,
   Validator,
-  Validators,
+  Validators
 } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { KeyValuePipe, NgForOf } from '@angular/common';
 
 interface CaloricIntakeFormDefinition {
   birthdate: FormControl<string>;
@@ -46,15 +48,22 @@ export interface CaloricIntakeForm extends Omit<CaloricIntakeFormValues, 'birthd
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => CalculateIntakeFormComponent),
-      multi: true,
+      multi: true
     },
     {
       provide: NG_VALIDATORS,
       useExisting: forwardRef(() => CalculateIntakeFormComponent),
-      multi: true,
-    },
+      multi: true
+    }
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    ReactiveFormsModule,
+    IonicModule,
+    NgForOf,
+    KeyValuePipe
+  ],
+  standalone: true
 })
 export class CalculateIntakeFormComponent
   implements OnInit, ControlValueAccessor, Validator

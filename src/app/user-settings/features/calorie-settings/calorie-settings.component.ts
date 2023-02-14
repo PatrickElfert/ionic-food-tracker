@@ -1,11 +1,15 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { IntakeSource, UserSettings } from '../../../shared/interfaces/user';
 import { catchError, map, startWith, switchMap, tap } from 'rxjs/operators';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { from, lastValueFrom, Observable, combineLatest, Subject } from 'rxjs';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
-import { CaloricIntakeForm } from '../../../shared/ui/calculate-intake-form/calculate-intake-form.component';
-import { ToastController } from '@ionic/angular';
+import {
+  CalculateIntakeFormComponent,
+  CaloricIntakeForm
+} from '../../../shared/ui/calculate-intake-form/calculate-intake-form.component';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { AsyncPipe, KeyValuePipe, NgForOf, NgIf } from '@angular/common';
 
 interface CalorieSettingsVM {
   intakeSource: IntakeSource;
@@ -19,6 +23,16 @@ interface CalorieSettingsVM {
   templateUrl: './calorie-settings.component.html',
   styleUrls: ['./calorie-settings.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    IonicModule,
+    AsyncPipe,
+    NgIf,
+    KeyValuePipe,
+    NgForOf,
+    CalculateIntakeFormComponent,
+    ReactiveFormsModule
+  ],
 })
 export class CalorieSettingsComponent {
   constructor(

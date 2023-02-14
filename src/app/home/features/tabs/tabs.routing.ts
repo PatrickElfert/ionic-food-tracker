@@ -1,8 +1,7 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: 'tabs',
     component: TabsPage,
@@ -15,8 +14,8 @@ const routes: Routes = [
       {
         path: 'tab2',
         loadChildren: () =>
-          import('../../../user-settings/user-settings.module').then(
-            (m) => m.UserSettingsModule
+          import('../../../user-settings/user-settings.routing').then(
+            (m) => m.routes
           ),
       },
     ],
@@ -28,9 +27,3 @@ const routes: Routes = [
   },
 ];
 
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-})
-export class TabsPageRoutingModule {
-  constructor() {}
-}
