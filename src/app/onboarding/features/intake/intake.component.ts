@@ -1,13 +1,17 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
-import { FormControl, FormControlStatus } from '@angular/forms';
+import { FormControl, FormControlStatus, ReactiveFormsModule } from '@angular/forms';
 import { combineLatest, from, lastValueFrom, Observable } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { ToastController } from '@ionic/angular';
-import { CaloricIntakeForm } from '../../../shared/ui/calculate-intake-form/calculate-intake-form.component';
+import { IonicModule, ToastController } from '@ionic/angular';
+import {
+  CalculateIntakeFormComponent,
+  CaloricIntakeForm
+} from '../../../shared/ui/calculate-intake-form/calculate-intake-form.component';
 import { IntakeSource } from '../../../shared/interfaces/user';
 import { intakeFormDefault } from '../../utils/form-defaults';
+import { AsyncPipe, NgIf } from '@angular/common';
 
 export interface IntakeVM {
   status: string;
@@ -22,6 +26,14 @@ export interface IntakeVM {
   templateUrl: './intake.component.html',
   styleUrls: ['./intake.component.sass'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    IonicModule,
+    ReactiveFormsModule,
+    NgIf,
+    CalculateIntakeFormComponent,
+    AsyncPipe
+  ],
+  standalone: true
 })
 export class IntakeComponent implements OnInit {
   public knowsIntake$ = this.activatedRoute.params
