@@ -6,10 +6,11 @@ import { from, lastValueFrom, Observable, combineLatest, Subject } from 'rxjs';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
 import {
   CalculateIntakeFormComponent,
-  CaloricIntakeForm
+  CaloricIntakeForm,
 } from '../../../shared/ui/calculate-intake-form/calculate-intake-form.component';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { AsyncPipe, KeyValuePipe, NgForOf, NgIf } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 
 interface CalorieSettingsVM {
   intakeSource: IntakeSource;
@@ -31,13 +32,14 @@ interface CalorieSettingsVM {
     KeyValuePipe,
     NgForOf,
     CalculateIntakeFormComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
 })
 export class CalorieSettingsComponent {
   constructor(
     private userSettingsService: UserSettingsService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   public intakeSource = IntakeSource;
@@ -60,9 +62,10 @@ export class CalorieSettingsComponent {
     startWith(undefined)
   );
 
-  public userSettings$ = this.userSettingsService
-    .queryUserSettings()
-    .pipe(tap((userSettings) => this.initializeFormValues(userSettings)));
+  public userSettings$ = this.activatedRoute.data.pipe(
+    map((data) => data.userSettings as UserSettings),
+    tap((userSettings) => this.initializeFormValues(userSettings))
+  );
 
   public vm$: Observable<CalorieSettingsVM> = combineLatest([
     this.intakeSource$,

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AuthService } from '../data-access/auth.service';
 import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -11,11 +12,10 @@ import { IonicModule } from '@ionic/angular';
   standalone: true,
 })
 export class SignInComponent implements OnInit {
-  constructor(private authService: AuthService) {}
-
+  constructor(private authService: AuthService, private router: Router) {}
   async ngOnInit() {}
-
   async signIn() {
     await this.authService.signIn();
+    await this.router.navigate(['/']);
   }
 }
