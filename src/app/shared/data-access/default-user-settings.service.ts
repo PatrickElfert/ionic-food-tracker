@@ -13,7 +13,7 @@ import { map, switchMap, take, tap } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 import { UserSettingsService } from './user-settings.service';
 import { UserService } from './user.service';
-import { userSettingsConverter } from '../utils/converters';
+import { userSettingsConverter } from '../utils/user-settings.converter';
 
 @Injectable()
 export class DefaultUserSettingsService extends UserSettingsService {

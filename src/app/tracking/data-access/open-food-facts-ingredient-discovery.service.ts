@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { from, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, retry } from 'rxjs/operators';
 import { IngredientDiscoveryService } from './ingredient-discovery.service';
 import { Injectable } from '@angular/core';
 import { ExternalIngredient } from '../interfaces/external-ingredient';
 
 @Injectable()
-export class DefaultIngredientDiscoveryService extends IngredientDiscoveryService {
+export class OpenFoodFactsIngredientDiscoveryService extends IngredientDiscoveryService {
   constructor(private httpClient: HttpClient) {
     super();
   }
@@ -31,6 +31,16 @@ export class DefaultIngredientDiscoveryService extends IngredientDiscoveryServic
       .pipe(this.extractExternalIngredients.bind(this), retry(1));
   }
 
+  public create(): Observable<void> {
+    throw new Error('not implemented for open food facts.');
+  }
+  public update(): Observable<void> {
+    throw new Error('not implemented for open food facts.');
+  }
+  public delete(): Observable<void> {
+    throw new Error('Not supported for open food facts');
+  }
+
   private extractExternalIngredients(observable: Observable<FoodSearchResult>) {
     return observable.pipe(
       map((searchResult) =>
@@ -41,6 +51,7 @@ export class DefaultIngredientDiscoveryService extends IngredientDiscoveryServic
 
   private toExternalIngredient(product: Product): ExternalIngredient {
     return new ExternalIngredient(
+      product.product_name,
       product.product_name,
       product.brands,
       {
