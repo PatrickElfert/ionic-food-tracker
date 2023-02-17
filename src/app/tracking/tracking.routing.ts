@@ -5,7 +5,7 @@ import { FirebaseIngredientService } from './data-access/firebase-ingredient.ser
 import { DefaultDiaryService } from './data-access/default-diary.service';
 import { IngredientService } from './data-access/ingredient.service';
 import { DiaryService } from './data-access/diary.service';
-import { DefaultIngredientDiscoveryService } from './data-access/default-ingredient-discovery.service';
+import { OpenFoodFactsIngredientDiscoveryService } from './data-access/open-food-facts-ingredient-discovery.service';
 import { CalorieBarService } from './data-access/calorie-bar.service';
 import { IngredientDiscoveryService } from './data-access/ingredient-discovery.service';
 
@@ -19,7 +19,7 @@ export const routes: Routes = [
       { provide: DiaryService, useClass: DefaultDiaryService },
       {
         provide: IngredientDiscoveryService,
-        useClass: DefaultIngredientDiscoveryService,
+        useClass: OpenFoodFactsIngredientDiscoveryService,
       },
     ],
     children: [

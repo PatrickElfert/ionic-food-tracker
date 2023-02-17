@@ -1,9 +1,14 @@
 import { Macros } from './macros';
-import { calculateCalories, calculateMacros } from "../utils/ingredient-utils";
+import { calculateCalories, calculateMacros } from '../utils/ingredient-utils';
 
-export class ExternalIngredient{
-
-  constructor(public name: string, public brand: string, public macros: Macros, public defaultAmount: number) {
+export class ExternalIngredient {
+  constructor(
+    public id: string,
+    public name: string,
+    public brand: string,
+    public macros: Macros,
+    public defaultAmount: number,
+  ) {
     this.amount = defaultAmount;
   }
 
