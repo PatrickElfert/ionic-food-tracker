@@ -5,9 +5,10 @@
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
-    "start": "npx ionic serve & firebase emulators:start --export-on-exit ./emulator-data --import=./emulator-data",
+    "start:ci": "firebase emulators:exec 'npx ionic serve --external' --export-on-exit ./emulator-data --import=./emulator-data",
+    "start:local": "firebase emulators:start --export-on-exit ./emulator-data --import=./emulator-data & npx ionic serve --external",
     "build": "ng build",
-    "test": "ng test --watch",
+    "test": "npm run cypress",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
@@ -37,9 +38,10 @@
     "lodash": "^4.17.21",
     "prettier": "^2.5.0",
     "rxfire": "^6.0.0",
-    "rxjs": "~7.0.0",
+    "rxjs": "^7.4.0",
     "tslib": "^2.2.0",
     "uuid": "^8.3.2",
+    "wait-on": "^7.0.1",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

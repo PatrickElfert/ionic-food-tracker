@@ -1,0 +1,48 @@
+name: Ionic App CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Firebase
+        run: curl -sL https://firebase.tools | bash
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.12
+
+      - name: Install Ionic CLI
+        run: npm install -g @ionic/cli
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          browser: chrome
+          start: npm run start:ci
+          wait-on: 'http://127.0.0.1:8100'
+
+
+
+
+
+
+
+
+

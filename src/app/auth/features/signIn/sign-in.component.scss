@@ -1,0 +1,35 @@
+.sign-in {
+  font-weight: 800;
+  padding: 1em 0 0 1em;
+}
+
+.seperator {
+  display: flex;
+  flex-direction:row;
+  margin: 1em
+}
+
+.seperator:before, .seperator:after {
+  content: "";
+  flex: 1 1;
+  border-bottom: 1px solid var(--ion-color-secondary);
+  margin: auto;
+}
+
+.seperator:before {
+  margin-right: 1em
+}
+
+.seperator:after {
+  margin-left: 1em
+}
+
+.credentials-login {
+  ion-item:last-of-type {
+    margin-bottom: 1.5em
+  }
+}
+
+ion-button {
+ margin: 0 1em 0 1em
+}

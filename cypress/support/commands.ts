@@ -14,7 +14,6 @@ import {
   signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { environment } from '../../src/environments/environment';
-import { UserSettings } from '../../src/app/shared/interfaces/user';
 import {
   ActivityLevel,
   Gender,

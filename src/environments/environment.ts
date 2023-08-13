@@ -14,9 +14,9 @@ export const environment = {
   },
   production: false,
   useEmulators: true,
-  baseUrl: 'http://localhost:8100',
-  authEmulatorHost: 'localhost',
-  firestoreEmulatorHost: 'localhost',
+  baseUrl: 'http://127.0.0.1:8100',
+  authEmulatorHost: '127.0.0.1',
+  firestoreEmulatorHost: '127.0.0.1',
   authEmulatorPort: 9099,
   firestoreEmulatorPort: 9090,
   cypressUser: {
