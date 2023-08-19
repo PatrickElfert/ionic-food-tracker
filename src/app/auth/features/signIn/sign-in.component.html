@@ -1,11 +1,25 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>
-      SignIn
-    </ion-title>
+    <h1 class="sign-in">
+      Sign in your <br />
+      Account
+    </h1>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-button (click)="signIn()">Sign In</ion-button>
+  <div class="credentials-login">
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="email"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input [(ngModel)]="password"></ion-input>
+    </ion-item>
+    <ion-button expand="block" (click)="signIn()">Sign In</ion-button>
+  </div>
+  <label class="seperator">or login with</label>
+  <ion-button (click)="authService.signInWithGoogle()" expand="block">
+    <ion-icon name="logo-google"></ion-icon>
+  </ion-button>
 </ion-content>
-

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { GoogleAuthProvider, UserCredential } from 'firebase/auth';
 import { FirebaseAuthentication } from '@robingenz/capacitor-firebase-authentication';
-import { Auth, authState, signInWithCredential } from '@angular/fire/auth';
+import { Auth, authState, signInWithCredential, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { map } from "rxjs/operators";
 import { Router } from "@angular/router";
 
@@ -17,8 +17,8 @@ export class FirebaseAuthService extends AuthService {
     super(router);
   }
 
-  signIn(): void {
-    void this.signInWithGoogle();
+  async signInWithEmailAndPassword(email:string, password:string): Promise<UserCredential> {
+    return await signInWithEmailAndPassword(this.auth,email,password)
   }
 
   signOut(): void {
