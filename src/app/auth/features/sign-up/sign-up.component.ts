@@ -1,32 +1,34 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { AuthService } from '../data-access/auth.service';
-import { IonicModule } from '@ionic/angular';
-import { Router, RouterLink, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { ToastService } from 'src/app/shared/data-access/toast.service';
 import { FirebaseError } from '@angular/fire/app';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink, RouterModule } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { ToastService } from 'src/app/shared/data-access/toast.service';
+import { AuthService } from '../data-access/auth.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.scss'],
+  selector: 'app-sign-up',
+  templateUrl: './sign-up.component.html',
+  styleUrls: ['./sign-up.component.scss'],
   imports: [IonicModule, FormsModule, RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
 })
-export class SignInComponent implements OnInit {
-  email: string = '';
-  password: string = '';
+export class SignUpComponent implements OnInit {
+  email = '';
+  password = '';
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private toastService: ToastService
   ) {}
-  async ngOnInit() {}
 
-  async signUpWithEmailAndPassword() { try {
-      await this.authService.signInWithEmailAndPassword(
+  ngOnInit() {}
+
+  async signUpWithEmailAndPassword() {
+    try {
+      await this.authService.signUpWithEmailAndPassword(
         this.email,
         this.password
       );
@@ -38,9 +40,9 @@ export class SignInComponent implements OnInit {
     }
   }
 
-  async signInWithGoogle() {
+  async signUpWithGoogle() {
     try {
-      await this.authService.signInWithGoogle();
+      await this.authService.signUpWithGoogle();
       await this.router.navigate(['']);
     } catch (e) {
       if (e instanceof FirebaseError) {
@@ -48,5 +50,4 @@ export class SignInComponent implements OnInit {
       }
     }
   }
-
 }

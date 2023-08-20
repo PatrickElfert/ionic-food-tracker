@@ -14,5 +14,7 @@ export abstract class AuthService {
 
   abstract signInWithEmailAndPassword(email: string, password: string): Promise<UserCredential>;
   abstract signInWithGoogle(): Promise<UserCredential>;
+  abstract signUpWithEmailAndPassword(email: string, password: string): Promise<UserCredential>;
+  abstract signUpWithGoogle(): Promise<UserCredential>;
   abstract signOut(): void;
 }

@@ -25,6 +25,7 @@ import { isNotUndefinedOrNull } from '../../../shared/utils/utils';
 import { AsyncPipe, CommonModule, NgForOf, NgIf } from '@angular/common';
 import { IngredientSearchItemComponent } from '../../ui/ingredient-search-item/ingredient-search-item.component';
 import { AddIngredientComponent } from '../../ui/add-ingredient/add-ingredient.component';
+import { ToastService } from 'src/app/shared/data-access/toast.service';
 
 @Component({
   selector: 'app-ingredient-search-modal',
@@ -69,7 +70,7 @@ export class IngredientSearchComponent implements OnInit {
   ).pipe(
     map((ingredients) => ingredients.filter((ingredient) => ingredient.name)),
     catchError((error) =>
-      from(this.showErrorToast(error.message)).pipe(map(() => []))
+      from(this.toastService.showErrorToast(error.message)).pipe(map(() => []))
     ),
     tap(() => (this.loading = false))
   );
@@ -105,12 +106,11 @@ export class IngredientSearchComponent implements OnInit {
   constructor(
     private barcodeScannerService: BarcodeScannerService,
     private ingredientDiscoveryService: IngredientDiscoveryService,
-    private calorieBarService: CalorieBarService,
     private platform: Platform,
     private ingredientService: IngredientService,
     private diaryService: DiaryService,
     private userSettingsService: UserSettingsService,
-    private toastController: ToastController
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {}
@@ -146,31 +146,12 @@ export class IngredientSearchComponent implements OnInit {
             )
           )
         ),
-        switchMap(() => from(this.createSuccessToast('Added to diary')))
+        switchMap(() => from(this.toastService.showErrorToast('Added to diary')))
       )
     );
   }
 
   public onModalDismiss() {
     this.ingredientSelectedAction.next(undefined);
-  }
-
-  private async createSuccessToast(message: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 1000,
-      color: 'success',
-      icon: 'checkmark-circle-outline',
-    });
-    await toast.present();
-  }
-  private async showErrorToast(message: string) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2000,
-      color: 'danger',
-      icon: 'close-circle-outline',
-    });
-    await toast.present();
   }
 }

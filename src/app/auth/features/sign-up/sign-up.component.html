@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title size="large"> Sign in your Account </ion-title>
+    <ion-title size="large"> Strong Track </ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -13,14 +13,14 @@
       <ion-label position="floating">Password</ion-label>
       <ion-input type="password" [(ngModel)]="password"></ion-input>
     </ion-item>
-    <ion-button expand="block" (click)="signInInWithEmailAndPassword()">Sign In</ion-button>
+    <ion-button expand="block" (click)="signUpWithEmailAndPassword()">Sign Up</ion-button>
   </div>
-  <label class="seperator">or login with</label>
-  <ion-button (click)="signInWithGoogle()" expand="block">
+  <label class="seperator">or sign up with</label>
+  <ion-button (click)="signUpWithGoogle()" expand="block">
     <ion-icon name="logo-google"></ion-icon>
   </ion-button>
   <ion-row class="ion-justify-content-center helper-text">
-    <ion-text>Don't have an account yet? </ion-text>
-    <a [routerLink]="['../']" color="primary">Sign Up</a>
+    <ion-text>Already have an account?</ion-text>
+    <a [routerLink]="['sign-in']" color="primary">Sign In</a>
   </ion-row>
 </ion-content>
