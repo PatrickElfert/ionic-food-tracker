@@ -13,7 +13,7 @@ import { IngredientItemComponent } from '../../ui/ingredient-item/ingredient-ite
 @Component({
   selector: 'app-diary',
   templateUrl: './diary.component.html',
-  styleUrls: ['./diary.component.sass'],
+  styleUrls: ['./diary.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [

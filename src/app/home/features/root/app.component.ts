@@ -6,10 +6,10 @@ import { AuthService } from '../../../auth/features/data-access/auth.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  styleUrls: ['app.component.sass'],
+  styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  constructor(public barcodeScannerService: BarcodeScannerService, private authService: AuthService, public router: Router) {}
+  constructor(public barcodeScannerService: BarcodeScannerService,  public router: Router) {}
 
   async ngOnInit(): Promise<void> {}
 

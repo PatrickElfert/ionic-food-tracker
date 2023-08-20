@@ -24,7 +24,7 @@ export interface IntakeVM {
 @Component({
   selector: 'app-intake',
   templateUrl: './intake.component.html',
-  styleUrls: ['./intake.component.sass'],
+  styleUrls: ['./intake.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonicModule,

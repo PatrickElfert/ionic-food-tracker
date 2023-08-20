@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
-  styleUrls: ['./welcome.component.sass'],
+  styleUrls: ['./welcome.component.scss'],
   imports: [
     IonicModule
   ],

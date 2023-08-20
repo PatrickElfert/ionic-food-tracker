@@ -21,8 +21,8 @@ export class FirebaseAuthService extends AuthService {
     return await signInWithEmailAndPassword(this.auth,email,password)
   }
 
-  signOut(): void {
-    void this.auth.signOut();
+  async signOut(): Promise<void> {
+    await this.auth.signOut();
   }
 
   async signInWithGoogle(): Promise<UserCredential> {

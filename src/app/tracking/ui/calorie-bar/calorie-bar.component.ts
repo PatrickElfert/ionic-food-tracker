@@ -9,7 +9,6 @@ import {
 import { CalorieBarService } from '../../data-access/calorie-bar.service';
 import {
   AsyncPipe,
-  CommonModule,
   DecimalPipe,
   NgClass, NgIf,
   NgStyle,
@@ -20,7 +19,7 @@ import { IonicModule } from '@ionic/angular';
 @Component({
   selector: 'app-calorie-bar',
   templateUrl: './calorie-bar.component.html',
-  styleUrls: ['./calorie-bar.component.sass'],
+  styleUrls: ['./calorie-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [IonicModule, NgStyle, AsyncPipe, PercentPipe, DecimalPipe, NgClass, NgIf]

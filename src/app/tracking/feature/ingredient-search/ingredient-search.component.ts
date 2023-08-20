@@ -30,7 +30,7 @@ import { ToastService } from 'src/app/shared/data-access/toast.service';
 @Component({
   selector: 'app-ingredient-search-modal',
   templateUrl: './ingredient-search.component.html',
-  styleUrls: ['./ingredient-search.component.sass'],
+  styleUrls: ['./ingredient-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
@@ -146,7 +146,7 @@ export class IngredientSearchComponent implements OnInit {
             )
           )
         ),
-        switchMap(() => from(this.toastService.showErrorToast('Added to diary')))
+        switchMap(() => from(this.toastService.showSuccessToast('Added to diary')))
       )
     );
   }

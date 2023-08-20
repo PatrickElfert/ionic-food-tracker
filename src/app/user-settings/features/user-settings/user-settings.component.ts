@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../auth/features/data-access/auth.service';
 import { IonicModule } from '@ionic/angular';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-user-settings',
@@ -11,17 +11,19 @@ import { RouterLink } from '@angular/router';
   standalone:true,
   imports: [
     IonicModule,
-    RouterLink
+    RouterModule,
   ],
 })
 export class UserSettingsComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private router: Router
   ) {}
 
-  async logOut() {
+  async onLogout() {
     await this.authService.signOut();
+    this.router.navigate(['/']);
   }
 
   ngOnInit() {}
