@@ -26,6 +26,7 @@ import { AsyncPipe, CommonModule, NgForOf, NgIf } from '@angular/common';
 import { IngredientSearchItemComponent } from '../../ui/ingredient-search-item/ingredient-search-item.component';
 import { AddIngredientComponent } from '../../ui/add-ingredient/add-ingredient.component';
 import { ToastService } from 'src/app/shared/data-access/toast.service';
+import { AddCustomIngredientComponent } from '../../ui/add-custom-ingredient/add-custom-ingredient.component';
 
 @Component({
   selector: 'app-ingredient-search-modal',
@@ -39,6 +40,7 @@ import { ToastService } from 'src/app/shared/data-access/toast.service';
     IngredientSearchItemComponent,
     AsyncPipe,
     AddIngredientComponent,
+    AddCustomIngredientComponent,
     NgIf,
     NgForOf
   ]

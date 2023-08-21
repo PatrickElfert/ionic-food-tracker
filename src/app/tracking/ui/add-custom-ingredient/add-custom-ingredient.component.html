@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Details </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-item lines="full">
+    <ion-label>Name</ion-label>
+    <ion-input></ion-input>
+  </ion-item>
+  <ion-item lines="full">
+    <ion-label>Brand</ion-label>
+    <ion-input></ion-input>
+  </ion-item>
+  <ion-item lines="full">
+    <ion-label>Amount</ion-label>
+    <ion-input
+      [formControl]="amount"
+      type="number"
+      [value]="ingredient.amount"
+    ></ion-input>
+    <ion-badge slot="end">gram</ion-badge>
+    <ion-note slot="helper">How much did you eat?</ion-note>
+  </ion-item>
+      <ion-item lines="full">
+        <ion-label>Protein</ion-label>
+        <ion-input></ion-input>
+        <ion-badge slot="end">gram</ion-badge>
+      </ion-item>
+      <ion-item lines="full">
+        <ion-label>Fats</ion-label>
+        <ion-input></ion-input>
+        <ion-badge slot="end">gram</ion-badge>
+      </ion-item>
+      <ion-item lines="full">
+        <ion-label>Carbs</ion-label>
+        <ion-input></ion-input>
+        <ion-badge slot="end">gram</ion-badge>
+      </ion-item>
+  <ion-button
+    (click)="onAddIngredient(ingredient)"
+    class="ion-margin"
+    shape="round"
+    expand="block"
+    data-cy="add-to-diary"
+    >Add to diary</ion-button
+  >
+</ion-content>

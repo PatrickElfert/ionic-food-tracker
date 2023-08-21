@@ -23,14 +23,36 @@
 
 <ion-content [fullscreen]="true">
   <ion-list>
-    <app-ingredient-search-item
-      [ingredient]="ingredient"
-      (click)="onIngredientSelected(ingredient)"
-      *ngFor="let ingredient of ingredientSearchResult$ | async"
-    >
-    </app-ingredient-search-item>
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Your foods</ion-label>
+      </ion-item-divider>
+      <ion-item button lines="none" detail="true" detail-icon="add-circle">
+        <ion-label>
+          <h2>Create</h2>
+          <p>Your own custom food</p>
+        </ion-label>
+      </ion-item>
+    </ion-item-group>
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Search result</ion-label>
+      </ion-item-divider>
+      <app-ingredient-search-item
+        [ingredient]="ingredient"
+        (click)="onIngredientSelected(ingredient)"
+        *ngFor="let ingredient of ingredientSearchResult$ | async"
+      >
+      </app-ingredient-search-item>
+    </ion-item-group>
   </ion-list>
 </ion-content>
+<ion-modal [isOpen]="true">
+ <ng-template>
+    <app-add-custom-ingredient>
+    </app-add-custom-ingredient>
+  </ng-template>
+</ion-modal>
 <ion-modal
   #modal
   *ngIf="modalInput$ | async as modalInput"
@@ -39,7 +61,7 @@
   [isOpen]="(selectedIngredient$ | async) !== undefined"
   (ionModalDidDismiss)="onModalDismiss()"
 >
-  <ng-template >
+  <ng-template>
     <app-add-ingredient
       (addIngredient)="
         modal.dismiss();
