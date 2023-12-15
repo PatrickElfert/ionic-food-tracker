@@ -1,0 +1,8 @@
+:host {
+  height: inherit;
+}
+
+ion-item {
+  --background: inherit;
+  --border-color: var(--ion-color-contrast)
+}
