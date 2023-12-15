@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { catchError, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import {
   combineLatest,
-  EMPTY,
   from,
   lastValueFrom,
   merge,
@@ -12,21 +11,20 @@ import {
 } from 'rxjs';
 import { BarcodeScannerService } from '../../../shared/data-access/barcode-scanner.service';
 import { Ingredient } from '../../interfaces/ingredient';
-import { CalorieBarService } from '../../data-access/calorie-bar.service';
 import { IngredientDiscoveryService } from '../../data-access/ingredient-discovery.service';
-import { IonicModule, Platform, ToastController } from '@ionic/angular';
-import { DiaryService } from '../../data-access/diary.service';
+import { IonicModule, Platform } from '@ionic/angular';
 import { ExternalIngredient } from '../../interfaces/external-ingredient';
 import { IngredientService } from '../../data-access/ingredient.service';
 import { v4 } from 'uuid';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { isNotUndefinedOrNull } from '../../../shared/utils/utils';
-import { AsyncPipe, CommonModule, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { IngredientSearchItemComponent } from '../../ui/ingredient-search-item/ingredient-search-item.component';
 import { AddIngredientComponent } from '../../ui/add-ingredient/add-ingredient.component';
 import { ToastService } from 'src/app/shared/data-access/toast.service';
 import { AddCustomIngredientComponent } from '../../ui/add-custom-ingredient/add-custom-ingredient.component';
+import {DiaryFacade} from '../../data-access/diary.facade';
 
 @Component({
   selector: 'app-ingredient-search-modal',
@@ -110,7 +108,7 @@ export class IngredientSearchComponent implements OnInit {
     private ingredientDiscoveryService: IngredientDiscoveryService,
     private platform: Platform,
     private ingredientService: IngredientService,
-    private diaryService: DiaryService,
+    private diaryService: DiaryFacade,
     private userSettingsService: UserSettingsService,
     private toastService: ToastService
   ) {}
@@ -133,9 +131,9 @@ export class IngredientSearchComponent implements OnInit {
     selectedMealCategory: string
   ) {
     void lastValueFrom(
-      this.diaryService.selectedDate$.pipe(
+      this.diaryService.todaysDiaryEntry$.pipe(
         take(1),
-        switchMap((date) =>
+        switchMap(({currentDay}) =>
           this.ingredientService.create(
             new Ingredient(
               v4(),
@@ -144,7 +142,7 @@ export class IngredientSearchComponent implements OnInit {
               macros,
               amount,
               selectedMealCategory,
-              date
+              currentDay
             )
           )
         ),

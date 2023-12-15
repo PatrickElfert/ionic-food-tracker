@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Ingredient } from '../../interfaces/ingredient';
-import { DiaryService } from '../../data-access/diary.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
+import { combineLatest, lastValueFrom } from 'rxjs';
 import { IngredientService } from '../../data-access/ingredient.service';
-import { AsyncPipe, CommonModule, DatePipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe, NgForOf, NgIf } from '@angular/common';
 import { CalorieBarComponent } from '../../ui/calorie-bar/calorie-bar.component';
 import { IonicModule } from '@ionic/angular';
 import { IngredientItemComponent } from '../../ui/ingredient-item/ingredient-item.component';
+import { DiaryFacade } from '../../data-access/diary.facade';
 
 @Component({
   selector: 'app-diary',
@@ -23,14 +23,22 @@ import { IngredientItemComponent } from '../../ui/ingredient-item/ingredient-ite
     IngredientItemComponent,
     CalorieBarComponent,
     NgForOf,
-    NgIf
-  ]
+    NgIf,
+  ],
 })
 export class DiaryComponent implements OnInit {
-  $vm = this.diaryService.diaryDay$.pipe(map((diaryDay) => ({ ...diaryDay })));
+  $vm = combineLatest([
+    this.diaryFacade.todaysDiaryEntry$,
+    this.diaryFacade.calorieLimit$,
+  ]).pipe(
+    map(([todaysDiaryEntry, calorieLimit]) => ({
+      ...todaysDiaryEntry,
+      calorieLimit,
+    }))
+  );
 
   constructor(
-    public diaryService: DiaryService,
+    public diaryFacade: DiaryFacade,
     public router: Router,
     public activatedRoute: ActivatedRoute,
     public ingredientService: IngredientService

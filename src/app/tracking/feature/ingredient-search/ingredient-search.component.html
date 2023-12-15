@@ -27,7 +27,13 @@
       <ion-item-divider>
         <ion-label>Your foods</ion-label>
       </ion-item-divider>
-      <ion-item button lines="none" detail="true" detail-icon="add-circle">
+      <ion-item
+        (click)="customIngredientModalVisible = true"
+        button
+        lines="none"
+        detail="true"
+        detail-icon="add-circle"
+      >
         <ion-label>
           <h2>Create</h2>
           <p>Your own custom food</p>
@@ -47,12 +53,14 @@
     </ion-item-group>
   </ion-list>
 </ion-content>
-<ion-modal [isOpen]="true">
- <ng-template>
-    <app-add-custom-ingredient>
+<ion-modal [isOpen]="customIngredientModalVisible">
+  <!--
+<ng-template>
+    <app-add-custom-ingredient (addIngredient)="">
     </app-add-custom-ingredient>
   </ng-template>
-</ion-modal>
+
+--></ion-modal>
 <ion-modal
   #modal
   *ngIf="modalInput$ | async as modalInput"

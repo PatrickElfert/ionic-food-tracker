@@ -1,4 +1,4 @@
-<div class="bar" *ngIf="calorieBarService.vm$ | async as vm">
+<div class="bar">
   <div *ngIf="displayAction" class="button-wrapper">
     <div class="button" data-cy="add-ingredient" (click)="click.emit()">
       <ion-icon size="large" icon="add-outline"></ion-icon>
@@ -6,13 +6,13 @@
   </div>
   <div
     [ngStyle]="{
-      width: vm.calorieFillWidth | percent,
-      'border-radius': vm.calorieFillWidth === 1 ?'5px 5px 5px 5px' : '5px 0 0 5px'
+      width: calories / calorieLimit | percent,
+      'border-radius': calories / calorieLimit === 1 ?'5px 5px 5px 5px' : '5px 0 0 5px'
     }"
     class="row percentage"
   ></div>
   <div data-cy="calorie-display" [ngClass]="displayAction ? 'action-label' : 'standalone-label'">
-    {{ vm.currentCalories | number: "1.0-0" }} /
-    {{ vm.calorieLimit | number: "1.0-0" }} kcal
+    {{ calories | number: "1.0-0" }} /
+    {{ calorieLimit | number: "1.0-0" }} kcal
   </div>
 </div>

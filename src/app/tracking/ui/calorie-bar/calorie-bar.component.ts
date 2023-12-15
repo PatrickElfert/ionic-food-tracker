@@ -3,16 +3,15 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
-import { CalorieBarService } from '../../data-access/calorie-bar.service';
 import {
   AsyncPipe,
   DecimalPipe,
-  NgClass, NgIf,
+  NgClass,
+  NgIf,
   NgStyle,
-  PercentPipe
+  PercentPipe,
 } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
@@ -22,13 +21,21 @@ import { IonicModule } from '@ionic/angular';
   styleUrls: ['./calorie-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [IonicModule, NgStyle, AsyncPipe, PercentPipe, DecimalPipe, NgClass, NgIf]
+  imports: [
+    IonicModule,
+    NgStyle,
+    AsyncPipe,
+    PercentPipe,
+    DecimalPipe,
+    NgClass,
+    NgIf,
+  ],
 })
-export class CalorieBarComponent implements OnInit {
+export class CalorieBarComponent {
+  constructor() {}
+
   @Output() click = new EventEmitter<string>();
+  @Input() calories = 0;
+  @Input() calorieLimit = 0;
   @Input() displayAction = true;
-
-  constructor(public calorieBarService: CalorieBarService) {}
-
-  ngOnInit(): void {}
 }

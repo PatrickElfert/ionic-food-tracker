@@ -25,6 +25,7 @@ import { AuthService } from '../../../auth/features/data-access/auth.service';
 import { FirebaseAuthService } from '../../../auth/features/data-access/firebase-auth.service';
 import { UserSettingsService } from '../../../shared/data-access/user-settings.service';
 import { DefaultUserSettingsService } from '../../../shared/data-access/default-user-settings.service';
+import {defaultStoreProvider} from "@state-adapt/angular";
 
 const whichAuth = () => {
   let auth;
@@ -70,6 +71,7 @@ const whichAuth = () => {
     }),
   ],
   providers: [
+    defaultStoreProvider,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     {
       provide: AuthService,

@@ -2,16 +2,16 @@
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="secondary">
-        <ion-button (click)="diaryService.previousDay()">
+        <ion-button (click)="diaryFacade.previousDay()">
           <ion-icon name="chevron-back-outline"></ion-icon>
         </ion-button>
       </ion-buttons>
       <ion-buttons slot="primary">
-        <ion-button (click)="diaryService.nextDay()">
+        <ion-button (click)="diaryFacade.nextDay()">
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title>{{ vm.date | date:'E, MMMM d' }}</ion-title>
+      <ion-title>{{ vm.currentDay | date:'E, MMMM d' }}</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
@@ -26,5 +26,5 @@
       </ion-list>
     </ng-container>
   </ion-content>
-  <app-calorie-bar (click)="routeToSearch()"></app-calorie-bar>
+  <app-calorie-bar [calorieLimit]="vm.calorieLimit" [calories]="vm.calories" (click)="routeToSearch()"></app-calorie-bar>
 </ng-container>

@@ -12,7 +12,7 @@ export class Ingredient {
     private defaultAmount: number,
     public mealCategory: string,
 
-    public createdDate: Date,
+    public createdDate: Date
   ) {
     this.currentAmount = defaultAmount;
   }
